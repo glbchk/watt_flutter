@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watt/pages/login_page.dart';
+import 'package:watt/presentation/screens/user_screen.dart';
 
 import 'data/colors.dart';
 
@@ -24,7 +24,8 @@ class _MyAppState extends State<MyApp> {
         brightness: wattColorScheme.brightness,
       ),
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: UserScreen(),
+      // home: const LoginPage(),
     );
   }
 }
