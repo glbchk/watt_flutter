@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/bloc/user_event.dart';
 import 'package:watt/presentation/bloc/user_state.dart';
-
-import '../../domain/use_cases/get_user_usecase.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final GetCurrentUserUseCase getCurrentUserUseCase;

@@ -31,4 +31,39 @@ class UserModel {
       chargingStations: json['charging_stations'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone_number': phoneNumber,
+      'language': language,
+      'payment_methods': paymentMethods,
+      'cars': cars,
+      'charging_stations': chargingStations,
+    };
+  }
+
+  UserModel copyUserWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phoneNumber,
+    String? language,
+    List<String>? paymentMethods,
+    List<String>? cars,
+    List<String>? chargingStations,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      language: language ?? this.language,
+      paymentMethods: paymentMethods ?? this.paymentMethods,
+      cars: cars ?? this.cars,
+      chargingStations: chargingStations ?? this.chargingStations,
+    );
+  }
 }

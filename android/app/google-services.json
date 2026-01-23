@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "434904199837",
+    "project_id": "watt-flutter",
+    "storage_bucket": "watt-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434904199837:android:d1d1785b8af3d5c134da74",
+        "android_client_info": {
+          "package_name": "agency.sixotwo.watt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmIO6e8-EaK8JRWkVmojCaY6Zee-XCKew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434904199837:android:fe12816b9aef339534da74",
+        "android_client_info": {
+          "package_name": "com.watt.watt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmIO6e8-EaK8JRWkVmojCaY6Zee-XCKew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

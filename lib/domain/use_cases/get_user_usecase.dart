@@ -1,13 +1,13 @@
-import '../../data/repositories/user_repository.dart';
-import '../entities/user_entity.dart';
+import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/domain/repositories/user_repository.dart';
 
 class CreateUserUseCase {
   final UserRepository repository;
 
   CreateUserUseCase(this.repository);
 
-  Future<UserEntity> execute() {
-    return repository.createUser();
+  Future<void> execute(UserEntity user) {
+    return repository.createUser(user);
   }
 }
 

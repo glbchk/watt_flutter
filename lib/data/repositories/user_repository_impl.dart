@@ -1,10 +1,10 @@
-import 'package:watt/data/repositories/user_repository.dart';
-
-import '../../domain/entities/user_entity.dart';
-import '../data_sources/remote_data_source.dart';
+import 'package:watt/data/data_sources/user_remote_data_source.dart';
+import 'package:watt/data/models/user_model.dart';
+import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final RemoteDataSource remoteDataSource;
+  final UserRemoteDataSource remoteDataSource;
 
   UserRepositoryImpl(this.remoteDataSource);
 
@@ -32,9 +32,19 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<UserEntity> createUser() {
-    // TODO: implement createUser
-    throw UnimplementedError();
+  Future<void> createUser(UserEntity user) async {
+    final userModel = UserModel(
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      language: user.language,
+      paymentMethods: user.paymentMethods,
+      cars: user.cars,
+      chargingStations: user.chargingStations,
+    );
+
+    await remoteDataSource.createUser(userModel);
   }
 
   @override

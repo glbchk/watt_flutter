@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../data/colors.dart';
-import '../widgets/custom_textfield.dart';
-import '../widgets/header_widget.dart';
-import '../widgets/main_button.dart';
+import 'package:watt/presentation/widgets/custom_textfield.dart';
+import 'package:watt/presentation/widgets/header_widget.dart';
+import 'package:watt/presentation/widgets/main_button.dart';
+import 'package:watt/utils/colors.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

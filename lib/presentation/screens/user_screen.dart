@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/data_sources/user_remote_data_source.dart';
+import 'package:watt/data/repositories/user_repository_impl.dart';
+import 'package:watt/domain/use_cases/get_user_usecase.dart';
+import 'package:watt/presentation/bloc/user_bloc.dart';
+import 'package:watt/presentation/bloc/user_state.dart';
 
-import '../../data/data_sources/remote_data_source.dart';
-import '../../data/repositories/user_repository_impl.dart';
-import '../../domain/use_cases/get_user_usecase.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_state.dart';
+//TO BE DELETED PAGE, CREATED JUST FOR OVERVIEW PURPOSE
 
 class UserScreen extends StatelessWidget {
   const UserScreen({super.key});
@@ -16,7 +19,14 @@ class UserScreen extends StatelessWidget {
       appBar: AppBar(title: Text('User Profile')),
       body: BlocProvider(
         create: (context) => UserBloc(
-          GetCurrentUserUseCase(UserRepositoryImpl(RemoteDataSource())),
+          GetCurrentUserUseCase(
+            UserRepositoryImpl(
+              UserRemoteDataSource(
+                auth: FirebaseAuth.instance,
+                firestore: FirebaseFirestore.instance,
+              ),
+            ),
+          ),
         ),
         child: UserProfile(),
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../data/colors.dart';
+import 'package:watt/utils/colors.dart';
 
 class HeaderWidget extends StatefulWidget {
   // 1. Define the modifiable fields

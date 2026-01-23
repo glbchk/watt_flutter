@@ -1,4 +1,4 @@
-import '../../domain/entities/user_entity.dart';
+import 'package:watt/domain/entities/user_entity.dart';
 
 abstract class UserState {}
 
