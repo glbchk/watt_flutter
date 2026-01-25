@@ -1,5 +1,8 @@
-import 'package:watt/data/models/user_model.dart';
+import 'package:watt/domain/entities/user_entity.dart';
 
 abstract class AuthRepository {
-  Future<void> registerUser(UserModel user, String password);
+  Future<UserEntity> registerUser(UserEntity email, String password);
+  Future<String> getCurrentUser();
+  Future<String> loginUser(String user, String password);
+  Future<void> logoutUser();
 }

@@ -15,21 +15,6 @@ class UserRemoteDataSource {
     await firestore.collection('users').doc(user.id).set(user.toJson());
   }
 
-  //TODO: Rebuild and rename to getCurrentUser
-  Future<UserModel> fetchUser(String userId) async {
-    await Future.delayed(Duration(seconds: 2));
-    return UserModel(
-      id: userId,
-      name: 'John Doe',
-      email: '',
-      phoneNumber: '',
-      language: '',
-      paymentMethods: [],
-      cars: [],
-      chargingStations: [],
-    );
-  }
-
   //changeUser
 
   //removeUser
