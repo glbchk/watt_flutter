@@ -39,7 +39,6 @@ class CustomTextField extends StatelessWidget {
           obscureText: isPassword,
           keyboardType: keyboardType,
           validator: validator,
-          // 3. Styling the field
           decoration: InputDecoration(
             // labelText: label,
             hintText: hint,

@@ -1,5 +1,5 @@
 class UserEntity {
-  final String? id;
+  final String id;
   final String? name;
   final String email;
   final String? phoneNumber;
@@ -9,7 +9,7 @@ class UserEntity {
   final List<String>? chargingStations;
 
   UserEntity({
-    this.id,
+    required this.id,
     this.name,
     required this.email,
     this.phoneNumber,

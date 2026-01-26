@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class MainButton extends StatelessWidget {
+class WattMainButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -9,7 +9,7 @@ class MainButton extends StatelessWidget {
   final Color? textColor;
   final Color? backgroundColor;
 
-  const MainButton({
+  const WattMainButton({
     super.key,
     required this.label,
     this.onPressed,
@@ -25,7 +25,7 @@ class MainButton extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 60,
       child: FilledButton.icon(
         label: Text(
           label,

@@ -1,28 +1,35 @@
-import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/data/repositories/auth_repository_impl.dart';
 import 'package:watt/domain/repositories/auth_repository.dart';
 
-class RegisterUserUseCase {
-  final AuthRepository userRepository;
-  RegisterUserUseCase(this.userRepository);
+abstract class AuthUserUseCase {
+  final AuthRepository userRepository = AuthRepositoryImpl();
+}
 
-  Future execute(UserEntity user, String password) {
+class RegisterUserUseCase extends AuthUserUseCase {
+  Future execute(String user, String password) {
     return userRepository.registerUser(user, password);
   }
 }
 
-class LoginUserUseCase {
-  final AuthRepository userRepository;
-  LoginUserUseCase(this.userRepository);
+class IsLoggedInUserUseCase extends AuthUserUseCase {
+  Future<bool> execute() {
+    return userRepository.isUserLoggedIn();
+  }
+}
 
+class LoginUserUseCase extends AuthUserUseCase {
   Future<String> execute(String email, String password) {
     return userRepository.loginUser(email, password);
   }
 }
 
-class LogoutUserUseCase {
-  final AuthRepository userRepository;
-  LogoutUserUseCase(this.userRepository);
+// class SwitchToRegisterUseCase extends AuthUserUseCase {
+//   Future execute() {
+//     return userRepository.switchToRegister();
+//   }
+// }
 
+class LogoutUserUseCase extends AuthUserUseCase {
   Future<void> execute() {
     return userRepository.logoutUser();
   }

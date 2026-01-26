@@ -1,23 +1,18 @@
 import 'package:watt/data/data_sources/auth_remote_data_source.dart';
 import 'package:watt/data/data_sources/user_remote_data_source.dart';
 import 'package:watt/data/models/user_model.dart';
-import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource authRemoteDataSource;
-  final UserRemoteDataSource userRemoteDataSource;
-
-  AuthRepositoryImpl(this.authRemoteDataSource, this.userRemoteDataSource);
+  final AuthRemoteDataSource authRemoteDataSource = AuthRemoteDataSource();
+  final UserRemoteDataSource userRemoteDataSource = UserRemoteDataSource();
 
   @override
-  Future<UserEntity> registerUser(UserEntity user, String password) async {
-    final uid = await authRemoteDataSource.register(user.email, password);
+  Future<void> registerUser(String email, String password) async {
+    final uid = await authRemoteDataSource.register(email, password);
 
-    final userWithUid = UserModel.fromEntity(user).copyUserWith(id: uid);
+    final userWithUid = UserModel(id: uid, email: email);
     await userRemoteDataSource.createUser(userWithUid);
-
-    return userWithUid;
   }
 
   @override
@@ -31,6 +26,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
     return uid;
   }
+
+  @override
+  Future<bool> isUserLoggedIn() async {
+    return await authRemoteDataSource.getCurrentUser() != null;
+  }
+
+  // @override
+  // Future switchToRegister() async {
+  //   return await authRemoteDataSource.switchToRegister();
+  // }
 
   @override
   Future<void> logoutUser() async {

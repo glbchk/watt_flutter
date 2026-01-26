@@ -1,21 +1,23 @@
-import 'package:watt/domain/entities/user_entity.dart';
-
 abstract class AuthEvent {}
 
-class RegisterRequested extends AuthEvent {
-  final UserEntity user;
-  final String password;
-
-  RegisterRequested({required this.user, required this.password});
-}
-
-class LoginRequested extends AuthEvent {
+class RegisterRequestedEvent extends AuthEvent {
   final String email;
   final String password;
-  LoginRequested({required this.email, required this.password});
+
+  RegisterRequestedEvent({required this.email, required this.password});
 }
 
-class LogoutRequested extends AuthEvent {}
+class IsUserLoggedInAuthEvent extends AuthEvent {}
+
+class LoginRequestedEvent extends AuthEvent {
+  final String email;
+  final String password;
+  LoginRequestedEvent({required this.email, required this.password});
+}
+
+// class SwitchToRegisterAuthEvent extends AuthEvent {}
+
+class LogoutRequestedEvent extends AuthEvent {}
 
 //change user
 

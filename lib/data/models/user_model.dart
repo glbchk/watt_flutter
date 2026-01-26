@@ -1,15 +1,24 @@
 import 'package:watt/domain/entities/user_entity.dart';
 
-class UserModel extends UserEntity {
+class UserModel {
+  final String id;
+  final String? name;
+  final String? email;
+  final String? phoneNumber;
+  final String? language;
+  final List<String>? paymentMethods;
+  final List<String>? cars;
+  final List<String>? chargingStations;
+
   UserModel({
-    required super.id,
-    required super.name,
-    required super.email,
-    required super.phoneNumber,
-    required super.language,
-    required super.paymentMethods,
-    required super.cars,
-    required super.chargingStations,
+    required this.id,
+    this.name,
+    required this.email,
+    this.phoneNumber,
+    this.language,
+    this.paymentMethods,
+    this.cars,
+    this.chargingStations,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -41,13 +50,13 @@ class UserModel extends UserEntity {
   factory UserModel.fromEntity(UserEntity entity) {
     return UserModel(
       id: entity.id,
-      name: entity.name,
+      name: entity.name ?? '',
       email: entity.email,
-      phoneNumber: entity.phoneNumber,
-      language: entity.language,
-      paymentMethods: entity.paymentMethods,
-      cars: entity.cars,
-      chargingStations: entity.chargingStations,
+      phoneNumber: entity.phoneNumber ?? '',
+      language: entity.language ?? '',
+      paymentMethods: entity.paymentMethods ?? [],
+      cars: entity.cars ?? [],
+      chargingStations: entity.chargingStations ?? [],
     );
   }
 
