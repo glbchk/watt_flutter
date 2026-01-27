@@ -7,11 +7,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUserUseCase registerUserUseCase = RegisterUserUseCase();
   final IsLoggedInUserUseCase isLoggedInUserUseCase = IsLoggedInUserUseCase();
   final LoginUserUseCase loginUserUseCase = LoginUserUseCase();
+
   // final SwitchToRegisterUseCase switchToRegisterUseCase =
   //     SwitchToRegisterUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
 
   AuthBloc() : super(AuthInitialState()) {
+
+    on<ChangeAuthModeEvent>((event, emit) {
+      final s = state;
+      print('ChangeAuthModeEvent $s');
+      if (s is AuthUnauthenticatedState) {
+        emit(s.copyWith(isRegisterMode: !s.isRegisterMode));
+      } else {
+        // Якщо стан не AuthUnauthenticatedState (наприклад, AuthErrorState),
+        // все одно переключаємо в потрібний режим
+        emit(AuthUnauthenticatedState(event.isRegisterMode));
+      }
+    });
+
     on<RegisterRequestedEvent>((event, emit) async {
       emit(AuthLoadingState());
       try {
@@ -31,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (isLoggedIn) {
           emit(AuthSuccessState());
         } else {
-          emit(AuthUnauthenticatedState());
+          emit(AuthUnauthenticatedState(false));
         }
       } catch (e) {
         emit(AuthErrorState(e.toString()));
@@ -64,7 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoadingState());
       try {
         await logoutUserUseCase.execute();
-        emit(AuthUnauthenticatedState());
+        emit(AuthUnauthenticatedState(false));
       } catch (e) {
         emit(AuthErrorState(e.toString()));
       }

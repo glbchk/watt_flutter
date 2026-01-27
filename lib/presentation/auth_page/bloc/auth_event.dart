@@ -12,7 +12,14 @@ class IsUserLoggedInAuthEvent extends AuthEvent {}
 class LoginRequestedEvent extends AuthEvent {
   final String email;
   final String password;
+
   LoginRequestedEvent({required this.email, required this.password});
+}
+
+class ChangeAuthModeEvent extends AuthEvent {
+  final bool isRegisterMode;
+
+  ChangeAuthModeEvent({required this.isRegisterMode});
 }
 
 // class SwitchToRegisterAuthEvent extends AuthEvent {}
