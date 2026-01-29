@@ -32,10 +32,17 @@ class AuthRepositoryImpl implements AuthRepository {
     return await authRemoteDataSource.getCurrentUser() != null;
   }
 
-  // @override
-  // Future switchToRegister() async {
-  //   return await authRemoteDataSource.switchToRegister();
-  // }
+  @override
+  Future sendEmailVerification() async {
+    return await authRemoteDataSource.sendEmailVerification();
+  }
+
+  @override
+  Future<String> signInAnonymously() async {
+    final uid = await authRemoteDataSource.signInAnonymously();
+
+    return uid;
+  }
 
   @override
   Future<void> logoutUser() async {

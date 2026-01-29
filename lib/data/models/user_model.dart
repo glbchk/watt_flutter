@@ -1,9 +1,11 @@
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
+  final bool? isAnonymous;
   final String id;
   final String? name;
   final String? email;
+  final bool? isEmailVerified;
   final String? phoneNumber;
   final String? language;
   final List<String>? paymentMethods;
@@ -11,9 +13,11 @@ class UserModel {
   final List<String>? chargingStations;
 
   UserModel({
+    this.isAnonymous,
     required this.id,
     this.name,
-    required this.email,
+    this.email,
+    this.isEmailVerified,
     this.phoneNumber,
     this.language,
     this.paymentMethods,
@@ -23,9 +27,11 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      isAnonymous: json['is_anonymous'] ?? '',
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
+      isEmailVerified: json['is_email_verified'] ?? false,
       phoneNumber: json['phone_number'] ?? '',
       language: json['language'] ?? 'en',
       paymentMethods: List<String>.from(json['payment_methods'] ?? []),
@@ -36,9 +42,11 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'is_anonymous': isAnonymous,
       'id': id,
       'name': name,
       'email': email,
+      'is_email_verified': isEmailVerified,
       'phone_number': phoneNumber,
       'language': language,
       'payment_methods': paymentMethods,
@@ -49,9 +57,11 @@ class UserModel {
 
   factory UserModel.fromEntity(UserEntity entity) {
     return UserModel(
+      isAnonymous: entity.isAnonymous ?? false,
       id: entity.id,
       name: entity.name ?? '',
       email: entity.email,
+      isEmailVerified: entity.isEmailVerified ?? false,
       phoneNumber: entity.phoneNumber ?? '',
       language: entity.language ?? '',
       paymentMethods: entity.paymentMethods ?? [],
@@ -61,9 +71,11 @@ class UserModel {
   }
 
   UserModel copyUserWith({
+    bool? isAnonymous,
     String? id,
     String? name,
     String? email,
+    bool? isEmailVerified,
     String? phoneNumber,
     String? language,
     List<String>? paymentMethods,
@@ -71,9 +83,11 @@ class UserModel {
     List<String>? chargingStations,
   }) {
     return UserModel(
+      isAnonymous: isAnonymous ?? this.isAnonymous,
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       language: language ?? this.language,
       paymentMethods: paymentMethods ?? this.paymentMethods,

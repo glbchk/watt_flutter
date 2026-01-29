@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watt/utils/colors.dart';
 
 class BottomFloatingButton extends StatelessWidget {
   final String label;
@@ -27,10 +28,16 @@ class BottomFloatingButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            backgroundColor: Colors.white,
+            elevation: 8,
+            shadowColor: wattColorScheme.onSecondary.withAlpha(100),
           ),
           child: Text(
             label,
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: wattBlackColor,
+            ),
           ),
         ),
       ),

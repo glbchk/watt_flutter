@@ -5,6 +5,7 @@ class CardButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final IconData? frontIcon;
+  final Color? iconColor = hintTextColor;
   final Color? textColor;
   final Color? backgroundColor;
 
@@ -33,6 +34,7 @@ class CardButton extends StatelessWidget {
           width: double.infinity,
           child: Card(
             color: Colors.white,
+            elevation: 8,
             shadowColor: wattColorScheme.onSecondary.withAlpha(100),
             child: Padding(
               padding: const EdgeInsets.all(15.0),
@@ -43,16 +45,24 @@ class CardButton extends StatelessWidget {
                     child: Container(
                       height: 40.0,
                       width: 40.0,
-                      color: Color(0xFFF4F6F9),
-                      child: Icon(frontIcon),
+                      color: lightGreyColor,
+                      child: Icon(
+                        frontIcon,
+                        color: iconColor,
+                      ),
                     ),
                   ),
 
                   SizedBox(width: 10.0),
-                  // Icon(Icons.account_circle_outlined),
-                  Text(label),
+                  Text(
+                    label,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   Spacer(),
-                  Icon(Icons.chevron_right),
+                  Icon(
+                    Icons.chevron_right,
+                    color: iconColor,
+                  ),
                 ],
               ),
             ),

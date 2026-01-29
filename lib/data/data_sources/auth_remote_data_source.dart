@@ -31,9 +31,23 @@ class AuthRemoteDataSource {
     return credential.user!.uid;
   }
 
-  // Future switchToRegister() async {
-  //   isRegisterNotifier.value = !isRegisterNotifier.value;
-  // }
+  Future sendEmailVerification() async {
+    User? user = auth.currentUser;
+
+    await user?.sendEmailVerification();
+  }
+
+  Future<String> signInAnonymously() async {
+    try {
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .signInAnonymously();
+      final String? uid = userCredential.user?.uid;
+      print("Signed in with temporary account.");
+      return uid ?? 'No Uid';
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+  }
 
   Future<void> logout() async {
     return await auth.signOut();

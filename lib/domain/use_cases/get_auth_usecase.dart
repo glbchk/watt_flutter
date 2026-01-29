@@ -23,11 +23,17 @@ class LoginUserUseCase extends AuthUserUseCase {
   }
 }
 
-// class SwitchToRegisterUseCase extends AuthUserUseCase {
-//   Future execute() {
-//     return userRepository.switchToRegister();
-//   }
-// }
+class SendEmailVerificationUseCase extends AuthUserUseCase {
+  Future execute() {
+    return userRepository.sendEmailVerification();
+  }
+}
+
+class SignInAnonymouslyUseCase extends AuthUserUseCase {
+  Future<String> execute() {
+    return userRepository.signInAnonymously();
+  }
+}
 
 class LogoutUserUseCase extends AuthUserUseCase {
   Future<void> execute() {

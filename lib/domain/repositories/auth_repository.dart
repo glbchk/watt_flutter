@@ -3,6 +3,7 @@ abstract class AuthRepository {
   Future<String> getCurrentUser();
   Future<String> loginUser(String user, String password);
   Future<bool> isUserLoggedIn();
-  // Future switchToRegister();
+  Future sendEmailVerification();
+  Future<String> signInAnonymously();
   Future<void> logoutUser();
 }

@@ -1,7 +1,9 @@
 class UserEntity {
+  final bool? isAnonymous;
   final String id;
   final String? name;
-  final String email;
+  final String? email;
+  final bool? isEmailVerified;
   final String? phoneNumber;
   final String? language;
   final List<String>? paymentMethods;
@@ -9,9 +11,11 @@ class UserEntity {
   final List<String>? chargingStations;
 
   UserEntity({
+    this.isAnonymous,
     required this.id,
     this.name,
-    required this.email,
+    this.email,
+    this.isEmailVerified,
     this.phoneNumber,
     this.language,
     this.paymentMethods,

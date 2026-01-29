@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:watt/presentation/onboarding_page/view/add_name_phone_number_page.dart';
-import 'package:watt/presentation/onboarding_page/view/components/header_onboarding.dart';
+import 'package:watt/presentation/onboarding_page/view/components/short_header_onboarding.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
 
 import 'components/card_button.dart';
 
-class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({super.key});
+class AddNameAndPhoneNumberPage extends StatelessWidget {
+  const AddNameAndPhoneNumberPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +24,18 @@ class OnboardingPage extends StatelessWidget {
     ];
 
     return Scaffold(
-      // extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.transparent,
-      // ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderOnboarding(
-              title: 'Welcome to Watt!',
-              label:
-                  'We need details to provide a convenient\nWatt app experience for you',
+            ShortHeaderOnboarding(
+              title: 'Add your name & email',
+              label: 'We need email to send you receipts and updates',
             ),
             Transform.translate(
               offset: Offset(0, -30),
@@ -60,14 +59,7 @@ class OnboardingPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomFloatingButton(
         label: 'Complete later',
-        callback: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddNameAndPhoneNumberPage(),
-            ),
-          );
-        },
+        callback: () {},
       ),
     );
   }

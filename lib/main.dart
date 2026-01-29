@@ -9,6 +9,8 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/utils/constants.dart';
+import 'package:watt/utils/dark_theme.dart';
+import 'package:watt/utils/light_theme.dart';
 import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
@@ -47,12 +49,7 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           title: 'Watt App',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: isDarkMode ? Brightness.dark : Brightness.light,
-            ),
-          ),
+          theme: isDarkMode ? lightTheme : darkTheme,
           home: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthSuccessState) {

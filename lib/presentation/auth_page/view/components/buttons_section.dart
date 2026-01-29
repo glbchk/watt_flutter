@@ -55,6 +55,7 @@ class ButtonsSectionWidget extends StatelessWidget {
             },
             label: !isRegisterMode ? 'Sign in' : 'Sign up',
             isLoading: isLoading,
+            textColor: Colors.white,
           ),
           SizedBox(height: 20.0),
           Row(
@@ -67,7 +68,9 @@ class ButtonsSectionWidget extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  print('call ChangeAuthModeEvent isRegisterMode: ${!isRegisterMode}');
+                  print(
+                    'call ChangeAuthModeEvent isRegisterMode: ${!isRegisterMode}',
+                  );
                   context.read<AuthBloc>().add(
                     ChangeAuthModeEvent(isRegisterMode: !isRegisterMode),
                   );
