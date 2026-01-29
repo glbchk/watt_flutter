@@ -1,12 +1,14 @@
-import 'package:watt/data/repositories/user_repository.dart';
-
-import '../../domain/entities/user_entity.dart';
-import '../data_sources/remote_data_source.dart';
+import 'package:watt/data/data_sources/auth_remote_data_source.dart';
+import 'package:watt/data/data_sources/user_remote_data_source.dart';
+import 'package:watt/data/models/user_model.dart';
+import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final RemoteDataSource remoteDataSource;
+  final UserRemoteDataSource userRemoteDataSource;
+  final AuthRemoteDataSource authRemoteDataSource;
 
-  UserRepositoryImpl(this.remoteDataSource);
+  UserRepositoryImpl(this.userRemoteDataSource, this.authRemoteDataSource);
 
   @override
   Future<UserEntity> changeUser(String userId) {
@@ -15,26 +17,19 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<UserEntity> getCurrentUser(String userId) async {
-    // final userModel = await remoteDataSource.fetchUser(userId);
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    return UserEntity(
-      id: '131425',
-      name: 'John Doe',
-      email: 'peterwatt@amp.com',
-      phoneNumber: '+46 73 53 56 999',
-      language: 'Ukrainian',
-      paymentMethods: [],
-      cars: [],
-      chargingStations: [],
+  Future<void> createUser(UserEntity user) async {
+    final userModel = UserModel(
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      language: user.language,
+      paymentMethods: user.paymentMethods,
+      cars: user.cars,
+      chargingStations: user.chargingStations,
     );
-  }
 
-  @override
-  Future<UserEntity> createUser() {
-    // TODO: implement createUser
-    throw UnimplementedError();
+    await userRemoteDataSource.createUser(userModel);
   }
 
   @override

@@ -1,42 +1,43 @@
-import '../../data/repositories/user_repository.dart';
-import '../entities/user_entity.dart';
+import 'package:watt/domain/entities/user_entity.dart';
+import 'package:watt/domain/repositories/auth_repository.dart';
+import 'package:watt/domain/repositories/user_repository.dart';
 
 class CreateUserUseCase {
-  final UserRepository repository;
+  final UserRepository userRepository;
 
-  CreateUserUseCase(this.repository);
+  CreateUserUseCase(this.userRepository);
 
-  Future<UserEntity> execute() {
-    return repository.createUser();
+  Future<void> execute(UserEntity user) {
+    return userRepository.createUser(user);
   }
 }
 
 class GetCurrentUserUseCase {
-  final UserRepository repository;
+  final AuthRepository authRepository;
 
-  GetCurrentUserUseCase(this.repository);
+  GetCurrentUserUseCase(this.authRepository);
 
-  Future<UserEntity> execute(String userId) {
-    return repository.getCurrentUser(userId);
+  Future<String> execute() {
+    return authRepository.getCurrentUser();
   }
 }
 
 class ChangeUserUseCase {
-  final UserRepository repository;
+  final UserRepository userRepository;
 
-  ChangeUserUseCase(this.repository);
+  ChangeUserUseCase(this.userRepository);
 
   Future<UserEntity> execute(String userId) {
-    return repository.changeUser(userId);
+    return userRepository.changeUser(userId);
   }
 }
 
 class RemoveUserUseCase {
-  final UserRepository repository;
+  final UserRepository userRepository;
 
-  RemoveUserUseCase(this.repository);
+  RemoveUserUseCase(this.userRepository);
 
   Future<UserEntity> execute() {
-    return repository.removeUser();
+    return userRepository.removeUser();
   }
 }

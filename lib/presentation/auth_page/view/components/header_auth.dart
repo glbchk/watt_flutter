@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:watt/utils/colors.dart';
 
-import '../data/colors.dart';
-
-class HeaderWidget extends StatefulWidget {
-  // 1. Define the modifiable fields
+class HeaderAuth extends StatefulWidget {
   final String title;
-  final LinearGradient backgroundColor; // Optional parameter
+  final LinearGradient backgroundColor = wattGradient;
 
-  // 2. Create the constructor
-  const HeaderWidget({
+  const HeaderAuth({
     super.key,
     required this.title,
-    required this.backgroundColor, // Not required, can be null
   });
 
   @override
-  State<HeaderWidget> createState() => _HeaderWidgetState();
+  State<HeaderAuth> createState() => _HeaderAuthState();
 }
 
-class _HeaderWidgetState extends State<HeaderWidget> {
+class _HeaderAuthState extends State<HeaderAuth> {
   @override
   Widget build(BuildContext context) {
-    // 4. Access your custom theme
     final theme = Theme.of(context);
 
     return Container(
@@ -29,7 +24,6 @@ class _HeaderWidgetState extends State<HeaderWidget> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        // Use passed color OR fallback to theme primary
         gradient: widget.backgroundColor,
       ),
       child: Column(

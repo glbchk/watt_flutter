@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watt/data/colors.dart';
+import 'package:watt/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -39,7 +39,7 @@ class CustomTextField extends StatelessWidget {
           obscureText: isPassword,
           keyboardType: keyboardType,
           validator: validator,
-          // 3. Styling the field
+          style: TextStyle(color: Colors.black),
           decoration: InputDecoration(
             // labelText: label,
             hintText: hint,
