@@ -8,6 +8,7 @@ import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/dark_theme.dart';
 import 'package:watt/utils/light_theme.dart';
@@ -26,8 +27,16 @@ Future<void> main() async {
   Bloc.observer = AppBlocObserver();
 
   runApp(
-    BlocProvider(
-      create: (_) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (BuildContext context) =>
+              AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => OnboardingBloc(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );

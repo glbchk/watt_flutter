@@ -6,6 +6,7 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station_page
 import 'package:watt/presentation/onboarding_page/view/add_name_phone_number_page.dart';
 import 'package:watt/presentation/onboarding_page/view/add_your_car_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_header_onboarding.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
 
@@ -32,8 +33,17 @@ class OnboardingPage extends StatelessWidget {
     return BlocConsumer<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingInitialState) {}
+        if (state is OnboardingErrorState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
       },
       builder: (context, state) {
+        final isNamePhoneNumberChanged = state is ToggleNamePhoneNumberState
+            ? state.isNamePhoneNumberChanged
+            : false;
+
         return Scaffold(
           // extendBodyBehindAppBar: true,
           // appBar: AppBar(
@@ -52,19 +62,52 @@ class OnboardingPage extends StatelessWidget {
                   offset: Offset(0, -40),
                   child: Column(
                     children: [
-                      ...List.generate(
-                        onboardingTitlesList.length,
-                        (index) {
-                          return CardButton(
-                            label: onboardingTitlesList.elementAt(index),
-                            frontIcon: onboardingIconsList.elementAt(index),
-                            onPressed: () {
-                              assignCardAction(
-                                context,
-                                onboardingTitlesList.elementAt(index),
-                              );
-                            },
+                      CardButton(
+                        label: KCardTitles.addNameAndPhoneNumber,
+                        frontIcon: KCardIcons.profile,
+                        backgroundColor: isNamePhoneNumberChanged
+                            ? wattColorScheme.onPrimary
+                            : lightGreyColor,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddNameAndPhoneNumberPage(),
+                            ),
                           );
+                        },
+                      ),
+                      CardButton(
+                        label: KCardTitles.addCar,
+                        frontIcon: KCardIcons.car,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddYourCarPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      CardButton(
+                        label: KCardTitles.addChargingStation,
+                        frontIcon: KCardIcons.chargingStation,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddChargingStationPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      CardButton(
+                        label: KCardTitles.addPaymentMethod,
+                        frontIcon: KCardIcons.paymentMethod,
+                        onPressed: () {
+                          // Navigator.push(
+                          // context.read<PaymentBloc>().add(SetupPaymentRequested());
+                          // );
                         },
                       ),
                     ],
@@ -87,39 +130,5 @@ class OnboardingPage extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-void assignCardAction(BuildContext context, String cardTitle) {
-  switch (cardTitle) {
-    case KCardTitles.addNameAndPhoneNumber:
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => AddNameAndPhoneNumberPage(),
-        ),
-      );
-      break;
-    case KCardTitles.addCar:
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => AddYourCarPage(),
-        ),
-      );
-      break;
-    case KCardTitles.addChargingStation:
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => AddChargingStationPage(),
-        ),
-      );
-      break;
-    case KCardTitles.addPaymentMethod:
-      // context.read<PaymentBloc>().add(SetupPaymentRequested());
-      break;
-    default:
-      print("No action defined for $cardTitle");
   }
 }

@@ -11,49 +11,53 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       UpdateUserPhoneNumberUseCase();
 
   OnboardingBloc() : super(OnboardingInitialState()) {
-    on<UpdateUserNameEvent>((event, emit) async {
-      emit(OnboardingInitialState());
+    on<NameVerificationEvent>((event, emit) async {
+      if (event.value.isEmpty) {
+        emit(NameValidState(null, true));
+        return;
+      } else if (event.value.length < 3) {
+        emit(NameValidState('Name should be at least 3 symbols', false));
+        return;
+      }
+
+      emit(NameValidState(null, true));
+    });
+
+    on<PhoneNumberVerificationEvent>((event, emit) async {
+      if (event.value.isEmpty) {
+        emit(PhoneNumberValidState(null, true));
+        return;
+      } else if (event.value.length < 11) {
+        emit(
+          PhoneNumberValidState('Phone number must contain 9 digits', false),
+        );
+        return;
+      }
+      emit(PhoneNumberValidState(null, true));
+    });
+
+    on<OnboardingSaveEvent>((event, emit) async {
+      emit(OnboardingLoadingState());
       try {
         await updateUserNameUseCase.execute(
           event.name,
         );
-        emit(NameValidState(event.name));
+        await updateUserPhoneNumberUseCase.execute(
+          event.phoneNumber,
+        );
+        emit(OnboardingSaveSuccessState());
       } catch (e) {
         emit(OnboardingErrorState(e.toString()));
       }
     });
 
-    on<NameVerificationEvent>(_nameVerification);
+    on<ToggleNamePhoneNumberEvent>((event, emit) async {
+      final s = state;
+      if (s is ToggleNamePhoneNumberState) {
+        emit(s.copyWith(isNamePhoneNumberChanged: !s.isNamePhoneNumberChanged));
+      }
 
-    on<PhoneNumberVerificationEvent>(_phoneNumberVerification);
-  }
-
-  Future<void> _nameVerification(
-    NameVerificationEvent event,
-    Emitter<OnboardingState> emit,
-  ) async {
-    if (event.value.isEmpty) {
-      emit(NameValidState(null));
-      return;
-    } else if (event.value.length < 3) {
-      emit(NameValidState('Name should be at least 3 symbols'));
-      return;
-    }
-
-    emit(NameValidState(null));
-  }
-
-  Future<void> _phoneNumberVerification(
-    PhoneNumberVerificationEvent event,
-    Emitter<OnboardingState> emit,
-  ) async {
-    if (event.value.isEmpty) {
-      emit(PhoneNumberValidState(null));
-      return;
-    } else if (event.value.length < 11) {
-      emit(PhoneNumberValidState('Phone number must contain 9 digits'));
-      return;
-    }
-    emit(PhoneNumberValidState(null));
+      emit(ToggleNamePhoneNumberState(event.isNamePhoneNumberChanged));
+    });
   }
 }

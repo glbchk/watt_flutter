@@ -14,12 +14,28 @@ class OnboardingErrorState extends OnboardingState {
 
 class NameValidState extends OnboardingState {
   final String? value;
+  final bool isNameValid;
 
-  NameValidState(this.value);
+  NameValidState(this.value, this.isNameValid);
 }
 
 class PhoneNumberValidState extends OnboardingState {
   final String? value;
+  final bool isPhoneNumberValid;
 
-  PhoneNumberValidState(this.value);
+  PhoneNumberValidState(this.value, this.isPhoneNumberValid);
 }
+
+class ToggleNamePhoneNumberState extends OnboardingState {
+  final bool isNamePhoneNumberChanged;
+
+  ToggleNamePhoneNumberState(this.isNamePhoneNumberChanged);
+
+  ToggleNamePhoneNumberState copyWith({bool? isNamePhoneNumberChanged}) {
+    return ToggleNamePhoneNumberState(
+      isNamePhoneNumberChanged ?? this.isNamePhoneNumberChanged,
+    );
+  }
+}
+
+class OnboardingSaveSuccessState extends OnboardingState {}

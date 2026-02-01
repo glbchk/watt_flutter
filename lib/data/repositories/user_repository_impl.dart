@@ -27,6 +27,11 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> getCurrentUser() async {
+    await userRemoteDataSource.getCurrentUser();
+  }
+
+  @override
   Future<void> updatePhoneNumber(String phoneNumber) async {
     await userRemoteDataSource.updatePhoneNumber(phoneNumber);
   }

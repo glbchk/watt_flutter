@@ -1,4 +1,3 @@
-import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/auth_repository_impl.dart';
 import 'package:watt/domain/repositories/auth_repository.dart';
 
@@ -42,8 +41,8 @@ class LogoutUserUseCase extends AuthUserUseCase {
   }
 }
 
-class UpdateOnboardingDataUseCase extends AuthUserUseCase {
-  Future<UserModel> execute(UserModel user) {
-    return authRepository.saveOnboardingDataForRegister(user);
-  }
-}
+// class UpdateOnboardingDataUseCase extends AuthUserUseCase {
+//   Future<UserModel> execute(UserModel user) {
+//     return authRepository.saveOnboardingDataForRegister(user);
+//   }
+// }

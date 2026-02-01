@@ -10,6 +10,11 @@ class UserRemoteDataSource {
     await firestore.collection('users').doc(user.id).set(user.toJson());
   }
 
+  Future<void> getCurrentUser() async {
+    User? user = auth.currentUser;
+    await firestore.collection("users").doc(user?.uid).get();
+  }
+
   Future<void> updateUserEmail(String email) async {
     User? user = auth.currentUser;
     await user?.verifyBeforeUpdateEmail(email);

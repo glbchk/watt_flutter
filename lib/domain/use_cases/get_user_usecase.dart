@@ -29,6 +29,12 @@ class UpdateUserPhoneNumberUseCase extends UserUseCase {
   }
 }
 
+// class ToggleNamePhoneNumberUseCase extends UserUseCase {
+//   Future<bool> execute() {
+//     return userRepository.getCurrentUser();
+//   }
+// }
+
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {
     return userRepository.deleteUser();

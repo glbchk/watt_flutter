@@ -54,7 +54,7 @@ class CardButton extends StatelessWidget {
                     child: Container(
                       height: 40.0,
                       width: 40.0,
-                      color: lightGreyColor,
+                      color: backgroundColor,
                       child: Icon(
                         frontIcon,
                         color: iconColor,

@@ -4,7 +4,7 @@ import 'package:watt/utils/colors.dart';
 class WattMainButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
-  final bool isLoading;
+  final bool? isLoading;
   final IconData? icon;
   final Color? textColor;
   final Color? backgroundColor;
@@ -13,7 +13,7 @@ class WattMainButton extends StatelessWidget {
     super.key,
     required this.label,
     this.onPressed,
-    required this.isLoading,
+    this.isLoading,
     this.icon,
     this.backgroundColor,
     this.textColor,

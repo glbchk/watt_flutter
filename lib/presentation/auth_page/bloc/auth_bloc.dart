@@ -8,8 +8,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IsLoggedInUserUseCase isLoggedInUserUseCase = IsLoggedInUserUseCase();
   final LoginUserUseCase loginUserUseCase = LoginUserUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
-  final UpdateOnboardingDataUseCase updateOnboardingDateUseCase =
-      UpdateOnboardingDataUseCase();
   final SignInAnonymouslyUseCase signInAnonymouslyUseCase =
       SignInAnonymouslyUseCase();
 
@@ -79,70 +77,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<UpdateOnboardingDataEvent>(_updateOnboardingData);
-
-    on<SignInAnonymouslyEvent>(_onSignInAnonymously);
-
-    on<NameVerificationEvent>(_nameVerification);
-
-    on<PhoneNumberVerificationEvent>(_phoneNumberVerification);
-  }
-
-  Future<void> _updateOnboardingData(
-    UpdateOnboardingDataEvent event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoadingState());
-    try {
-      final userDraft = await updateOnboardingDateUseCase.execute(event.user);
-      print(userDraft.id);
-      print(userDraft.email);
-      print(event.password);
-      emit(AuthInProgressState(userDraft, event.password));
-    } catch (e) {
-      emit(AuthErrorState(e.toString()));
-    }
-  }
-
-  Future<void> _onSignInAnonymously(
-    SignInAnonymouslyEvent event,
-    Emitter<AuthState> emit,
-  ) async {
-    emit(AuthLoadingState());
-    try {
-      await signInAnonymouslyUseCase.execute();
-      emit(SignInAnonymouslyState());
-    } catch (e) {
-      emit(AuthErrorState(e.toString()));
-    }
-  }
-
-  Future<void> _nameVerification(
-    NameVerificationEvent event,
-    Emitter<AuthState> emit,
-  ) async {
-    if (event.value.isEmpty) {
-      emit(NameValidState(null));
-      return;
-    } else if (event.value.length < 3) {
-      emit(NameValidState('Name should be at least 3 symbols'));
-      return;
-    }
-
-    emit(NameValidState(null));
-  }
-
-  Future<void> _phoneNumberVerification(
-    PhoneNumberVerificationEvent event,
-    Emitter<AuthState> emit,
-  ) async {
-    if (event.value.isEmpty) {
-      emit(PhoneNumberValidState(null));
-      return;
-    } else if (event.value.length < 11) {
-      emit(PhoneNumberValidState('Phone number must contain 9 digits'));
-      return;
-    }
-    emit(PhoneNumberValidState(null));
+    on<SignInAnonymouslyEvent>((event, emit) async {
+      emit(AuthLoadingState());
+      try {
+        await signInAnonymouslyUseCase.execute();
+        emit(SignInAnonymouslyState());
+      } catch (e) {
+        emit(AuthErrorState(e.toString()));
+      }
+    });
   }
 }

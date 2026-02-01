@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/components/add_name_phone_number_form.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
@@ -38,26 +38,26 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
     String? errorNameText;
     String? errorPhoneNumberText;
 
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocConsumer<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is NameValidState) {
           errorNameText = state.value;
-          NameValidState(state.value);
+          NameValidState(state.value, state.isNameValid);
         }
         if (state is PhoneNumberValidState) {
           errorPhoneNumberText = state.value;
-          PhoneNumberValidState(state.value);
+          PhoneNumberValidState(state.value, state.isPhoneNumberValid);
         }
-        if (state is AuthInProgressState) {
+        if (state is ToggleNamePhoneNumberState) {
           Navigator.pop(context);
+          ToggleNamePhoneNumberState(state.isNamePhoneNumberChanged);
         }
       },
 
       builder: (context, state) {
-        final isLoading = state is AuthInProgressState;
-        final isNameValid = state is NameValidState ? true : false;
+        final isNameValid = state is NameValidState ? state.isNameValid : false;
         final isPhoneNumberValid = state is PhoneNumberValidState
-            ? true
+            ? state.isPhoneNumberValid
             : false;
 
         return Scaffold(
@@ -100,7 +100,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                         nameSuffixIcon: isNameValid ? Icons.check : null,
                         onChangedName: (value) {
                           print(value);
-                          context.read<AuthBloc>().add(
+                          context.read<OnboardingBloc>().add(
                             NameVerificationEvent(
                               value: value ?? '',
                             ),
@@ -111,7 +111,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                             : null,
                         onChangedPhoneNumber: (value) {
                           print(value);
-                          context.read<AuthBloc>().add(
+                          context.read<OnboardingBloc>().add(
                             PhoneNumberVerificationEvent(value: value ?? ''),
                           );
                         },
@@ -119,17 +119,27 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                     ),
                   ),
                 ),
-                isNameValid
-                    ? SizedBox()
-                    : WattMainButton(
-                        label: 'Save',
-                        isLoading: isLoading,
-                        onPressed: () {},
-                      ),
+                Visibility(
+                  visible: (isNameValid || isPhoneNumberValid),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: WattMainButton(
+                      label: 'Save',
+                      onPressed: () {
+                        context.read<OnboardingBloc>().add(
+                          OnboardingSaveEvent(
+                            name: controllerName.text,
+                            phoneNumber: controllerPhoneNumber.text,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          bottomNavigationBar: isNameValid
+          bottomNavigationBar: (isNameValid || isPhoneNumberValid)
               ? const SizedBox()
               : BottomFloatingButton(
                   label: 'Complete later',
