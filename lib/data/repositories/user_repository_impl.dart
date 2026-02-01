@@ -5,24 +5,18 @@ import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final UserRemoteDataSource userRemoteDataSource;
-  final AuthRemoteDataSource authRemoteDataSource;
-
-  UserRepositoryImpl(this.userRemoteDataSource, this.authRemoteDataSource);
-
-  @override
-  Future<UserEntity> changeUser(String userId) {
-    // TODO: implement changeUser
-    throw UnimplementedError();
-  }
+  final AuthRemoteDataSource authRemoteDataSource = AuthRemoteDataSource();
+  final UserRemoteDataSource userRemoteDataSource = UserRemoteDataSource();
 
   @override
   Future<void> createUser(UserEntity user) async {
     final userModel = UserModel(
+      isAnonymous: user.isAnonymous,
       id: user.id,
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      isOnboardingCompleted: user.isOnboardingCompleted,
       language: user.language,
       paymentMethods: user.paymentMethods,
       cars: user.cars,
@@ -33,8 +27,22 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<UserEntity> removeUser() {
-    // TODO: implement removeUser
-    throw UnimplementedError();
+  Future<void> updatePhoneNumber(String phoneNumber) async {
+    await userRemoteDataSource.updatePhoneNumber(phoneNumber);
+  }
+
+  @override
+  Future<void> updateUserEmail(String email) async {
+    await userRemoteDataSource.updateUserEmail(email);
+  }
+
+  @override
+  Future<void> updateUserName(String name) async {
+    await userRemoteDataSource.updateUserName(name);
+  }
+
+  @override
+  Future<void> deleteUser() async {
+    await userRemoteDataSource.deleteUser();
   }
 }

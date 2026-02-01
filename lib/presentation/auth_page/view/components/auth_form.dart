@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 
-class FormWidget extends StatelessWidget {
+class AuthFormWidget extends StatelessWidget {
   final TextEditingController controllerEmail;
   final TextEditingController controllerPassword;
   final TextEditingController controllerRetypePassword;
   final bool isRegisterMode;
 
-  const FormWidget({
+  const AuthFormWidget({
     super.key,
     required this.controllerEmail,
     required this.controllerPassword,
@@ -26,6 +26,7 @@ class FormWidget extends StatelessWidget {
               controller: controllerEmail,
               label: 'Email',
               hint: 'Email...',
+              onChanged: (String? p1) {},
             ),
             const SizedBox(height: 20.0),
             CustomTextField(
@@ -33,6 +34,7 @@ class FormWidget extends StatelessWidget {
               label: 'Password',
               hint: 'Start typing here...',
               suffixIcon: Icons.visibility_off,
+              onChanged: (String? p1) {},
             ),
             if (isRegisterMode) ...[
               SizedBox(height: 20.0),
@@ -41,6 +43,7 @@ class FormWidget extends StatelessWidget {
                 label: 'Retype Password',
                 hint: 'Start typing here...',
                 suffixIcon: Icons.visibility_off,
+                onChanged: (String? p1) {},
               ),
             ],
           ],

@@ -1,29 +1,48 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String? hint;
+  final String? error;
   final IconData? suffixIcon;
+  final Color? suffixIconColor;
   final bool isPassword;
-  final TextInputType keyboardType;
-  final String? Function(String?)? validator; // For form validation
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? Function(String?)? validator;
+  final Function(String?) onChanged;
 
   const CustomTextField({
     super.key,
     required this.controller,
     required this.label,
     this.hint,
+    this.error,
     this.suffixIcon,
+    this.suffixIconColor,
     this.isPassword = false,
-    this.keyboardType = TextInputType.text,
+    this.keyboardType,
+    this.inputFormatters,
     this.validator,
+    required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    Timer? debounce;
+
+    void _onSearchChanged(String? value) {
+      if (debounce?.isActive ?? false) debounce!.cancel();
+      debounce = Timer(const Duration(milliseconds: 500), () {
+        onChanged(value);
+      });
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,17 +57,23 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           obscureText: isPassword,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: TextStyle(color: Colors.black),
+          onChanged: _onSearchChanged,
           decoration: InputDecoration(
-            // labelText: label,
+            errorStyle: TextStyle(
+              color: theme.colorScheme.error,
+              fontSize: 12,
+            ),
             hintText: hint,
             hintStyle: TextStyle(color: hintTextColor),
+            errorText: error,
             suffixIcon: suffixIcon != null
                 ? IconButton(
                     icon: Icon(
                       suffixIcon,
-                      color: greyAppColor,
+                      color: suffixIconColor,
                     ),
                     onPressed: () {},
                   )
@@ -72,7 +97,11 @@ class CustomTextField extends StatelessWidget {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: theme.colorScheme.error),
+              borderSide: BorderSide(color: theme.colorScheme.error, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
             ),
           ),
         ),

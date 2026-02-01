@@ -7,13 +7,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final RegisterUserUseCase registerUserUseCase = RegisterUserUseCase();
   final IsLoggedInUserUseCase isLoggedInUserUseCase = IsLoggedInUserUseCase();
   final LoginUserUseCase loginUserUseCase = LoginUserUseCase();
-
-  // final SwitchToRegisterUseCase switchToRegisterUseCase =
-  //     SwitchToRegisterUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
+  final UpdateOnboardingDataUseCase updateOnboardingDateUseCase =
+      UpdateOnboardingDataUseCase();
+  final SignInAnonymouslyUseCase signInAnonymouslyUseCase =
+      SignInAnonymouslyUseCase();
 
   AuthBloc() : super(AuthInitialState()) {
-
     on<ChangeAuthModeEvent>((event, emit) {
       final s = state;
       print('ChangeAuthModeEvent $s');
@@ -33,7 +33,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           event.email,
           event.password,
         );
-        emit(AuthSuccessState());
+        if (!event.isOnboardingCompleted) {
+          emit(FirstTimeAuthState());
+        } else {
+          emit(AuthSuccessState());
+        }
       } catch (e) {
         emit(AuthErrorState(e.toString()));
       }
@@ -65,15 +69,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    // on<SwitchToRegisterAuthEvent>((event, emit) async {
-    //   emit(AuthLoadingState());
-    //   try {
-    //     await switchToRegisterUseCase.execute();
-    //   } catch (e) {
-    //     emit(AuthErrorState(e.toString()));
-    //   }
-    // });
-
     on<LogoutRequestedEvent>((event, emit) async {
       emit(AuthLoadingState());
       try {
@@ -83,21 +78,71 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthErrorState(e.toString()));
       }
     });
+
+    on<UpdateOnboardingDataEvent>(_updateOnboardingData);
+
+    on<SignInAnonymouslyEvent>(_onSignInAnonymously);
+
+    on<NameVerificationEvent>(_nameVerification);
+
+    on<PhoneNumberVerificationEvent>(_phoneNumberVerification);
+  }
+
+  Future<void> _updateOnboardingData(
+    UpdateOnboardingDataEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoadingState());
+    try {
+      final userDraft = await updateOnboardingDateUseCase.execute(event.user);
+      print(userDraft.id);
+      print(userDraft.email);
+      print(event.password);
+      emit(AuthInProgressState(userDraft, event.password));
+    } catch (e) {
+      emit(AuthErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _onSignInAnonymously(
+    SignInAnonymouslyEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoadingState());
+    try {
+      await signInAnonymouslyUseCase.execute();
+      emit(SignInAnonymouslyState());
+    } catch (e) {
+      emit(AuthErrorState(e.toString()));
+    }
+  }
+
+  Future<void> _nameVerification(
+    NameVerificationEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (event.value.isEmpty) {
+      emit(NameValidState(null));
+      return;
+    } else if (event.value.length < 3) {
+      emit(NameValidState('Name should be at least 3 symbols'));
+      return;
+    }
+
+    emit(NameValidState(null));
+  }
+
+  Future<void> _phoneNumberVerification(
+    PhoneNumberVerificationEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    if (event.value.isEmpty) {
+      emit(PhoneNumberValidState(null));
+      return;
+    } else if (event.value.length < 11) {
+      emit(PhoneNumberValidState('Phone number must contain 9 digits'));
+      return;
+    }
+    emit(PhoneNumberValidState(null));
   }
 }
-
-// @override
-// Stream<AuthState> mapEventToState(AuthEvent event) async* {
-//   if (event is GetCurrentUserEvent) {
-//     yield UserLoading();
-//     print('Event received: $event');
-//     try {
-//       final user = await getCurrentUserUseCase.execute(event.userId);
-//       yield UserLoaded(user);
-//       print('Event received: $event');
-//     } catch (e) {
-//       yield UserError("Couldn't fetch user");
-//       print('Event received: $event');
-//     }
-//   }
-// }

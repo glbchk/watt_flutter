@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class HeaderOnboarding extends StatefulWidget {
+class TallHeaderOnboarding extends StatefulWidget {
   final String title;
   final String label;
   final LinearGradient backgroundColor = wattGradient;
 
-  const HeaderOnboarding({
+  const TallHeaderOnboarding({
     super.key,
     required this.label,
     required this.title,
   });
 
   @override
-  State<HeaderOnboarding> createState() => _HeaderOnboardingState();
+  State<TallHeaderOnboarding> createState() => _TallHeaderOnboardingState();
 }
 
-class _HeaderOnboardingState extends State<HeaderOnboarding> {
+class _TallHeaderOnboardingState extends State<TallHeaderOnboarding> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -32,7 +32,7 @@ class _HeaderOnboardingState extends State<HeaderOnboarding> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            height: 40.0,
+            height: 20.0,
           ),
           Image.asset(
             logo,
@@ -56,7 +56,7 @@ class _HeaderOnboardingState extends State<HeaderOnboarding> {
             style: TextStyle(
               color: theme.colorScheme.onPrimaryContainer,
               fontWeight: FontWeight.normal,
-              fontSize: 13,
+              fontSize: 15,
             ),
           ),
         ],

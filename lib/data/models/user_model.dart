@@ -7,6 +7,7 @@ class UserModel {
   final String? email;
   final bool? isEmailVerified;
   final String? phoneNumber;
+  final bool isOnboardingCompleted;
   final String? language;
   final List<String>? paymentMethods;
   final List<String>? cars;
@@ -19,6 +20,7 @@ class UserModel {
     this.email,
     this.isEmailVerified,
     this.phoneNumber,
+    required this.isOnboardingCompleted,
     this.language,
     this.paymentMethods,
     this.cars,
@@ -33,6 +35,7 @@ class UserModel {
       email: json['email'] ?? '',
       isEmailVerified: json['is_email_verified'] ?? false,
       phoneNumber: json['phone_number'] ?? '',
+      isOnboardingCompleted: json['is_onboarding_completed'],
       language: json['language'] ?? 'en',
       paymentMethods: List<String>.from(json['payment_methods'] ?? []),
       cars: List<String>.from(json['cars'] ?? []),
@@ -48,6 +51,7 @@ class UserModel {
       'email': email,
       'is_email_verified': isEmailVerified,
       'phone_number': phoneNumber,
+      'is_onboarding_completed': isOnboardingCompleted,
       'language': language,
       'payment_methods': paymentMethods,
       'cars': cars,
@@ -63,6 +67,7 @@ class UserModel {
       email: entity.email,
       isEmailVerified: entity.isEmailVerified ?? false,
       phoneNumber: entity.phoneNumber ?? '',
+      isOnboardingCompleted: entity.isOnboardingCompleted ?? false,
       language: entity.language ?? '',
       paymentMethods: entity.paymentMethods ?? [],
       cars: entity.cars ?? [],
@@ -77,6 +82,7 @@ class UserModel {
     String? email,
     bool? isEmailVerified,
     String? phoneNumber,
+    bool? isOnboardingCompleted,
     String? language,
     List<String>? paymentMethods,
     List<String>? cars,
@@ -89,6 +95,8 @@ class UserModel {
       email: email ?? this.email,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      isOnboardingCompleted:
+          isOnboardingCompleted ?? this.isOnboardingCompleted,
       language: language ?? this.language,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       cars: cars ?? this.cars,

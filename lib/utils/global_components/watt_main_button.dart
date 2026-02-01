@@ -23,14 +23,25 @@ class WattMainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return SizedBox(
+    return Container(
       width: double.infinity,
       height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: wattColorScheme.primary.withAlpha(76),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
       child: FilledButton.icon(
         label: Text(
           label,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
@@ -41,8 +52,6 @@ class WattMainButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 8,
-          shadowColor: wattColorScheme.onSecondary.withAlpha(100),
         ),
       ),
     );

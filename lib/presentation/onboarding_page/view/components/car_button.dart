@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class CardButton extends StatelessWidget {
+class CarButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
-  final IconData? frontIcon;
+  final String carImage;
   final Color? iconColor = hintTextColor;
   final Color? textColor;
   final Color? backgroundColor;
 
-  const CardButton({
+  const CarButton({
     super.key,
     required this.label,
     this.onPressed,
-    this.frontIcon,
+    required this.carImage,
     this.backgroundColor,
     this.textColor,
   });
@@ -30,7 +30,7 @@ class CardButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
-          height: 80.0,
+          height: 100.0,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -50,14 +50,18 @@ class CardButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipOval(
+                  ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(5),
                     child: Container(
-                      height: 40.0,
-                      width: 40.0,
+                      height: 60.0,
+                      width: 60.0,
                       color: lightGreyColor,
-                      child: Icon(
-                        frontIcon,
-                        color: iconColor,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Image.asset(
+                          carImage,
+                          // fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),

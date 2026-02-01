@@ -9,7 +9,7 @@ import 'package:watt/presentation/onboarding_page/view/onboarding_page.dart';
 
 import '../../../utils/global_components/bottom_floating_button.dart';
 import '../../home_page/view/home_page.dart';
-import 'components/form_widget.dart';
+import 'components/auth_form.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -22,8 +22,6 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController controllerEmail = TextEditingController();
   TextEditingController controllerPassword = TextEditingController();
   TextEditingController controllerRetypePassword = TextEditingController();
-
-  // bool isRegisterMode = false;
 
   @override
   void dispose() {
@@ -38,6 +36,19 @@ class _AuthPageState extends State<AuthPage> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccessState) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => HomePage()),
+            (route) => false,
+          );
+        }
+        if (state is FirstTimeAuthState) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => OnboardingPage()),
+          );
+        }
+        if (state is SignInAnonymouslyState) {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => HomePage()),
@@ -68,7 +79,7 @@ class _AuthPageState extends State<AuthPage> {
                 HeaderAuth(
                   title: !isRegisterMode ? 'Welcome back' : 'Create an account',
                 ),
-                FormWidget(
+                AuthFormWidget(
                   controllerEmail: controllerEmail,
                   controllerPassword: controllerPassword,
                   controllerRetypePassword: controllerRetypePassword,
@@ -88,6 +99,7 @@ class _AuthPageState extends State<AuthPage> {
                       RegisterRequestedEvent(
                         email: controllerEmail.text,
                         password: controllerPassword.text,
+                        isOnboardingCompleted: false,
                       ),
                     );
                   },
@@ -110,7 +122,11 @@ class _AuthPageState extends State<AuthPage> {
               ? const SizedBox()
               : BottomFloatingButton(
                   label: 'Continue as guest',
-                  callback: () {},
+                  callback: () {
+                    context.read<AuthBloc>().add(
+                      SignInAnonymouslyEvent(),
+                    );
+                  },
                 ),
         );
       },

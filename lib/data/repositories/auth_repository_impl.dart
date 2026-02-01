@@ -11,7 +11,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> registerUser(String email, String password) async {
     final uid = await authRemoteDataSource.register(email, password);
 
-    final userWithUid = UserModel(id: uid, email: email);
+    final userWithUid = UserModel(
+      id: uid,
+      email: email,
+      isOnboardingCompleted: false,
+    );
     await userRemoteDataSource.createUser(userWithUid);
   }
 
@@ -38,14 +42,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<String> signInAnonymously() async {
+  Future<void> signInAnonymously() async {
     final uid = await authRemoteDataSource.signInAnonymously();
 
-    return uid;
+    final userWithUid = UserModel(id: uid, isOnboardingCompleted: true);
+    await userRemoteDataSource.createUser(userWithUid);
   }
 
   @override
   Future<void> logoutUser() async {
     await authRemoteDataSource.logout();
+  }
+
+  @override
+  Future<UserModel> saveOnboardingDataForRegister(UserModel user) async {
+    return authRemoteDataSource.saveOnboardingDataForRegister(user);
   }
 }

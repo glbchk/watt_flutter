@@ -10,7 +10,36 @@ class UserRemoteDataSource {
     await firestore.collection('users').doc(user.id).set(user.toJson());
   }
 
-  //changeUser
+  Future<void> updateUserEmail(String email) async {
+    User? user = auth.currentUser;
+    await user?.verifyBeforeUpdateEmail(email);
+    await firestore.collection("users").doc(user?.uid).update({'email': email});
+  }
 
-  //removeUser
+  Future<void> updateUserName(String name) async {
+    User? user = auth.currentUser;
+    await user?.updateDisplayName(name);
+    await firestore.collection("users").doc(user?.uid).update({'name': name});
+  }
+
+  Future<void> updatePhoneNumber(String phoneNumber) async {
+    User? user = auth.currentUser;
+    //await user?.updatePhoneNumber(phoneNumber); //Need PhoneAuthCredential
+    await firestore.collection("users").doc(user?.uid).update({
+      'phone_number': phoneNumber,
+    });
+  }
+
+  Future<void> deleteUser() async {
+    User? user = auth.currentUser;
+    await firestore
+        .collection("users")
+        .doc(user?.uid)
+        .delete()
+        .then(
+          (doc) => print("Document deleted"),
+          onError: (e) => print("Error updating document $e"),
+        );
+    await user?.delete();
+  }
 }

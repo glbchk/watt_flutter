@@ -1,42 +1,49 @@
+import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/auth_repository_impl.dart';
 import 'package:watt/domain/repositories/auth_repository.dart';
 
 abstract class AuthUserUseCase {
-  final AuthRepository userRepository = AuthRepositoryImpl();
+  final AuthRepository authRepository = AuthRepositoryImpl();
 }
 
 class RegisterUserUseCase extends AuthUserUseCase {
   Future execute(String user, String password) {
-    return userRepository.registerUser(user, password);
+    return authRepository.registerUser(user, password);
   }
 }
 
 class IsLoggedInUserUseCase extends AuthUserUseCase {
   Future<bool> execute() {
-    return userRepository.isUserLoggedIn();
+    return authRepository.isUserLoggedIn();
   }
 }
 
 class LoginUserUseCase extends AuthUserUseCase {
   Future<String> execute(String email, String password) {
-    return userRepository.loginUser(email, password);
+    return authRepository.loginUser(email, password);
   }
 }
 
 class SendEmailVerificationUseCase extends AuthUserUseCase {
   Future execute() {
-    return userRepository.sendEmailVerification();
+    return authRepository.sendEmailVerification();
   }
 }
 
 class SignInAnonymouslyUseCase extends AuthUserUseCase {
-  Future<String> execute() {
-    return userRepository.signInAnonymously();
+  Future<void> execute() {
+    return authRepository.signInAnonymously();
   }
 }
 
 class LogoutUserUseCase extends AuthUserUseCase {
   Future<void> execute() {
-    return userRepository.logoutUser();
+    return authRepository.logoutUser();
+  }
+}
+
+class UpdateOnboardingDataUseCase extends AuthUserUseCase {
+  Future<UserModel> execute(UserModel user) {
+    return authRepository.saveOnboardingDataForRegister(user);
   }
 }

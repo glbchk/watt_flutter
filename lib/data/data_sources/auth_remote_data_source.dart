@@ -1,7 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:watt/data/models/user_model.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth auth = FirebaseAuth.instance;
+
+  Future<UserModel> saveOnboardingDataForRegister(UserModel user) async {
+    return user;
+  }
 
   Future<String> register(String email, String password) async {
     final credential = await auth.createUserWithEmailAndPassword(
