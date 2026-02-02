@@ -3,13 +3,13 @@ import 'package:watt/utils/colors.dart';
 
 class ShortHeaderOnboarding extends StatefulWidget {
   final String mainTitle;
-  final String subtitle;
+  final String? subtitle;
   final LinearGradient backgroundColor = wattGradient;
 
   const ShortHeaderOnboarding({
     super.key,
     required this.mainTitle,
-    required this.subtitle,
+    this.subtitle,
   });
 
   @override
@@ -36,14 +36,16 @@ class _ShortHeaderOnboardingState extends State<ShortHeaderOnboarding> {
               fontSize: 28,
             ),
           ),
-          Text(
-            widget.subtitle,
-            style: TextStyle(
-              color: theme.colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.normal,
-              fontSize: 15,
-            ),
-          ),
+          widget.subtitle != null
+              ? Text(
+                  widget.subtitle ?? '',
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15,
+                  ),
+                )
+              : SizedBox(),
         ],
       ),
     );

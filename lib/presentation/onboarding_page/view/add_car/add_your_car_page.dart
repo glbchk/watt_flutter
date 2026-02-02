@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:watt/presentation/onboarding_page/view/add_car/select_car_model_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
-import 'package:watt/presentation/onboarding_page/view/components/car_button.dart';
+import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/constants.dart';
 
-import 'components/short_header_onboarding.dart';
+import '../components/short_header_onboarding.dart';
 
 class AddYourCarPage extends StatefulWidget {
   const AddYourCarPage({super.key});
@@ -37,6 +38,8 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final double marginSize = 10.0;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -64,10 +67,20 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                   ...List.generate(
                     carList.length,
                     (index) {
-                      return CarButton(
+                      return TallCardButton(
                         label: carList.elementAt(index),
-                        carImage: onboardingIconsList.elementAt(index),
-                        onPressed: () {},
+                        pngImage: onboardingIconsList.elementAt(index),
+                        marginDistance: marginSize,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SelectCarModelPage(
+                                brandName: carList.elementAt(index),
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   ),

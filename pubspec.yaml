@@ -44,6 +44,7 @@ dependencies:
   firebase_auth: ^6.1.4
   shared_preferences: ^2.5.4
   mask_text_input_formatter: ^2.9.0
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
     - assets/images/
     - assets/car_logos/
     - assets/charging_station_logos/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

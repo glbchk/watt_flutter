@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:watt/utils/colors.dart';
 
-class CardButton extends StatelessWidget {
+class TallCardButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
-  final IconData? frontIcon;
-  final Color? iconColor = hintTextColor;
+  final String? svgImage;
+  final String? pngImage;
+  final Color? iconColor;
+  final double? marginDistance;
   final Color? textColor;
   final Color? backgroundColor;
 
-  const CardButton({
+  const TallCardButton({
     super.key,
     required this.label,
     this.onPressed,
-    this.frontIcon,
+    this.svgImage,
+    this.pngImage,
+    this.iconColor,
+    this.marginDistance,
     this.backgroundColor,
     this.textColor,
   });
@@ -30,7 +36,7 @@ class CardButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
-          height: 80.0,
+          height: 100.0,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -50,16 +56,35 @@ class CardButton extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipOval(
-                    child: Container(
-                      height: 40.0,
-                      width: 40.0,
-                      color: backgroundColor,
-                      child: Icon(
-                        frontIcon,
-                        color: iconColor,
-                      ),
-                    ),
+                  ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(5),
+                    child: svgImage != null
+                        ? Container(
+                            height: 60.0,
+                            width: 60.0,
+                            color: lightGreyColor,
+                            child: Container(
+                              margin: EdgeInsets.all(marginDistance ?? 0),
+                              child: SvgPicture.asset(
+                                svgImage ?? '',
+                                colorFilter: ColorFilter.mode(
+                                  iconColor ?? greyAppColor,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            height: 60.0,
+                            width: 60.0,
+                            color: lightGreyColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Image.asset(
+                                pngImage ?? '',
+                              ),
+                            ),
+                          ),
                   ),
 
                   SizedBox(width: 10.0),
@@ -73,7 +98,7 @@ class CardButton extends StatelessWidget {
                   Spacer(),
                   Icon(
                     Icons.chevron_right,
-                    color: iconColor,
+                    color: greyAppColor,
                   ),
                 ],
               ),

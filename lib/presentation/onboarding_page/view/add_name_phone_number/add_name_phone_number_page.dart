@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
-import 'package:watt/presentation/onboarding_page/view/components/add_name_phone_number_form.dart';
+import 'package:watt/presentation/onboarding_page/view/add_name_phone_number/components/add_name_phone_number_form_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
-import 'components/short_header_onboarding.dart';
+import '../components/short_header_onboarding.dart';
 
 class AddNameAndPhoneNumberPage extends StatefulWidget {
   const AddNameAndPhoneNumberPage({super.key});
@@ -23,13 +21,11 @@ class AddNameAndPhoneNumberPage extends StatefulWidget {
 class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerPhoneNumber = TextEditingController();
-  Timer? _debounce;
 
   @override
   void dispose() {
     controllerName.dispose();
     controllerPhoneNumber.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
 

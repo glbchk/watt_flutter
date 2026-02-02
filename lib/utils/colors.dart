@@ -6,6 +6,7 @@ const lightGreyColor = Color(0xFFF4F6F9);
 const greyAppColor = Color(0xFF8692A9);
 const borderTFColor = Color(0xFFDBDFE3);
 const hintTextColor = Color(0xFFAEB8C8);
+const successColor = Color(0xFF37C750);
 
 const wattBlackColor = Color(0xFF3D4B61);
 

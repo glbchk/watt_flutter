@@ -2,34 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station_page.dart';
-import 'package:watt/presentation/onboarding_page/view/add_name_phone_number_page.dart';
-import 'package:watt/presentation/onboarding_page/view/add_your_car_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_car/add_your_car_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/add_charging_station_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_name_phone_number/add_name_phone_number_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_payment_method/add_payment_method_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_header_onboarding.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
 
-import 'components/card_button.dart';
+import 'components/slim_card_button.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    List<String> onboardingTitlesList = [
-      KCardTitles.addNameAndPhoneNumber,
-      KCardTitles.addCar,
-      KCardTitles.addChargingStation,
-      KCardTitles.addPaymentMethod,
-    ];
-    List<IconData> onboardingIconsList = [
-      KCardIcons.profile,
-      KCardIcons.car,
-      KCardIcons.chargingStation,
-      KCardIcons.paymentMethod,
-    ];
-
     return BlocConsumer<OnboardingBloc, OnboardingState>(
       listener: (context, state) {
         if (state is OnboardingInitialState) {}
@@ -40,6 +28,8 @@ class OnboardingPage extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        final double marginSize = 8.0;
+
         final isNamePhoneNumberChanged = state is ToggleNamePhoneNumberState
             ? state.isNamePhoneNumberChanged
             : false;
@@ -62,9 +52,10 @@ class OnboardingPage extends StatelessWidget {
                   offset: Offset(0, -40),
                   child: Column(
                     children: [
-                      CardButton(
+                      SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
-                        frontIcon: KCardIcons.profile,
+                        svgImage: KCardIcons.profile,
+                        marginDistance: marginSize,
                         backgroundColor: isNamePhoneNumberChanged
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
@@ -77,9 +68,13 @@ class OnboardingPage extends StatelessWidget {
                           );
                         },
                       ),
-                      CardButton(
+                      SlimCardButton(
                         label: KCardTitles.addCar,
-                        frontIcon: KCardIcons.car,
+                        svgImage: KCardIcons.car,
+                        marginDistance: marginSize,
+                        backgroundColor: isNamePhoneNumberChanged
+                            ? wattColorScheme.onPrimary
+                            : lightGreyColor,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -89,9 +84,13 @@ class OnboardingPage extends StatelessWidget {
                           );
                         },
                       ),
-                      CardButton(
+                      SlimCardButton(
                         label: KCardTitles.addChargingStation,
-                        frontIcon: KCardIcons.chargingStation,
+                        svgImage: KCardIcons.chargingStation,
+                        marginDistance: marginSize,
+                        backgroundColor: isNamePhoneNumberChanged
+                            ? wattColorScheme.onPrimary
+                            : lightGreyColor,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -101,13 +100,20 @@ class OnboardingPage extends StatelessWidget {
                           );
                         },
                       ),
-                      CardButton(
+                      SlimCardButton(
                         label: KCardTitles.addPaymentMethod,
-                        frontIcon: KCardIcons.paymentMethod,
+                        svgImage: KCardIcons.paymentMethod,
+                        marginDistance: marginSize,
+                        backgroundColor: isNamePhoneNumberChanged
+                            ? wattColorScheme.onPrimary
+                            : lightGreyColor,
                         onPressed: () {
-                          // Navigator.push(
-                          // context.read<PaymentBloc>().add(SetupPaymentRequested());
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AddPaymentMethodPage(),
+                            ),
+                          );
                         },
                       ),
                     ],

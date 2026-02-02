@@ -43,7 +43,7 @@ class WattMainButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: textColor ?? Colors.white,
           ),
         ),
         onPressed: onPressed,

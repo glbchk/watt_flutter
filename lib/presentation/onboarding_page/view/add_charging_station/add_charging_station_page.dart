@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
-import 'package:watt/presentation/onboarding_page/view/components/car_button.dart';
+import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/constants.dart';
 
-import 'components/short_header_onboarding.dart';
+import '../components/short_header_onboarding.dart';
 
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
@@ -60,9 +60,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                   ...List.generate(
                     chargingStationList.length,
                     (index) {
-                      return CarButton(
+                      return TallCardButton(
                         label: chargingStationList.elementAt(index),
-                        carImage: chargingStationIconsList.elementAt(index),
+                        pngImage: chargingStationIconsList.elementAt(index),
                         onPressed: () {},
                       );
                     },

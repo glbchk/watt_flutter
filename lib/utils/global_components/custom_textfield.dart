@@ -11,11 +11,13 @@ class CustomTextField extends StatelessWidget {
   final String? error;
   final IconData? suffixIcon;
   final Color? suffixIconColor;
+  final IconData? prefixIcon;
+  final Color? prefixIconColor;
   final bool isPassword;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
-  final Function(String?) onChanged;
+  final Function(String?)? onChanged;
 
   const CustomTextField({
     super.key,
@@ -25,11 +27,13 @@ class CustomTextField extends StatelessWidget {
     this.error,
     this.suffixIcon,
     this.suffixIconColor,
+    this.prefixIcon,
+    this.prefixIconColor,
     this.isPassword = false,
     this.keyboardType,
     this.inputFormatters,
     this.validator,
-    required this.onChanged,
+    this.onChanged,
   });
 
   @override
@@ -40,7 +44,7 @@ class CustomTextField extends StatelessWidget {
     void _onSearchChanged(String? value) {
       if (debounce?.isActive ?? false) debounce!.cancel();
       debounce = Timer(const Duration(milliseconds: 500), () {
-        onChanged(value);
+        onChanged?.call(value);
       });
     }
 
@@ -69,6 +73,15 @@ class CustomTextField extends StatelessWidget {
             hintText: hint,
             hintStyle: TextStyle(color: hintTextColor),
             errorText: error,
+            prefixIcon: prefixIcon != null
+                ? IconButton(
+                    icon: Icon(
+                      prefixIcon,
+                      color: prefixIconColor,
+                    ),
+                    onPressed: () {},
+                  )
+                : null,
             suffixIcon: suffixIcon != null
                 ? IconButton(
                     icon: Icon(

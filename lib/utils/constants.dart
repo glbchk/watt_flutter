@@ -18,10 +18,10 @@ class KCardTitles {
 }
 
 class KCardIcons {
-  static const IconData profile = Icons.account_circle_outlined;
-  static const IconData car = Icons.directions_car_outlined;
-  static const IconData chargingStation = Icons.ev_station_outlined;
-  static const IconData paymentMethod = Icons.credit_card;
+  static const String profile = 'assets/icons/profile.svg';
+  static const String car = 'assets/icons/car.svg';
+  static const String chargingStation = 'assets/icons/charging_station.svg';
+  static const String paymentMethod = 'assets/icons/credit_card.svg';
 }
 
 class KCarNames {
