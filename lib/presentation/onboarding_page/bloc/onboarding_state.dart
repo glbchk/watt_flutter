@@ -2,16 +2,6 @@ abstract class OnboardingState {}
 
 class OnboardingInitialState extends OnboardingState {}
 
-class OnboardingLoadingState extends OnboardingState {}
-
-class OnboardingSuccessState extends OnboardingState {}
-
-class OnboardingErrorState extends OnboardingState {
-  final String message;
-
-  OnboardingErrorState(this.message);
-}
-
 class NameValidState extends OnboardingState {
   final String? value;
   final bool isNameValid;
@@ -38,4 +28,39 @@ class ToggleNamePhoneNumberState extends OnboardingState {
   }
 }
 
-class OnboardingSaveSuccessState extends OnboardingState {}
+class OnboardingFilledNamePhoneNumberState extends OnboardingState {
+  final String? name;
+  final String? phoneNumber;
+  // final Car? car;
+  // final ChargerStation? chargerStation;
+  // final PaymentMethod? paymentMethod;
+
+  OnboardingFilledNamePhoneNumberState({
+    this.name,
+    this.phoneNumber,
+  });
+
+  OnboardingFilledNamePhoneNumberState copyWith({
+    String? name,
+    String? phoneNumber,
+    // Car? car,
+    // ChargerStation? chargerStation,
+    // PaymentMethod? paymentMethod,
+  }) {
+    return OnboardingFilledNamePhoneNumberState(
+      name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      // car: car ?? this.car,
+      // chargerStation: chargerStation ?? this.chargerStation,
+      // paymentMethod: paymentMethod ?? this.paymentMethod,
+    );
+  }
+}
+
+class OnboardingErrorState extends OnboardingState {
+  final String message;
+
+  OnboardingErrorState(this.message);
+}
+
+// class OnboardingSaveSuccessState extends OnboardingState {}

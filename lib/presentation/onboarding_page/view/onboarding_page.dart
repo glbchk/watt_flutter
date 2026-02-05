@@ -29,6 +29,13 @@ class OnboardingPage extends StatelessWidget {
       },
       builder: (context, state) {
         final double marginSize = 8.0;
+        String? name;
+        String? phoneNumber;
+
+        if (state is OnboardingFilledNamePhoneNumberState) {
+          name = state.name;
+          phoneNumber = state.phoneNumber;
+        }
 
         final isNamePhoneNumberChanged = state is ToggleNamePhoneNumberState
             ? state.isNamePhoneNumberChanged
@@ -54,6 +61,7 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
+                        subLabel: '${name ?? ''}, ${phoneNumber ?? ''}',
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
                         backgroundColor: isNamePhoneNumberChanged
@@ -70,6 +78,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addCar,
+                        subLabel: KCardTitles.addCar,
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
                         backgroundColor: isNamePhoneNumberChanged
@@ -86,6 +95,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addChargingStation,
+                        subLabel: KCardTitles.addChargingStation,
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
                         backgroundColor: isNamePhoneNumberChanged
@@ -102,6 +112,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addPaymentMethod,
+                        subLabel: KCardTitles.addPaymentMethod,
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
                         backgroundColor: isNamePhoneNumberChanged

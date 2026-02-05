@@ -4,6 +4,7 @@ import 'package:watt/utils/colors.dart';
 
 class SlimCardButton extends StatelessWidget {
   final String label;
+  final String subLabel;
   final VoidCallback? onPressed;
   final String? svgImage;
   final String? pngImage;
@@ -15,6 +16,7 @@ class SlimCardButton extends StatelessWidget {
   const SlimCardButton({
     super.key,
     required this.label,
+    required this.subLabel,
     this.onPressed,
     this.svgImage,
     this.pngImage,
@@ -89,7 +91,7 @@ class SlimCardButton extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        label,
+                        subLabel,
                         style: TextStyle(
                           fontWeight: FontWeight.normal,
                           fontSize: 13,

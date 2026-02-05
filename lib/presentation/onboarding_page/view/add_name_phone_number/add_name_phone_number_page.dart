@@ -123,11 +123,12 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                       label: 'Save',
                       onPressed: () {
                         context.read<OnboardingBloc>().add(
-                          OnboardingSaveEvent(
+                          OnboardingFilledNamePhoneNumberEvent(
                             name: controllerName.text,
                             phoneNumber: controllerPhoneNumber.text,
                           ),
                         );
+                        Navigator.pop(context);
                       },
                     ),
                   ),

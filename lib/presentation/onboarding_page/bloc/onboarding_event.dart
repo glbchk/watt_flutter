@@ -24,17 +24,14 @@ class PhoneNumberVerificationEvent extends OnboardingEvent {
   PhoneNumberVerificationEvent({required this.value});
 }
 
-class OnboardingSaveEvent extends OnboardingEvent {
+class OnboardingFilledNamePhoneNumberEvent extends OnboardingEvent {
   final String name;
   final String phoneNumber;
 
-  OnboardingSaveEvent({required this.name, required this.phoneNumber});
-}
-
-class ToggleNamePhoneNumberEvent extends OnboardingEvent {
-  final bool isNamePhoneNumberChanged;
-
-  ToggleNamePhoneNumberEvent({required this.isNamePhoneNumberChanged});
+  OnboardingFilledNamePhoneNumberEvent({
+    required this.name,
+    required this.phoneNumber,
+  });
 }
 
 class DeleteUserEvent extends OnboardingEvent {}

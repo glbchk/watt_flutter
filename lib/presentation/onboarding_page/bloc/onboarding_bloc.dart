@@ -36,8 +36,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(PhoneNumberValidState(null, true));
     });
 
-    on<OnboardingSaveEvent>((event, emit) async {
-      emit(OnboardingLoadingState());
+    on<OnboardingFilledNamePhoneNumberEvent>((event, emit) async {
+      // emit(OnboardingLoadingState());
       try {
         await updateUserNameUseCase.execute(
           event.name,
@@ -45,19 +45,15 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         await updateUserPhoneNumberUseCase.execute(
           event.phoneNumber,
         );
-        emit(OnboardingSaveSuccessState());
+        emit(
+          OnboardingFilledNamePhoneNumberState(
+            name: event.name,
+            phoneNumber: event.phoneNumber,
+          ),
+        );
       } catch (e) {
         emit(OnboardingErrorState(e.toString()));
       }
-    });
-
-    on<ToggleNamePhoneNumberEvent>((event, emit) async {
-      final s = state;
-      if (s is ToggleNamePhoneNumberState) {
-        emit(s.copyWith(isNamePhoneNumberChanged: !s.isNamePhoneNumberChanged));
-      }
-
-      emit(ToggleNamePhoneNumberState(event.isNamePhoneNumberChanged));
     });
   }
 }
