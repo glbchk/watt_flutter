@@ -1,17 +1,5 @@
 abstract class OnboardingEvent {}
 
-class UpdateUserNameEvent extends OnboardingEvent {
-  final String name;
-
-  UpdateUserNameEvent(this.name);
-}
-
-class UpdateUserPhoneNumberEvent extends OnboardingEvent {
-  final String phoneNumber;
-
-  UpdateUserPhoneNumberEvent(this.phoneNumber);
-}
-
 class NameVerificationEvent extends OnboardingEvent {
   final String value;
 
@@ -33,5 +21,3 @@ class OnboardingFilledNamePhoneNumberEvent extends OnboardingEvent {
     required this.phoneNumber,
   });
 }
-
-class DeleteUserEvent extends OnboardingEvent {}

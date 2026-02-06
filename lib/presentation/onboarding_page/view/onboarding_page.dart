@@ -18,28 +18,9 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
-      listener: (context, state) {
-        if (state is OnboardingInitialState) {}
-        if (state is OnboardingErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-      },
+    return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
         final double marginSize = 8.0;
-        String? name;
-        String? phoneNumber;
-
-        if (state is OnboardingFilledNamePhoneNumberState) {
-          name = state.name;
-          phoneNumber = state.phoneNumber;
-        }
-
-        final isNamePhoneNumberChanged = state is ToggleNamePhoneNumberState
-            ? state.isNamePhoneNumberChanged
-            : false;
 
         return Scaffold(
           // extendBodyBehindAppBar: true,
@@ -61,10 +42,11 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
-                        subLabel: '${name ?? ''}, ${phoneNumber ?? ''}',
+                        subLabel:
+                            '${state.name ?? ''}, ${state.phoneNumber ?? ''}',
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
-                        backgroundColor: isNamePhoneNumberChanged
+                        backgroundColor: state.isNameValid
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {
@@ -81,7 +63,7 @@ class OnboardingPage extends StatelessWidget {
                         subLabel: KCardTitles.addCar,
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
-                        backgroundColor: isNamePhoneNumberChanged
+                        backgroundColor: state.isPhoneNumberValid
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {
@@ -98,7 +80,7 @@ class OnboardingPage extends StatelessWidget {
                         subLabel: KCardTitles.addChargingStation,
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
-                        backgroundColor: isNamePhoneNumberChanged
+                        backgroundColor: state.isNameValid
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {
@@ -115,7 +97,7 @@ class OnboardingPage extends StatelessWidget {
                         subLabel: KCardTitles.addPaymentMethod,
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
-                        backgroundColor: isNamePhoneNumberChanged
+                        backgroundColor: state.isNameValid
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {

@@ -10,50 +10,58 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserPhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdateUserPhoneNumberUseCase();
 
-  OnboardingBloc() : super(OnboardingInitialState()) {
-    on<NameVerificationEvent>((event, emit) async {
-      if (event.value.isEmpty) {
-        emit(NameValidState(null, true));
-        return;
-      } else if (event.value.length < 3) {
-        emit(NameValidState('Name should be at least 3 symbols', false));
-        return;
+  OnboardingBloc() : super(OnboardingState()) {
+    on<NameVerificationEvent>((event, emit) {
+      if (event.value.length < 3) {
+        emit(
+          state.copyWith(
+            nameError: 'Name should be at least 3 symbols',
+            isNameValid: false,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            name: state.name,
+            nameError: null,
+            isNameValid: true,
+          ),
+        );
       }
-
-      emit(NameValidState(null, true));
     });
 
-    on<PhoneNumberVerificationEvent>((event, emit) async {
-      if (event.value.isEmpty) {
-        emit(PhoneNumberValidState(null, true));
-        return;
-      } else if (event.value.length < 11) {
+    on<PhoneNumberVerificationEvent>((event, emit) {
+      if (event.value.length < 11) {
         emit(
-          PhoneNumberValidState('Phone number must contain 9 digits', false),
+          state.copyWith(
+            phoneNumberError: 'Phone number must contain 9 digits',
+            isPhoneNumberValid: false,
+          ),
         );
-        return;
+      } else {
+        emit(
+          state.copyWith(
+            phoneNumber: state.phoneNumber,
+            phoneNumberError: null,
+            isPhoneNumberValid: true,
+          ),
+        );
       }
-      emit(PhoneNumberValidState(null, true));
     });
 
     on<OnboardingFilledNamePhoneNumberEvent>((event, emit) async {
-      // emit(OnboardingLoadingState());
-      try {
-        await updateUserNameUseCase.execute(
-          event.name,
-        );
-        await updateUserPhoneNumberUseCase.execute(
-          event.phoneNumber,
-        );
-        emit(
-          OnboardingFilledNamePhoneNumberState(
-            name: event.name,
-            phoneNumber: event.phoneNumber,
-          ),
-        );
-      } catch (e) {
-        emit(OnboardingErrorState(e.toString()));
-      }
+      await updateUserNameUseCase.execute(
+        event.name,
+      );
+      await updateUserPhoneNumberUseCase.execute(
+        event.phoneNumber,
+      );
+      emit(
+        state.copyWith(
+          name: event.name,
+          phoneNumber: event.phoneNumber,
+        ),
+      );
     });
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
   final String? hint;
@@ -37,6 +37,11 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     Timer? debounce;
@@ -44,7 +49,7 @@ class CustomTextField extends StatelessWidget {
     void _onSearchChanged(String? value) {
       if (debounce?.isActive ?? false) debounce!.cancel();
       debounce = Timer(const Duration(milliseconds: 500), () {
-        onChanged?.call(value);
+        widget.onChanged?.call(value);
       });
     }
 
@@ -52,17 +57,17 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label.toUpperCase(),
+          widget.label.toUpperCase(),
 
           style: TextStyle(fontWeight: FontWeight.bold, color: greyAppColor),
         ),
         SizedBox(height: 8.0),
         TextFormField(
-          controller: controller,
-          obscureText: isPassword,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          validator: validator,
+          controller: widget.controller,
+          obscureText: widget.isPassword,
+          keyboardType: widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
+          validator: widget.validator,
           style: TextStyle(color: Colors.black),
           onChanged: _onSearchChanged,
           decoration: InputDecoration(
@@ -70,23 +75,23 @@ class CustomTextField extends StatelessWidget {
               color: theme.colorScheme.error,
               fontSize: 12,
             ),
-            hintText: hint,
+            hintText: widget.hint,
             hintStyle: TextStyle(color: hintTextColor),
-            errorText: error,
-            prefixIcon: prefixIcon != null
+            errorText: widget.error,
+            prefixIcon: widget.prefixIcon != null
                 ? IconButton(
                     icon: Icon(
-                      prefixIcon,
-                      color: prefixIconColor,
+                      widget.prefixIcon,
+                      color: widget.prefixIconColor,
                     ),
                     onPressed: () {},
                   )
                 : null,
-            suffixIcon: suffixIcon != null
+            suffixIcon: widget.suffixIcon != null
                 ? IconButton(
                     icon: Icon(
-                      suffixIcon,
-                      color: suffixIconColor,
+                      widget.suffixIcon,
+                      color: widget.suffixIconColor,
                     ),
                     onPressed: () {},
                   )

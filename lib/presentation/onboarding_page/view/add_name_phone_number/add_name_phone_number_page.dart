@@ -30,32 +30,19 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final state = context.read<OnboardingBloc>().state;
+
+    controllerName.text = state.name ?? '';
+    controllerPhoneNumber.text = state.phoneNumber ?? '';
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String? errorNameText;
-    String? errorPhoneNumberText;
-
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
-      listener: (context, state) {
-        if (state is NameValidState) {
-          errorNameText = state.value;
-          NameValidState(state.value, state.isNameValid);
-        }
-        if (state is PhoneNumberValidState) {
-          errorPhoneNumberText = state.value;
-          PhoneNumberValidState(state.value, state.isPhoneNumberValid);
-        }
-        if (state is ToggleNamePhoneNumberState) {
-          Navigator.pop(context);
-          ToggleNamePhoneNumberState(state.isNamePhoneNumberChanged);
-        }
-      },
-
+    return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
-        final isNameValid = state is NameValidState ? state.isNameValid : false;
-        final isPhoneNumberValid = state is PhoneNumberValidState
-            ? state.isPhoneNumberValid
-            : false;
-
         return Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
@@ -91,9 +78,9 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                       child: AddNamePhoneNumberFormWidget(
                         controllerName: controllerName,
                         controllerPhoneNumber: controllerPhoneNumber,
-                        errorName: errorNameText,
-                        errorPhoneNumber: errorPhoneNumberText,
-                        nameSuffixIcon: isNameValid ? Icons.check : null,
+                        errorName: state.nameError,
+                        errorPhoneNumber: state.phoneNumberError,
+                        nameSuffixIcon: state.isNameValid ? Icons.check : null,
                         onChangedName: (value) {
                           print(value);
                           context.read<OnboardingBloc>().add(
@@ -102,7 +89,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                             ),
                           );
                         },
-                        phoneNumberSuffixIcon: isPhoneNumberValid
+                        phoneNumberSuffixIcon: state.isPhoneNumberValid
                             ? Icons.check
                             : null,
                         onChangedPhoneNumber: (value) {
@@ -116,7 +103,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                   ),
                 ),
                 Visibility(
-                  visible: (isNameValid || isPhoneNumberValid),
+                  visible: (state.isNameValid || state.isPhoneNumberValid),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: WattMainButton(
@@ -136,7 +123,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
               ],
             ),
           ),
-          bottomNavigationBar: (isNameValid || isPhoneNumberValid)
+          bottomNavigationBar: (state.isNameValid || state.isPhoneNumberValid)
               ? const SizedBox()
               : BottomFloatingButton(
                   label: 'Complete later',
