@@ -4,11 +4,10 @@ import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
-  final UpdateUserEmailUseCase updateUserEmailUseCase =
-      UpdateUserEmailUseCase();
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
   final UpdateUserPhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdateUserPhoneNumberUseCase();
+  final UpdateUserCarUseCase updateUserCarUseCase = UpdateUserCarUseCase();
 
   OnboardingBloc() : super(OnboardingState()) {
     on<NameVerificationEvent>((event, emit) {
@@ -60,6 +59,17 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         state.copyWith(
           name: event.name,
           phoneNumber: event.phoneNumber,
+        ),
+      );
+    });
+
+    on<OnboardingFilledCarModelEvent>((event, emit) async {
+      await updateUserCarUseCase.execute(
+        event.car,
+      );
+      emit(
+        state.copyWith(
+          car: event.car,
         ),
       );
     });

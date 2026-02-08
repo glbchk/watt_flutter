@@ -1,3 +1,4 @@
+import 'package:watt/data/models/car_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
@@ -9,9 +10,9 @@ class UserModel {
   final String? phoneNumber;
   final bool isOnboardingCompleted;
   final String? language;
-  final List<String>? paymentMethods;
-  final List<String>? cars;
+  final List<CarModel>? cars;
   final List<String>? chargingStations;
+  final List<String>? paymentMethods;
 
   UserModel({
     this.isAnonymous,
@@ -22,9 +23,9 @@ class UserModel {
     this.phoneNumber,
     required this.isOnboardingCompleted,
     this.language,
-    this.paymentMethods,
     this.cars,
     this.chargingStations,
+    this.paymentMethods,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -38,7 +39,7 @@ class UserModel {
       isOnboardingCompleted: json['is_onboarding_completed'],
       language: json['language'] ?? 'en',
       paymentMethods: List<String>.from(json['payment_methods'] ?? []),
-      cars: List<String>.from(json['cars'] ?? []),
+      cars: List<CarModel>.from(json['cars'] ?? []),
       chargingStations: List<String>.from(json['charging_stations'] ?? []),
     );
   }
@@ -67,7 +68,7 @@ class UserModel {
       email: entity.email,
       isEmailVerified: entity.isEmailVerified ?? false,
       phoneNumber: entity.phoneNumber ?? '',
-      isOnboardingCompleted: entity.isOnboardingCompleted ?? false,
+      isOnboardingCompleted: entity.isOnboardingCompleted,
       language: entity.language ?? '',
       paymentMethods: entity.paymentMethods ?? [],
       cars: entity.cars ?? [],
@@ -85,7 +86,7 @@ class UserModel {
     bool? isOnboardingCompleted,
     String? language,
     List<String>? paymentMethods,
-    List<String>? cars,
+    List<CarModel>? cars,
     List<String>? chargingStations,
   }) {
     return UserModel(

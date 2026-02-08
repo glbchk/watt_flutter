@@ -58,7 +58,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.label.toUpperCase(),
-
           style: TextStyle(fontWeight: FontWeight.bold, color: greyAppColor),
         ),
         SizedBox(height: 8.0),

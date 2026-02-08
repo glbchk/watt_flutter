@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
 class UserRemoteDataSource {
@@ -33,6 +34,24 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user?.uid).update({
       'phone_number': phoneNumber,
     });
+  }
+
+  Future<void> addCar(CarModel car) async {
+    User? user = auth.currentUser;
+    await firestore.collection("users").doc(user?.uid).update({
+      'cars': FieldValue.arrayUnion([car]),
+    });
+  }
+
+  Future<UserModel> displayCars() async {
+    User? user = auth.currentUser;
+
+    DocumentSnapshot doc = await firestore
+        .collection("users")
+        .doc(user?.uid)
+        .get();
+
+    return UserModel.fromJson(doc.data() as Map<String, dynamic>);
   }
 
   Future<void> deleteUser() async {

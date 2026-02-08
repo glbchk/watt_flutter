@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/components/select_car_model_form_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/presentation/onboarding_page/view/components/short_header_onboarding.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class SelectCarModelPage extends StatefulWidget {
   final String brandName;
@@ -92,6 +93,8 @@ class _SelectCarModelPageState extends State<SelectCarModelPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
                       child: SelectCarModelFormWidget(
+                        controllerPlateNumber: plateController,
+                        label: 'Model',
                         selectedValue: _dropdownValue,
                         listItems: items,
                         onDropdownChanged: (String? newValue) {
@@ -99,23 +102,21 @@ class _SelectCarModelPageState extends State<SelectCarModelPage> {
                             _dropdownValue = newValue ?? '';
                           });
                         },
+                        saveLabel: 'Save',
+                        onSavePressed: () {
+                          context.read<OnboardingBloc>().add(
+                            OnboardingFilledCarModelEvent(
+                              car: CarModel(
+                                brandName: widget.brandName,
+                                carModel: _dropdownValue ?? '',
+                                plateNumber: plateController.text,
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: WattMainButton(
-                    label: 'Save',
-                    onPressed: () {
-                      // context.read<OnboardingBloc>().add(
-                      // OnboardingSaveEvent(
-                      //   name: controllerName.text,
-                      //   phoneNumber: controllerPhoneNumber.text,
-                      // ),
-                      // );
-                    },
                   ),
                 ),
               ],

@@ -1,3 +1,5 @@
+import 'package:watt/data/models/car_model.dart';
+
 class OnboardingState {
   final String? name;
   final String? phoneNumber;
@@ -5,6 +7,7 @@ class OnboardingState {
   final String? phoneNumberError;
   final bool isNameValid;
   final bool isPhoneNumberValid;
+  final CarModel? car;
 
   OnboardingState({
     this.name,
@@ -13,6 +16,7 @@ class OnboardingState {
     this.phoneNumberError,
     this.isNameValid = false,
     this.isPhoneNumberValid = false,
+    this.car,
   });
 
   OnboardingState copyWith({
@@ -22,6 +26,7 @@ class OnboardingState {
     String? phoneNumberError,
     bool? isNameValid,
     bool? isPhoneNumberValid,
+    CarModel? car,
   }) {
     return OnboardingState(
       name: name ?? this.name,
@@ -30,6 +35,7 @@ class OnboardingState {
       phoneNumberError: phoneNumberError ?? this.phoneNumberError,
       isNameValid: isNameValid ?? this.isNameValid,
       isPhoneNumberValid: isPhoneNumberValid ?? this.isPhoneNumberValid,
+      car: car ?? this.car,
     );
   }
 }

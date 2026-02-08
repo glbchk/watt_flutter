@@ -16,6 +16,21 @@ import 'components/slim_card_button.dart';
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
+  String createLabel(String? name, String? phoneNumber) {
+    if (name != null && phoneNumber != null) return '$name, $phoneNumber';
+    if (name != null) return name;
+    if (phoneNumber != null) return phoneNumber;
+    return '';
+  }
+
+  Color changeIconColors(bool isNameValid, bool isPhoneNumberValid) {
+    if (isNameValid || isPhoneNumberValid) {
+      return Colors.white;
+    } else {
+      return hintTextColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
@@ -42,13 +57,17 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
-                        subLabel:
-                            '${state.name ?? ''}, ${state.phoneNumber ?? ''}',
+                        subLabel: createLabel(state.name, state.phoneNumber),
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
-                        backgroundColor: state.isNameValid
-                            ? wattColorScheme.onPrimary
-                            : lightGreyColor,
+                        iconColor: changeIconColors(
+                          state.isNameValid,
+                          state.isPhoneNumberValid,
+                        ),
+                        backgroundColor:
+                            state.name != null || state.phoneNumber != null
+                            ? wattColorScheme.primary
+                            : wattColorScheme.surface,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -60,7 +79,10 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addCar,
-                        subLabel: KCardTitles.addCar,
+                        subLabel: createLabel(
+                          state.car?.brandName,
+                          state.car?.carModel,
+                        ),
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
                         backgroundColor: state.isPhoneNumberValid
@@ -77,7 +99,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addChargingStation,
-                        subLabel: KCardTitles.addChargingStation,
+                        subLabel: '',
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
                         backgroundColor: state.isNameValid
@@ -94,7 +116,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addPaymentMethod,
-                        subLabel: KCardTitles.addPaymentMethod,
+                        subLabel: '',
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
                         backgroundColor: state.isNameValid

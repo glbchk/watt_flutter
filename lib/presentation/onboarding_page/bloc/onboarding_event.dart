@@ -1,3 +1,5 @@
+import 'package:watt/data/models/car_model.dart';
+
 abstract class OnboardingEvent {}
 
 class NameVerificationEvent extends OnboardingEvent {
@@ -19,5 +21,13 @@ class OnboardingFilledNamePhoneNumberEvent extends OnboardingEvent {
   OnboardingFilledNamePhoneNumberEvent({
     required this.name,
     required this.phoneNumber,
+  });
+}
+
+class OnboardingFilledCarModelEvent extends OnboardingEvent {
+  final CarModel car;
+
+  OnboardingFilledCarModelEvent({
+    required this.car,
   });
 }

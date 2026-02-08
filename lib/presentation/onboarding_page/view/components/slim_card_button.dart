@@ -4,11 +4,11 @@ import 'package:watt/utils/colors.dart';
 
 class SlimCardButton extends StatelessWidget {
   final String label;
-  final String subLabel;
+  final String? subLabel;
   final VoidCallback? onPressed;
   final String? svgImage;
   final String? pngImage;
-  final Color? iconColor = hintTextColor;
+  final Color? iconColor;
   final double? marginDistance;
   final Color? textColor;
   final Color? backgroundColor;
@@ -16,13 +16,14 @@ class SlimCardButton extends StatelessWidget {
   const SlimCardButton({
     super.key,
     required this.label,
-    required this.subLabel,
+    this.subLabel,
     this.onPressed,
     this.svgImage,
     this.pngImage,
+    this.iconColor,
     this.marginDistance,
-    this.backgroundColor,
     this.textColor,
+    this.backgroundColor,
   });
 
   @override
@@ -68,7 +69,7 @@ class SlimCardButton extends StatelessWidget {
                               child: SvgPicture.asset(
                                 svgImage ?? '',
                                 colorFilter: ColorFilter.mode(
-                                  iconColor ?? lightGreyColor,
+                                  iconColor ?? hintTextColor,
                                   BlendMode.srcIn,
                                 ),
                               ),
@@ -80,30 +81,38 @@ class SlimCardButton extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 10.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                  subLabel != ''
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              subLabel ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 13,
+                                color: greyAppColor,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
-                      ),
-                      Text(
-                        subLabel,
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 13,
-                          color: greyAppColor,
-                        ),
-                      ),
-                    ],
-                  ),
                   Spacer(),
                   Icon(
                     Icons.chevron_right,
-                    color: iconColor,
+                    color: hintTextColor,
                   ),
                 ],
               ),

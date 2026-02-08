@@ -1,3 +1,4 @@
+import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
@@ -29,11 +30,17 @@ class UpdateUserPhoneNumberUseCase extends UserUseCase {
   }
 }
 
-// class ToggleNamePhoneNumberUseCase extends UserUseCase {
-//   Future<bool> execute() {
-//     return userRepository.getCurrentUser();
-//   }
-// }
+class UpdateUserCarUseCase extends UserUseCase {
+  Future execute(CarModel car) {
+    return userRepository.addCar(car);
+  }
+}
+
+class DisplayUserCarsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.displayCars();
+  }
+}
 
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {
