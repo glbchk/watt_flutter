@@ -5,9 +5,9 @@ class OnboardingState {
   final String? phoneNumber;
   final String? nameError;
   final String? phoneNumberError;
-  final bool isNameValid;
-  final bool isPhoneNumberValid;
-  final CarModel? car;
+  final bool? isNameValid;
+  final bool? isPhoneNumberValid;
+  final List<CarModel>? cars;
 
   OnboardingState({
     this.name,
@@ -16,26 +16,35 @@ class OnboardingState {
     this.phoneNumberError,
     this.isNameValid = false,
     this.isPhoneNumberValid = false,
-    this.car,
+    this.cars,
   });
 
   OnboardingState copyWith({
-    String? name,
-    String? phoneNumber,
-    String? nameError,
-    String? phoneNumberError,
-    bool? isNameValid,
-    bool? isPhoneNumberValid,
-    CarModel? car,
+    String? Function()? name,
+    String? Function()? phoneNumber,
+    String? Function()? nameError,
+    String? Function()? phoneNumberError,
+    bool? Function()? isNameValid,
+    bool? Function()? isPhoneNumberValid,
+    List<CarModel>? Function()? cars,
   }) {
     return OnboardingState(
-      name: name ?? this.name,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      nameError: nameError ?? this.nameError,
-      phoneNumberError: phoneNumberError ?? this.phoneNumberError,
-      isNameValid: isNameValid ?? this.isNameValid,
-      isPhoneNumberValid: isPhoneNumberValid ?? this.isPhoneNumberValid,
-      car: car ?? this.car,
+      name: name != null ? name() : this.name,
+      phoneNumber: phoneNumber != null ? phoneNumber() : this.phoneNumber,
+      nameError: nameError != null ? nameError() : this.nameError,
+      phoneNumberError: phoneNumberError != null
+          ? phoneNumberError()
+          : this.phoneNumberError,
+      isNameValid: isNameValid != null ? isNameValid() : this.isNameValid,
+      isPhoneNumberValid: isPhoneNumberValid != null
+          ? isPhoneNumberValid()
+          : this.isPhoneNumberValid,
+      cars: cars != null ? cars() : this.cars,
     );
   }
 }
+
+// class Wrapper<T> {
+//   final T value;
+//   const Wrapper.value(this.value);
+// }

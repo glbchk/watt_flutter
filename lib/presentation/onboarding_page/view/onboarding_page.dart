@@ -61,8 +61,8 @@ class OnboardingPage extends StatelessWidget {
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
                         iconColor: changeIconColors(
-                          state.isNameValid,
-                          state.isPhoneNumberValid,
+                          state.isNameValid ?? false,
+                          state.isPhoneNumberValid ?? false,
                         ),
                         backgroundColor:
                             state.name != null || state.phoneNumber != null
@@ -80,12 +80,12 @@ class OnboardingPage extends StatelessWidget {
                       SlimCardButton(
                         label: KCardTitles.addCar,
                         subLabel: createLabel(
-                          state.car?.brandName,
-                          state.car?.carModel,
+                          state.cars?[0].brandName,
+                          state.cars?[0].carModel,
                         ),
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
-                        backgroundColor: state.isPhoneNumberValid
+                        backgroundColor: state.isPhoneNumberValid ?? false
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {
@@ -102,7 +102,7 @@ class OnboardingPage extends StatelessWidget {
                         subLabel: '',
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
-                        backgroundColor: state.isNameValid
+                        backgroundColor: state.isNameValid ?? false
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {
@@ -119,7 +119,7 @@ class OnboardingPage extends StatelessWidget {
                         subLabel: '',
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
-                        backgroundColor: state.isNameValid
+                        backgroundColor: state.isNameValid ?? false
                             ? wattColorScheme.onPrimary
                             : lightGreyColor,
                         onPressed: () {

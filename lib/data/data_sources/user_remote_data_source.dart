@@ -39,7 +39,7 @@ class UserRemoteDataSource {
   Future<void> addCar(CarModel car) async {
     User? user = auth.currentUser;
     await firestore.collection("users").doc(user?.uid).update({
-      'cars': FieldValue.arrayUnion([car]),
+      'cars': FieldValue.arrayUnion([car.toJson()]),
     });
   }
 

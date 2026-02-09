@@ -14,16 +14,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       if (event.value.length < 3) {
         emit(
           state.copyWith(
-            nameError: 'Name should be at least 3 symbols',
-            isNameValid: false,
+            nameError: () => 'Name should be at least 3 symbols',
+            isNameValid: () => false,
           ),
         );
       } else {
         emit(
           state.copyWith(
-            name: state.name,
-            nameError: null,
-            isNameValid: true,
+            name: () => event.value,
+            nameError: () => null,
+            isNameValid: () => true,
           ),
         );
       }
@@ -33,16 +33,16 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       if (event.value.length < 11) {
         emit(
           state.copyWith(
-            phoneNumberError: 'Phone number must contain 9 digits',
-            isPhoneNumberValid: false,
+            phoneNumberError: () => 'Phone number must contain 9 digits',
+            isPhoneNumberValid: () => false,
           ),
         );
       } else {
         emit(
           state.copyWith(
-            phoneNumber: state.phoneNumber,
-            phoneNumberError: null,
-            isPhoneNumberValid: true,
+            phoneNumber: () => event.value,
+            phoneNumberError: () => null,
+            isPhoneNumberValid: () => true,
           ),
         );
       }
@@ -57,8 +57,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
       emit(
         state.copyWith(
-          name: event.name,
-          phoneNumber: event.phoneNumber,
+          name: () => event.name,
+          phoneNumber: () => event.phoneNumber,
         ),
       );
     });
@@ -67,9 +67,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await updateUserCarUseCase.execute(
         event.car,
       );
+
       emit(
         state.copyWith(
-          car: event.car,
+          cars: () => [event.car],
         ),
       );
     });

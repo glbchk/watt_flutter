@@ -39,7 +39,11 @@ class UserModel {
       isOnboardingCompleted: json['is_onboarding_completed'],
       language: json['language'] ?? 'en',
       paymentMethods: List<String>.from(json['payment_methods'] ?? []),
-      cars: List<CarModel>.from(json['cars'] ?? []),
+      cars:
+          (json['cars'] as List<dynamic>?)
+              ?.map((item) => CarModel.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
       chargingStations: List<String>.from(json['charging_stations'] ?? []),
     );
   }

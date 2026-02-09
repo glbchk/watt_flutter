@@ -80,7 +80,9 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                         controllerPhoneNumber: controllerPhoneNumber,
                         errorName: state.nameError,
                         errorPhoneNumber: state.phoneNumberError,
-                        nameSuffixIcon: state.isNameValid ? Icons.check : null,
+                        nameSuffixIcon: state.isNameValid ?? false
+                            ? Icons.check
+                            : null,
                         onChangedName: (value) {
                           print(value);
                           context.read<OnboardingBloc>().add(
@@ -89,7 +91,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                             ),
                           );
                         },
-                        phoneNumberSuffixIcon: state.isPhoneNumberValid
+                        phoneNumberSuffixIcon: state.isPhoneNumberValid ?? false
                             ? Icons.check
                             : null,
                         onChangedPhoneNumber: (value) {
@@ -103,7 +105,9 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                   ),
                 ),
                 Visibility(
-                  visible: (state.isNameValid || state.isPhoneNumberValid),
+                  visible:
+                      (state.isNameValid ?? false) ||
+                      (state.isPhoneNumberValid ?? false),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: WattMainButton(
@@ -123,7 +127,9 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
               ],
             ),
           ),
-          bottomNavigationBar: (state.isNameValid || state.isPhoneNumberValid)
+          bottomNavigationBar:
+              (state.isNameValid ?? false) ||
+                  (state.isPhoneNumberValid ?? false)
               ? const SizedBox()
               : BottomFloatingButton(
                   label: 'Complete later',
