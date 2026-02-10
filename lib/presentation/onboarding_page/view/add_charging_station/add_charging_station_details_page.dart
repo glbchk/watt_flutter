@@ -70,10 +70,92 @@ class _AddChargingStationDetailsPageState
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => DetailsPage(),
+                                      builder: (_) => DetailsPage(
+                                        property: DetailPageProperties
+                                            .chargingStationName,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
                                     ),
                                   );
                                 },
+                                onAddressPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property: DetailPageProperties.address,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onBrandPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property:
+                                            DetailPageProperties.brandName,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onChargingEffectPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property:
+                                            DetailPageProperties.chargingEffect,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onPlugPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property: DetailPageProperties.plug,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onPricePressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property:
+                                            DetailPageProperties.pricePerKwh,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onIbanPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property: DetailPageProperties.iban,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onAvailableHoursPressed: () {},
+                                brandName: widget.chargingStationBrandName,
                               ),
                             ),
                           ),

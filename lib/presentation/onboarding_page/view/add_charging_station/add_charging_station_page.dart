@@ -6,6 +6,24 @@ import 'package:watt/utils/constants.dart';
 
 import '../components/short_header_onboarding.dart';
 
+List<String> chargingStationList = [
+  KChargingStationsNames.abb,
+  KChargingStationsNames.easee,
+  KChargingStationsNames.garo,
+  KChargingStationsNames.vattenfall,
+  KChargingStationsNames.tesla,
+  KChargingStationsNames.other,
+];
+
+List<String> chargingStationIconsList = [
+  KChargingStationsLogos.abb,
+  KChargingStationsLogos.easee,
+  KChargingStationsLogos.garo,
+  KChargingStationsLogos.vattenfall,
+  KChargingStationsLogos.tesla,
+  KChargingStationsLogos.other,
+];
+
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
 
@@ -14,24 +32,6 @@ class AddChargingStationPage extends StatefulWidget {
 }
 
 class _AddChargingStationPageState extends State<AddChargingStationPage> {
-  List<String> chargingStationList = [
-    KChargingStationsNames.abb,
-    KChargingStationsNames.easee,
-    KChargingStationsNames.garo,
-    KChargingStationsNames.vattenfall,
-    KChargingStationsNames.tesla,
-    KChargingStationsNames.other,
-  ];
-
-  List<String> chargingStationIconsList = [
-    KChargingStationsLogos.abb,
-    KChargingStationsLogos.easee,
-    KChargingStationsLogos.garo,
-    KChargingStationsLogos.vattenfall,
-    KChargingStationsLogos.tesla,
-    KChargingStationsLogos.other,
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

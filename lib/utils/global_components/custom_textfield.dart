@@ -83,6 +83,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       widget.prefixIcon,
                       color: widget.prefixIconColor,
                     ),
+                    iconSize: 24,
+                    padding: const EdgeInsets.only(right: 10.0, left: 15.0),
                     onPressed: () {},
                   )
                 : null,

@@ -61,3 +61,17 @@ class KChargingStationsLogos {
   static const String other =
       'assets/charging_station_logos/other_ev_station.png';
 }
+
+class KChargingEffect {
+  static const String three = '3,7 kW';
+  static const String seven = '7,0 kW';
+  static const String eleven = '11,0 kW';
+  static const String twentyTwo = '22,0 kW';
+}
+
+class KPlugs {
+  static const String threePhase = '3-phase (CEE)';
+  static const String typeOne = 'Type 1';
+  static const String typeTwo = 'Type 2';
+  static const String wall = 'Wall';
+}

@@ -11,6 +11,7 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
   final VoidCallback? onIbanPressed;
   final VoidCallback? onOnlineChargerPressed;
   final VoidCallback? onAvailableHoursPressed;
+  final String brandName;
 
   const ChargerStationDetailsFormWidget({
     super.key,
@@ -23,6 +24,7 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
     this.onIbanPressed,
     this.onOnlineChargerPressed,
     this.onAvailableHoursPressed,
+    required this.brandName,
   });
 
   @override
@@ -46,28 +48,35 @@ class _ChargerStationDetailsFormWidgetState
             ),
             RowButton(
               label: 'Address',
+              onPressed: widget.onAddressPressed,
             ),
             RowButton(
               label: 'Brand',
-              secondLabel: 'Easee',
+              secondLabel: widget.brandName,
+              onPressed: widget.onBrandPressed,
             ),
             RowButton(
               label: 'Charging effect',
+              onPressed: widget.onChargingEffectPressed,
             ),
             RowButton(
               label: 'Plug',
+              onPressed: widget.onPlugPressed,
             ),
             RowButton(
               label: 'Price per kWh',
+              onPressed: widget.onPricePressed,
             ),
             RowButton(
               label: 'IBAN',
+              onPressed: widget.onIbanPressed,
             ),
             RowButton(
               label: 'Online charger',
             ),
             RowButton(
               label: 'Available hours',
+              onPressed: widget.onAvailableHoursPressed,
             ),
             RowButton(
               label: 'Everyone can access',

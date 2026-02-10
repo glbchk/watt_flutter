@@ -1,4 +1,5 @@
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 
 class OnboardingState {
   final String? name;
@@ -8,6 +9,7 @@ class OnboardingState {
   final bool? isNameValid;
   final bool? isPhoneNumberValid;
   final List<CarModel>? cars;
+  final List<ChargingStationModel>? chargingStations;
 
   OnboardingState({
     this.name,
@@ -17,6 +19,7 @@ class OnboardingState {
     this.isNameValid = false,
     this.isPhoneNumberValid = false,
     this.cars,
+    this.chargingStations,
   });
 
   OnboardingState copyWith({
@@ -27,6 +30,7 @@ class OnboardingState {
     bool? Function()? isNameValid,
     bool? Function()? isPhoneNumberValid,
     List<CarModel>? Function()? cars,
+    List<ChargingStationModel>? Function()? chargingStations,
   }) {
     return OnboardingState(
       name: name != null ? name() : this.name,
@@ -40,6 +44,9 @@ class OnboardingState {
           ? isPhoneNumberValid()
           : this.isPhoneNumberValid,
       cars: cars != null ? cars() : this.cars,
+      chargingStations: chargingStations != null
+          ? chargingStations()
+          : this.chargingStations,
     );
   }
 }
