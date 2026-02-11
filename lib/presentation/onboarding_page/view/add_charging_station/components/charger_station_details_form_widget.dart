@@ -68,7 +68,7 @@ class _ChargerStationDetailsFormWidgetState
               onPressed: widget.onPricePressed,
             ),
             RowButton(
-              label: 'IBAN',
+              label: 'Bank account',
               onPressed: widget.onIbanPressed,
             ),
             RowButton(

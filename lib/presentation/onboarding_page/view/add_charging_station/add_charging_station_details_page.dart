@@ -154,7 +154,19 @@ class _AddChargingStationDetailsPageState
                                     ),
                                   );
                                 },
-                                onAvailableHoursPressed: () {},
+                                onAvailableHoursPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => DetailsPage(
+                                        property:
+                                            DetailPageProperties.availableHours,
+                                        brandName:
+                                            widget.chargingStationBrandName,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 brandName: widget.chargingStationBrandName,
                               ),
                             ),
