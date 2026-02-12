@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/add_charging_station_details_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/add_charging_station_details_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/constants.dart';

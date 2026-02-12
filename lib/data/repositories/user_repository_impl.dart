@@ -1,6 +1,7 @@
 import 'package:watt/data/data_sources/auth_remote_data_source.dart';
 import 'package:watt/data/data_sources/user_remote_data_source.dart';
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
@@ -55,6 +56,11 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserModel> displayCars() async {
     return await userRemoteDataSource.displayCars();
+  }
+
+  @override
+  Future<void> addChargingStation(ChargingStationModel chargingStation) async {
+    return await userRemoteDataSource.addChargingStation(chargingStation);
   }
 
   @override

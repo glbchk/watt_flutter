@@ -1,4 +1,5 @@
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
@@ -33,6 +34,12 @@ class UpdateUserPhoneNumberUseCase extends UserUseCase {
 class UpdateUserCarUseCase extends UserUseCase {
   Future execute(CarModel car) {
     return userRepository.addCar(car);
+  }
+}
+
+class UpdateUserChargingStationUseCase extends UserUseCase {
+  Future execute(ChargingStationModel chargingStation) {
+    return userRepository.addChargingStation(chargingStation);
   }
 }
 

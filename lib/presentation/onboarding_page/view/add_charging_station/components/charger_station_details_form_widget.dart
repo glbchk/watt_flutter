@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/global_components/row_button.dart';
+import 'package:watt/utils/global_components/row_toggle.dart';
 
 class ChargerStationDetailsFormWidget extends StatefulWidget {
   final VoidCallback? onNamePressed;
@@ -34,6 +35,9 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
 
 class _ChargerStationDetailsFormWidgetState
     extends State<ChargerStationDetailsFormWidget> {
+  bool isSwitchedOnlineCharger = false;
+  bool isSwitchedAccess = false;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -71,15 +75,27 @@ class _ChargerStationDetailsFormWidgetState
               label: 'Bank account',
               onPressed: widget.onIbanPressed,
             ),
-            RowButton(
+            RowToggle(
               label: 'Online charger',
+              isSwitched: isSwitchedOnlineCharger,
+              onChanged: (bool newValue) {
+                setState(() {
+                  isSwitchedOnlineCharger = newValue;
+                });
+              },
             ),
             RowButton(
               label: 'Available hours',
               onPressed: widget.onAvailableHoursPressed,
             ),
-            RowButton(
+            RowToggle(
               label: 'Everyone can access',
+              isSwitched: isSwitchedAccess,
+              onChanged: (bool newValue) {
+                setState(() {
+                  isSwitchedAccess = newValue;
+                });
+              },
             ),
           ],
         ),

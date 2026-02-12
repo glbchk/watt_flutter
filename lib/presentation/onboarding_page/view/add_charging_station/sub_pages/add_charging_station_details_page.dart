@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/charger_station_details_form_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/details_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
 
@@ -147,7 +147,8 @@ class _AddChargingStationDetailsPageState
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => DetailsPage(
-                                        property: DetailPageProperties.iban,
+                                        property:
+                                            DetailPageProperties.bankAccount,
                                         brandName:
                                             widget.chargingStationBrandName,
                                       ),

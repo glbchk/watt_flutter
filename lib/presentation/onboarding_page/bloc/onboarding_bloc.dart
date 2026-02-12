@@ -8,6 +8,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserPhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdateUserPhoneNumberUseCase();
   final UpdateUserCarUseCase updateUserCarUseCase = UpdateUserCarUseCase();
+  final UpdateUserChargingStationUseCase updateUserChargingStationUseCase =
+      UpdateUserChargingStationUseCase();
 
   OnboardingBloc() : super(OnboardingState()) {
     on<NameVerificationEvent>((event, emit) {
@@ -71,6 +73,18 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           cars: () => [event.car],
+        ),
+      );
+    });
+
+    on<OnboardingFilledChargingStationEvent>((event, emit) async {
+      await updateUserChargingStationUseCase.execute(
+        event.chargingStation,
+      );
+
+      emit(
+        state.copyWith(
+          chargingStations: () => [event.chargingStation],
         ),
       );
     });

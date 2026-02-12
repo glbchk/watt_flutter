@@ -1,4 +1,5 @@
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
@@ -11,7 +12,7 @@ class UserModel {
   final bool isOnboardingCompleted;
   final String? language;
   final List<CarModel>? cars;
-  final List<String>? chargingStations;
+  final List<ChargingStationModel>? chargingStations;
   final List<String>? paymentMethods;
 
   UserModel({
@@ -44,7 +45,14 @@ class UserModel {
               ?.map((item) => CarModel.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
-      chargingStations: List<String>.from(json['charging_stations'] ?? []),
+      chargingStations:
+          (json['charging_stations'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    ChargingStationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -91,7 +99,7 @@ class UserModel {
     String? language,
     List<String>? paymentMethods,
     List<CarModel>? cars,
-    List<String>? chargingStations,
+    List<ChargingStationModel>? chargingStations,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,

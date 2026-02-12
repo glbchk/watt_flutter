@@ -1,3 +1,5 @@
+import 'package:watt/data/models/timeslot_model.dart';
+
 class ChargingStationModel {
   final String? chargingStationName;
   final String? address;
@@ -7,7 +9,7 @@ class ChargingStationModel {
   final String? pricePerKwh;
   final String? iban;
   final bool? onlineCharger;
-  final String? availableHours;
+  final List<TimeslotModel>? availableHours;
   final bool? everyoneCanAccess;
 
   ChargingStationModel({

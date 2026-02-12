@@ -1,4 +1,5 @@
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 
 abstract class OnboardingEvent {}
 
@@ -29,5 +30,13 @@ class OnboardingFilledCarModelEvent extends OnboardingEvent {
 
   OnboardingFilledCarModelEvent({
     required this.car,
+  });
+}
+
+class OnboardingFilledChargingStationEvent extends OnboardingEvent {
+  final ChargingStationModel chargingStation;
+
+  OnboardingFilledChargingStationEvent({
+    required this.chargingStation,
   });
 }

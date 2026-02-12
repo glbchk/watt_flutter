@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
 class UserRemoteDataSource {
@@ -52,6 +53,13 @@ class UserRemoteDataSource {
         .get();
 
     return UserModel.fromJson(doc.data() as Map<String, dynamic>);
+  }
+
+  Future<void> addChargingStation(ChargingStationModel chargingStation) async {
+    User? user = auth.currentUser;
+    await firestore.collection("users").doc(user?.uid).update({
+      'charging_stations': FieldValue.arrayUnion([chargingStation.toJson()]),
+    });
   }
 
   Future<void> deleteUser() async {
