@@ -4,14 +4,14 @@ import 'package:watt/utils/colors.dart';
 class TileSelectorWidget extends StatelessWidget {
   final String? selectedValue;
   final List<String> list;
-  final ValueChanged<String>? onSelected;
+  final ValueChanged<String> onSelected;
   final IconData? prefixIcon;
 
   const TileSelectorWidget({
     super.key,
     this.selectedValue,
     required this.list,
-    this.onSelected,
+    required this.onSelected,
     this.prefixIcon,
   });
 
@@ -27,7 +27,7 @@ class TileSelectorWidget extends StatelessWidget {
           final isSelected = selectedValue == listValue;
 
           return GestureDetector(
-            onTap: () => onSelected?.call(listValue),
+            onTap: () => onSelected(listValue),
             child: Container(
               height: 60,
               color: Colors.white,

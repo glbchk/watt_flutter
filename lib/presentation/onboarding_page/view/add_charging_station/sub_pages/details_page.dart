@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_address_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_available_hours_property_widget.dart';
@@ -26,12 +28,12 @@ enum DetailPageProperties {
 
 class DetailsPage extends StatefulWidget {
   final DetailPageProperties property;
-  final String brandName;
+  final String? brandName;
 
   const DetailsPage({
     super.key,
     required this.property,
-    required this.brandName,
+    this.brandName,
   });
 
   @override
@@ -39,9 +41,20 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  // ChargingStationModel chargingStation = ChargingStationModel();
+
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerAddress = TextEditingController();
   TextEditingController controllerPrice = TextEditingController();
+
+  String? tempSelectedBrand;
+  String? selectedChargingEffect;
+
+  @override
+  void initState() {
+    super.initState();
+    tempSelectedBrand = widget.brandName;
+  }
 
   @override
   void dispose() {
@@ -91,9 +104,27 @@ class _DetailsPageState extends State<DetailsPage> {
                 DetailPageProperties.address => DetailAddressPropertyWidget(
                   controllerAddress: controllerAddress,
                 ),
-                DetailPageProperties.brandName => DetailBrandPropertyWidget(),
+                DetailPageProperties.brandName => DetailBrandPropertyWidget(
+                  selectedBrand: tempSelectedBrand ?? 'Other',
+                  onPressed: (newBrand) {
+                    setState(() {
+                      if (newBrand.isNotEmpty) {
+                        tempSelectedBrand = newBrand;
+                      } else {
+                        tempSelectedBrand = widget.brandName;
+                      }
+                    });
+                  },
+                ),
                 DetailPageProperties.chargingEffect =>
-                  DetailChargingEffectPropertyWidget(),
+                  DetailChargingEffectPropertyWidget(
+                    selectedValue: selectedChargingEffect,
+                    onSelected: (String value) {
+                      setState(() {
+                        selectedChargingEffect = value;
+                      });
+                    },
+                  ),
                 DetailPageProperties.plug => DetailPlugPropertyWidget(),
                 DetailPageProperties.pricePerKwh => DetailPricePropertyWidget(
                   controllerPrice: controllerPrice,
@@ -123,7 +154,39 @@ class _DetailsPageState extends State<DetailsPage> {
                 ? const SizedBox()
                 : WattMainButton(
                     label: 'Save',
-                    onPressed: () {},
+                    onPressed: () {
+                      final chargingStation = ChargingStationModel(
+                        chargingStationName: controllerName.text,
+                        address: controllerAddress.text,
+                        brandName: tempSelectedBrand ?? widget.brandName,
+                        chargingEffect: selectedChargingEffect,
+                        // plug: plugType,
+                        // pricePerKwh: price,
+                        // iban: bankAccount,
+                        // onlineCharger: isOnlineCharger,
+                        // availableHours: availableHours,
+                        // everyoneCanAccess: isEveryoneCanAccess,
+                      );
+                      context.read<OnboardingBloc>().add(
+                        ChargingStationSavePropertiesEvent(
+                          chargingStation: ChargingStationModel(
+                            chargingStationName: controllerName.text,
+                            address: controllerAddress.text,
+                            brandName: tempSelectedBrand ?? widget.brandName,
+                            chargingEffect: selectedChargingEffect,
+                            // plug: plugType,
+                            // pricePerKwh: price,
+                            // iban: bankAccount,
+                            // onlineCharger: isOnlineCharger,
+                            // availableHours: availableHours,
+                            // everyoneCanAccess: isEveryoneCanAccess,
+                          ),
+                        ),
+                      );
+                      print(chargingStation.brandName);
+                      print(chargingStation.chargingEffect);
+                      Navigator.pop(context);
+                    },
                   ),
           ),
         );

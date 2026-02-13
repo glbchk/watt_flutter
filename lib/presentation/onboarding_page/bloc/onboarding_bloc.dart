@@ -77,6 +77,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
     });
 
+    on<ChargingStationSavePropertiesEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          chargingStations: () => [event.chargingStation],
+        ),
+      );
+    });
+
     on<OnboardingFilledChargingStationEvent>((event, emit) async {
       await updateUserChargingStationUseCase.execute(
         event.chargingStation,

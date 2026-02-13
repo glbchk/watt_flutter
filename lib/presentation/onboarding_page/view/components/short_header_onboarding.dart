@@ -31,7 +31,7 @@ class _ShortHeaderOnboardingState extends State<ShortHeaderOnboarding> {
           Text(
             widget.mainTitle,
             style: TextStyle(
-              color: theme.colorScheme.onPrimaryContainer,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 28,
             ),
@@ -40,7 +40,7 @@ class _ShortHeaderOnboardingState extends State<ShortHeaderOnboarding> {
               ? Text(
                   widget.subtitle ?? '',
                   style: TextStyle(
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: Colors.white,
                     fontWeight: FontWeight.normal,
                     fontSize: 15,
                   ),

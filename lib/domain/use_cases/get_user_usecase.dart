@@ -37,15 +37,15 @@ class UpdateUserCarUseCase extends UserUseCase {
   }
 }
 
-class UpdateUserChargingStationUseCase extends UserUseCase {
-  Future execute(ChargingStationModel chargingStation) {
-    return userRepository.addChargingStation(chargingStation);
-  }
-}
-
 class DisplayUserCarsUseCase extends UserUseCase {
   Future execute() {
     return userRepository.displayCars();
+  }
+}
+
+class UpdateUserChargingStationUseCase extends UserUseCase {
+  Future execute(ChargingStationModel chargingStation) {
+    return userRepository.addChargingStation(chargingStation);
   }
 }
 

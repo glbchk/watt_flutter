@@ -17,11 +17,13 @@ List<String> plugList = [
 ];
 
 class DetailChargingEffectPropertyWidget extends StatefulWidget {
-  final ValueChanged<String>? onSelected;
+  final String? selectedValue;
+  final ValueChanged<String> onSelected;
 
   const DetailChargingEffectPropertyWidget({
     super.key,
-    this.onSelected,
+    this.selectedValue,
+    required this.onSelected,
   });
 
   @override
@@ -31,16 +33,12 @@ class DetailChargingEffectPropertyWidget extends StatefulWidget {
 
 class _DetailChargingEffectPropertyWidgetState
     extends State<DetailChargingEffectPropertyWidget> {
-  String? selectedChargingEffect;
-
   @override
   Widget build(BuildContext context) {
     return TileSelectorWidget(
       list: chargingEffectList,
-      selectedValue: selectedChargingEffect,
-      onSelected: (value) {
-        setState(() => selectedChargingEffect = value);
-      },
+      selectedValue: widget.selectedValue,
+      onSelected: widget.onSelected,
     );
   }
 }

@@ -12,7 +12,14 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
   final VoidCallback? onIbanPressed;
   final VoidCallback? onOnlineChargerPressed;
   final VoidCallback? onAvailableHoursPressed;
+  final String? chargingStationName;
   final String brandName;
+  final String? address;
+  final String? chargingEffect;
+  final String? plug;
+  final String? price;
+  final String? bankAccount;
+  final String? availableHours;
 
   const ChargerStationDetailsFormWidget({
     super.key,
@@ -25,7 +32,14 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
     this.onIbanPressed,
     this.onOnlineChargerPressed,
     this.onAvailableHoursPressed,
+    this.chargingStationName,
     required this.brandName,
+    this.address,
+    this.chargingEffect,
+    this.plug,
+    this.price,
+    this.bankAccount,
+    this.availableHours,
   });
 
   @override
@@ -48,10 +62,12 @@ class _ChargerStationDetailsFormWidgetState
           children: [
             RowButton(
               label: 'Name',
+              secondLabel: widget.chargingStationName,
               onPressed: widget.onNamePressed,
             ),
             RowButton(
               label: 'Address',
+              secondLabel: widget.address,
               onPressed: widget.onAddressPressed,
             ),
             RowButton(
@@ -61,18 +77,22 @@ class _ChargerStationDetailsFormWidgetState
             ),
             RowButton(
               label: 'Charging effect',
+              secondLabel: widget.chargingEffect,
               onPressed: widget.onChargingEffectPressed,
             ),
             RowButton(
               label: 'Plug',
+              secondLabel: widget.plug,
               onPressed: widget.onPlugPressed,
             ),
             RowButton(
               label: 'Price per kWh',
+              secondLabel: widget.price,
               onPressed: widget.onPricePressed,
             ),
             RowButton(
               label: 'Bank account',
+              secondLabel: widget.bankAccount,
               onPressed: widget.onIbanPressed,
             ),
             RowToggle(
@@ -86,6 +106,7 @@ class _ChargerStationDetailsFormWidgetState
             ),
             RowButton(
               label: 'Available hours',
+              secondLabel: widget.availableHours,
               onPressed: widget.onAvailableHoursPressed,
             ),
             RowToggle(

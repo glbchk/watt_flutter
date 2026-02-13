@@ -18,8 +18,13 @@ List<String> plugList = [
 ];
 
 class DetailBrandPropertyWidget extends StatefulWidget {
+  final String selectedBrand;
+  final ValueChanged<String> onPressed;
+
   const DetailBrandPropertyWidget({
     super.key,
+    required this.selectedBrand,
+    required this.onPressed,
   });
 
   @override
@@ -28,12 +33,6 @@ class DetailBrandPropertyWidget extends StatefulWidget {
 }
 
 class _DetailBrandPropertyWidgetState extends State<DetailBrandPropertyWidget> {
-  @override
-  void dispose() {
-    // controllerPriceKwh.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -45,10 +44,13 @@ class _DetailBrandPropertyWidgetState extends State<DetailBrandPropertyWidget> {
             ...List.generate(
               chargingStationList.length,
               (index) {
+                final brandName = chargingStationList.elementAt(index);
+
                 return TallCardSelector(
                   label: chargingStationList.elementAt(index),
                   pngImage: chargingStationIconsList.elementAt(index),
-                  onPressed: () {},
+                  isSelected: widget.selectedBrand == brandName,
+                  onPressed: () => widget.onPressed(brandName),
                 );
               },
             ),

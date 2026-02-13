@@ -11,8 +11,8 @@ class AddChargingStationDetailsPage extends StatefulWidget {
   final String chargingStationBrandName;
 
   const AddChargingStationDetailsPage({
-    required this.chargingStationBrandName,
     super.key,
+    required this.chargingStationBrandName,
   });
 
   @override
@@ -66,6 +66,7 @@ class _AddChargingStationDetailsPageState
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5.0),
                               child: ChargerStationDetailsFormWidget(
+                                // chargingStationName: ,
                                 onNamePressed: () {
                                   Navigator.push(
                                     context,
@@ -189,7 +190,12 @@ class _AddChargingStationDetailsPageState
                 ? const SizedBox()
                 : BottomFloatingButton(
                     label: 'Done',
-                    callback: () {},
+                    callback: () {
+                      // context.read<OnboardingBloc>().add(
+                      //   OnboardingFilledChargingStationEvent(chargingStation: chargingStation),
+                      // );
+                      // Navigator.pop(context);
+                    },
                   ),
 
             ///TODO: Need to fix color and update the BottomFloatingButton

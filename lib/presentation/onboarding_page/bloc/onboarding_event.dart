@@ -33,6 +33,14 @@ class OnboardingFilledCarModelEvent extends OnboardingEvent {
   });
 }
 
+class ChargingStationSavePropertiesEvent extends OnboardingEvent {
+  final ChargingStationModel chargingStation;
+
+  ChargingStationSavePropertiesEvent({
+    required this.chargingStation,
+  });
+}
+
 class OnboardingFilledChargingStationEvent extends OnboardingEvent {
   final ChargingStationModel chargingStation;
 

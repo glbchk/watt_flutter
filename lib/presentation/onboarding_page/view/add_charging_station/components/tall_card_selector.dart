@@ -4,51 +4,57 @@ import 'package:watt/utils/colors.dart';
 
 class TallCardSelector extends StatelessWidget {
   final String label;
-  final VoidCallback? onPressed;
   final String? svgImage;
   final String? pngImage;
   final Color? iconColor;
   final double? marginDistance;
   final Color? textColor;
   final Color? backgroundColor;
+  final bool isSelected;
+  final VoidCallback? onPressed;
 
   const TallCardSelector({
     super.key,
     required this.label,
-    this.onPressed,
     this.svgImage,
     this.pngImage,
     this.iconColor,
     this.marginDistance,
-    this.backgroundColor,
     this.textColor,
+    this.backgroundColor,
+    this.isSelected = false,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 20.0,
-        top: 2.0,
-        right: 20.0,
-        bottom: 2.0,
-      ),
-      child: Container(
-        height: 100.0,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: wattColorScheme.onSecondary.withAlpha(38),
-              spreadRadius: 0,
-              blurRadius: 15,
-              offset: Offset(0, 4),
-            ),
-          ],
+    return GestureDetector(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 20.0,
+          top: 5.0,
+          right: 20.0,
+          bottom: 5.0,
         ),
-        child: Card(
-          color: Colors.white,
+        child: Container(
+          height: 100.0,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: isSelected
+                ? Border.all(color: Colors.blue, width: 2)
+                : Border.all(color: Colors.transparent),
+            boxShadow: [
+              BoxShadow(
+                color: wattColorScheme.onSecondary.withAlpha(38),
+                spreadRadius: 0,
+                blurRadius: 15,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Row(
@@ -95,8 +101,10 @@ class TallCardSelector extends StatelessWidget {
                 ),
                 Spacer(),
                 Icon(
-                  Icons.chevron_right,
-                  color: greyAppColor,
+                  isSelected
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                  color: isSelected ? Colors.blue : Colors.grey,
                 ),
               ],
             ),
