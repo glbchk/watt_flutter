@@ -9,17 +9,17 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
   final VoidCallback? onChargingEffectPressed;
   final VoidCallback? onPlugPressed;
   final VoidCallback? onPricePressed;
-  final VoidCallback? onIbanPressed;
+  final VoidCallback? onBankAccountPressed;
   final VoidCallback? onOnlineChargerPressed;
   final VoidCallback? onAvailableHoursPressed;
-  final String? chargingStationName;
+  final String chargingStationName;
   final String brandName;
-  final String? address;
-  final String? chargingEffect;
-  final String? plug;
-  final String? price;
-  final String? bankAccount;
-  final String? availableHours;
+  final String address;
+  final String chargingEffect;
+  final String plug;
+  final String price;
+  final String bankAccount;
+  final String availableHours;
 
   const ChargerStationDetailsFormWidget({
     super.key,
@@ -29,17 +29,17 @@ class ChargerStationDetailsFormWidget extends StatefulWidget {
     this.onChargingEffectPressed,
     this.onPlugPressed,
     this.onPricePressed,
-    this.onIbanPressed,
+    this.onBankAccountPressed,
     this.onOnlineChargerPressed,
     this.onAvailableHoursPressed,
-    this.chargingStationName,
+    required this.chargingStationName,
     required this.brandName,
-    this.address,
-    this.chargingEffect,
-    this.plug,
-    this.price,
-    this.bankAccount,
-    this.availableHours,
+    required this.address,
+    required this.chargingEffect,
+    required this.plug,
+    required this.price,
+    required this.bankAccount,
+    required this.availableHours,
   });
 
   @override
@@ -93,7 +93,7 @@ class _ChargerStationDetailsFormWidgetState
             RowButton(
               label: 'Bank account',
               secondLabel: widget.bankAccount,
-              onPressed: widget.onIbanPressed,
+              onPressed: widget.onBankAccountPressed,
             ),
             RowToggle(
               label: 'Online charger',

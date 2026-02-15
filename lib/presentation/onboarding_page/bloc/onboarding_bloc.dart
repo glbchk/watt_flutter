@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
@@ -8,8 +10,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserPhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdateUserPhoneNumberUseCase();
   final UpdateUserCarUseCase updateUserCarUseCase = UpdateUserCarUseCase();
+  final FetchUserCarsUseCase fetchUserCarsUseCase = FetchUserCarsUseCase();
+  final UpdatePlateNumberCarsUseCase updatePlateNumberCarUseCase =
+      UpdatePlateNumberCarsUseCase();
+  final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
   final UpdateUserChargingStationUseCase updateUserChargingStationUseCase =
       UpdateUserChargingStationUseCase();
+  final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
+      FetchUserChargingStationsUseCase();
 
   OnboardingBloc() : super(OnboardingState()) {
     on<NameVerificationEvent>((event, emit) {
@@ -70,31 +78,132 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         event.car,
       );
 
+      final List<CarModel> updateCarsList = [...?state.cars, event.car];
+
       emit(
         state.copyWith(
-          cars: () => [event.car],
+          cars: () => updateCarsList,
         ),
       );
     });
 
-    on<ChargingStationSavePropertiesEvent>((event, emit) {
+    on<FetchUserCarsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        final List<CarModel> cars = await fetchUserCarsUseCase.execute();
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            cars: () => cars,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      }
+    });
+
+    on<UpdatePlateNumberCarEvent>((event, emit) async {
+      await updatePlateNumberCarUseCase.execute(
+        event.carId,
+        event.plateNumber,
+      );
+
+      final List<CarModel> updatedCarsList = (state.cars ?? []).map((car) {
+        return car.id == event.carId
+            ? car.copyCarWith(plateNumber: event.plateNumber)
+            : car;
+      }).toList();
+
       emit(
         state.copyWith(
-          chargingStations: () => [event.chargingStation],
+          cars: () => updatedCarsList,
         ),
       );
     });
+
+    on<DeleteCarEvent>((event, emit) async {
+      await deleteCarUseCase.execute(
+        event.carId,
+      );
+
+      final updatedCarsList = (state.cars ?? [])
+          .where((car) => car.id != event.carId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          cars: () => updatedCarsList,
+        ),
+      );
+    });
+
+    on<CreateChargingStationEvent>((event, emit) {
+      final List<ChargingStationModel> updatedList = [
+        ...(state.chargingStations ?? []),
+        event.chargingStation,
+      ];
+
+      emit(
+        state.copyWith(
+          chargingStations: () => updatedList,
+        ),
+      );
+    });
+
+    // on<UpdateChargingStationEvent>((event, emit) async {
+    //   await updatePlateNumberCarUseCase.execute(
+    //     event.chargingStationId,
+    //   );
+    //
+    //   final List<ChargingStationModel> updatedCarsList =
+    //       (state.chargingStations ?? []).map((chargingStation) {
+    //         return chargingStation.id == event.carId
+    //             ? car.copyCarWith(plateNumber: event.plateNumber)
+    //             : car;
+    //       }).toList();
+    //
+    //   emit(
+    //     state.copyWith(
+    //       cars: () => updatedCarsList,
+    //     ),
+    //   );
+    // });
 
     on<OnboardingFilledChargingStationEvent>((event, emit) async {
       await updateUserChargingStationUseCase.execute(
         event.chargingStation,
       );
 
+      final List<ChargingStationModel> updateChargingStationsList = [
+        ...?state.chargingStations,
+        event.chargingStation,
+      ];
+
       emit(
         state.copyWith(
-          chargingStations: () => [event.chargingStation],
+          chargingStations: () => updateChargingStationsList,
         ),
       );
+    });
+
+    on<FetchUserChargingStationsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        final List<ChargingStationModel> chargingStations =
+            await fetchUserChargingStationsUseCase.execute();
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            chargingStations: () => chargingStations,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      }
     });
   }
 }

@@ -1,7 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 
-class OnboardingState {
+class OnboardingState extends Equatable {
+  final bool isLoading;
+  final String? errorMessage;
+
   final String? name;
   final String? phoneNumber;
   final String? nameError;
@@ -12,6 +16,8 @@ class OnboardingState {
   final List<ChargingStationModel>? chargingStations;
 
   OnboardingState({
+    this.isLoading = false,
+    this.errorMessage,
     this.name,
     this.phoneNumber,
     this.nameError,
@@ -23,6 +29,8 @@ class OnboardingState {
   });
 
   OnboardingState copyWith({
+    bool? isLoading,
+    String? errorMessage,
     String? Function()? name,
     String? Function()? phoneNumber,
     String? Function()? nameError,
@@ -33,6 +41,8 @@ class OnboardingState {
     List<ChargingStationModel>? Function()? chargingStations,
   }) {
     return OnboardingState(
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage ?? this.errorMessage,
       name: name != null ? name() : this.name,
       phoneNumber: phoneNumber != null ? phoneNumber() : this.phoneNumber,
       nameError: nameError != null ? nameError() : this.nameError,
@@ -49,9 +59,7 @@ class OnboardingState {
           : this.chargingStations,
     );
   }
-}
 
-// class Wrapper<T> {
-//   final T value;
-//   const Wrapper.value(this.value);
-// }
+  @override
+  List<Object?> get props => [cars, chargingStations, isLoading, errorMessage];
+}

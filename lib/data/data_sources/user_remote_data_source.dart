@@ -44,15 +44,48 @@ class UserRemoteDataSource {
     });
   }
 
-  Future<UserModel> displayCars() async {
+  Future<List<CarModel>> fetchCars() async {
     User? user = auth.currentUser;
 
-    DocumentSnapshot doc = await firestore
-        .collection("users")
-        .doc(user?.uid)
-        .get();
+    final doc = await firestore.collection("users").doc(user?.uid).get();
+    final data = doc.data();
+    final List<dynamic> carsJson = data?['cars'];
 
-    return UserModel.fromJson(doc.data() as Map<String, dynamic>);
+    return carsJson
+        .map((car) => CarModel.fromJson(car as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> updatePlateNumber(String carId, String plateNumber) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    List<dynamic> carsData = currentUserData.data()?['cars'] ?? [];
+    List<CarModel> carList = carsData
+        .map((json) => CarModel.fromJson(json))
+        .toList();
+
+    int index = carList.indexWhere((car) => car.id == carId);
+
+    if (index != -1) {
+      carList[index] = carList[index].copyCarWith(plateNumber: plateNumber);
+    }
+    await docRef.update({
+      'cars': carList.map((car) => car.toJson()).toList(),
+    });
+  }
+
+  Future<void> deleteCar(String carId) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> carsData = currentUserData.data()?['cars'] ?? [];
+
+    carsData.removeWhere((car) => car['id'] == carId);
+
+    await docRef.update({'cars': carsData});
   }
 
   Future<void> addChargingStation(ChargingStationModel chargingStation) async {
@@ -60,6 +93,22 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user?.uid).update({
       'charging_stations': FieldValue.arrayUnion([chargingStation.toJson()]),
     });
+  }
+
+  Future<List<ChargingStationModel>> fetchChargingStations() async {
+    User? user = auth.currentUser;
+
+    final doc = await firestore.collection("users").doc(user?.uid).get();
+    final data = doc.data();
+    final List<dynamic> chargingStationsJson = data?['charging_stations'];
+
+    return chargingStationsJson
+        .map(
+          (chargingStation) => ChargingStationModel.fromJson(
+            chargingStation as Map<String, dynamic>,
+          ),
+        )
+        .toList();
   }
 
   Future<void> deleteUser() async {

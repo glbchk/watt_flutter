@@ -1,7 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 
-abstract class OnboardingEvent {}
+abstract class OnboardingEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 class NameVerificationEvent extends OnboardingEvent {
   final String value;
@@ -33,11 +37,37 @@ class OnboardingFilledCarModelEvent extends OnboardingEvent {
   });
 }
 
-class ChargingStationSavePropertiesEvent extends OnboardingEvent {
+class FetchUserCarsEvent extends OnboardingEvent {}
+
+class UpdatePlateNumberCarEvent extends OnboardingEvent {
+  final String carId;
+  final String plateNumber;
+
+  UpdatePlateNumberCarEvent({
+    required this.carId,
+    required this.plateNumber,
+  });
+}
+
+class DeleteCarEvent extends OnboardingEvent {
+  final String carId;
+
+  DeleteCarEvent({
+    required this.carId,
+  });
+}
+
+class CreateChargingStationEvent extends OnboardingEvent {
   final ChargingStationModel chargingStation;
 
-  ChargingStationSavePropertiesEvent({
-    required this.chargingStation,
+  CreateChargingStationEvent(this.chargingStation);
+}
+
+class UpdateChargingStationEvent extends OnboardingEvent {
+  final String chargingStationId;
+
+  UpdateChargingStationEvent({
+    required this.chargingStationId,
   });
 }
 
@@ -48,3 +78,5 @@ class OnboardingFilledChargingStationEvent extends OnboardingEvent {
     required this.chargingStation,
   });
 }
+
+class FetchUserChargingStationsEvent extends OnboardingEvent {}

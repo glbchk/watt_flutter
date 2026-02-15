@@ -1,16 +1,16 @@
-class TimeslotModel {
+class TimeSlotModel {
   final List<String>? availableDays;
   final String? startTime;
   final String? endTime;
 
-  TimeslotModel({
+  TimeSlotModel({
     this.availableDays,
     this.startTime,
     this.endTime,
   });
 
-  factory TimeslotModel.fromJson(Map<String, dynamic> json) {
-    return TimeslotModel(
+  factory TimeSlotModel.fromJson(Map<String, dynamic> json) {
+    return TimeSlotModel(
       availableDays: json['available_days'],
       startTime: json['start_time'],
       endTime: json['end_time'],

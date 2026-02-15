@@ -9,6 +9,7 @@ class RowButton extends StatelessWidget {
   final IconData? icon;
   final Color? textColor;
   final Color? backgroundColor;
+  final bool? hideChevron;
 
   const RowButton({
     super.key,
@@ -19,6 +20,7 @@ class RowButton extends StatelessWidget {
     this.icon,
     this.backgroundColor,
     this.textColor,
+    this.hideChevron = true,
   });
 
   @override
@@ -60,10 +62,12 @@ class RowButton extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: greyAppColor,
-            ),
+            ?hideChevron == true
+                ? Icon(
+                    Icons.chevron_right,
+                    color: greyAppColor,
+                  )
+                : null,
             Divider(
               color: Colors.black,
             ),

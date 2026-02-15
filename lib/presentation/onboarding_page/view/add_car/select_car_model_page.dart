@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
@@ -9,11 +10,13 @@ import 'package:watt/presentation/onboarding_page/view/components/background_gra
 import 'package:watt/presentation/onboarding_page/view/components/short_header_onboarding.dart';
 
 class SelectCarModelPage extends StatefulWidget {
+  final String brandLogo;
   final String brandName;
   final String? dropdownValue;
 
   const SelectCarModelPage({
     super.key,
+    required this.brandLogo,
     required this.brandName,
     this.dropdownValue,
   });
@@ -107,6 +110,8 @@ class _SelectCarModelPageState extends State<SelectCarModelPage> {
                           context.read<OnboardingBloc>().add(
                             OnboardingFilledCarModelEvent(
                               car: CarModel(
+                                id: Uuid().v4(),
+                                brandLogo: widget.brandLogo,
                                 brandName: widget.brandName,
                                 carModel: _dropdownValue ?? '',
                                 plateNumber: plateController.text,

@@ -37,15 +37,33 @@ class UpdateUserCarUseCase extends UserUseCase {
   }
 }
 
-class DisplayUserCarsUseCase extends UserUseCase {
+class FetchUserCarsUseCase extends UserUseCase {
   Future execute() {
-    return userRepository.displayCars();
+    return userRepository.fetchCars();
+  }
+}
+
+class UpdatePlateNumberCarsUseCase extends UserUseCase {
+  Future execute(String carId, String plateNumber) {
+    return userRepository.updatePlateNumber(carId, plateNumber);
+  }
+}
+
+class DeleteCarUseCase extends UserUseCase {
+  Future execute(String carId) {
+    return userRepository.deleteCar(carId);
   }
 }
 
 class UpdateUserChargingStationUseCase extends UserUseCase {
   Future execute(ChargingStationModel chargingStation) {
-    return userRepository.addChargingStation(chargingStation);
+    return userRepository.updateChargingStation(chargingStation);
+  }
+}
+
+class FetchUserChargingStationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchChargingStations();
   }
 }
 

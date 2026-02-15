@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/select_car_model_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
+import 'package:watt/presentation/profile_page/sub_pages/profile_car_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
@@ -30,7 +32,7 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
     KCarNames.nissan,
   ];
 
-  List<String> onboardingIconsList = [
+  List<String> carLogosList = [
     KCarLogos.audi,
     KCarLogos.bmw,
     KCarLogos.tesla,
@@ -42,14 +44,16 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    context.read<OnboardingBloc>().add(FetchUserCarsEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
         final double marginSize = 10.0;
-
-        // if (state.cars != null) {
-        //   addedCars.add(state.cars ?? CarModel());
-        // }
 
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -79,10 +83,20 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                       if (state.cars != null && state.cars!.isNotEmpty) ...[
                         ...state.cars!.map((car) {
                           return TallCardButton(
-                            label: car.brandName ?? '',
-                            pngImage: onboardingIconsList[0],
+                            label: car.carModel ?? '',
+                            subLabel: car.plateNumber,
+                            pngImage: car.brandLogo,
                             marginDistance: marginSize,
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ProfileCarDetailsPage(
+                                    carId: car.id,
+                                  ),
+                                ),
+                              );
+                            },
                           );
                         }),
                         const SizedBox(height: 30.0),
@@ -106,13 +120,14 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                         (index) {
                           return TallCardButton(
                             label: carList.elementAt(index),
-                            pngImage: onboardingIconsList.elementAt(index),
+                            pngImage: carLogosList.elementAt(index),
                             marginDistance: marginSize,
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => SelectCarModelPage(
+                                    brandLogo: carLogosList.elementAt(index),
                                     brandName: carList.elementAt(index),
                                   ),
                                 ),

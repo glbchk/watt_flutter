@@ -17,11 +17,13 @@ List<String> plugList = [
 ];
 
 class DetailPlugPropertyWidget extends StatefulWidget {
-  final ValueChanged<String>? onSelected;
+  final String? selectedValue;
+  final ValueChanged<String> onSelected;
 
   const DetailPlugPropertyWidget({
     super.key,
-    this.onSelected,
+    this.selectedValue,
+    required this.onSelected,
   });
 
   @override
@@ -37,10 +39,8 @@ class _DetailPlugPropertyWidgetState extends State<DetailPlugPropertyWidget> {
     return TileSelectorWidget(
       prefixIcon: Icons.settings_input_hdmi_outlined,
       list: plugList,
-      selectedValue: selectedPlug,
-      onSelected: (value) {
-        setState(() => selectedPlug = value);
-      },
+      selectedValue: widget.selectedValue,
+      onSelected: widget.onSelected,
     );
   }
 }

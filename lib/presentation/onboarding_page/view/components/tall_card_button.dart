@@ -4,6 +4,7 @@ import 'package:watt/utils/colors.dart';
 
 class TallCardButton extends StatelessWidget {
   final String label;
+  final String? subLabel;
   final VoidCallback? onPressed;
   final String? svgImage;
   final String? pngImage;
@@ -15,6 +16,7 @@ class TallCardButton extends StatelessWidget {
   const TallCardButton({
     super.key,
     required this.label,
+    this.subLabel,
     this.onPressed,
     this.svgImage,
     this.pngImage,
@@ -88,13 +90,36 @@ class TallCardButton extends StatelessWidget {
                   ),
 
                   SizedBox(width: 10.0),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
+                  subLabel == null
+                      ? Text(
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            SizedBox(height: 2.0),
+                            Text(
+                              subLabel ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: greyAppColor,
+                              ),
+                            ),
+                          ],
+                        ),
                   Spacer(),
                   Icon(
                     Icons.chevron_right,

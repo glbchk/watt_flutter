@@ -37,6 +37,9 @@ class OnboardingPage extends StatelessWidget {
       builder: (context, state) {
         final double marginSize = 8.0;
 
+        final cars = state.cars ?? [];
+        final firstCar = cars.isNotEmpty ? cars.first : null;
+
         return Scaffold(
           // extendBodyBehindAppBar: true,
           // appBar: AppBar(
@@ -79,10 +82,9 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addCar,
-                        subLabel: createLabel(
-                          state.cars?[0].brandName,
-                          state.cars?[0].carModel,
-                        ),
+                        subLabel: firstCar != null
+                            ? createLabel(firstCar.brandName, firstCar.carModel)
+                            : '',
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
                         backgroundColor: state.isPhoneNumberValid ?? false

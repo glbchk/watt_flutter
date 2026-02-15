@@ -31,12 +31,6 @@ class DetailNamePropertyWidget extends StatefulWidget {
 
 class _DetailNamePropertyWidgetState extends State<DetailNamePropertyWidget> {
   @override
-  void dispose() {
-    widget.controllerName.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Form(
       child: Container(
