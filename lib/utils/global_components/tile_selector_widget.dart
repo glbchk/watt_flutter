@@ -21,6 +21,8 @@ class TileSelectorWidget extends StatelessWidget {
       color: Colors.white,
       padding: const EdgeInsets.all(20.0),
       child: ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: list.length,
         itemBuilder: (context, index) {
           final listValue = list[index];
@@ -42,26 +44,29 @@ class TileSelectorWidget extends StatelessWidget {
                             child: Icon(
                               prefixIcon,
                               size: 24,
-                              color: greyAppColor,
+                              color: context.theme.appColors.grey1,
                             ),
                           ),
                         Expanded(
                           child: Text(
                             listValue,
-                            style: TextStyle(color: wattBlackColor),
+                            style: TextStyle(
+                              color: context.theme.appColors.onSurface,
+                            ),
                           ),
                         ),
                         if (isSelected)
-                          const Icon(
+                          Icon(
                             Icons.check,
-                            color: Colors.blue,
+                            color: context.theme.appColors.primary,
+                            size: 24,
                           ),
                       ],
                     ),
                   ),
                   Divider(
                     height: 1,
-                    color: borderTFColor,
+                    color: context.theme.appColors.grey3,
                     indent: prefixIcon != null ? 36 : null,
                   ),
                 ],

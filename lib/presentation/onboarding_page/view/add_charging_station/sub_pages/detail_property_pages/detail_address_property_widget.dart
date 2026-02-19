@@ -42,7 +42,7 @@ class _DetailAddressPropertyWidgetState
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        color: Colors.white,
+        color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,7 +50,7 @@ class _DetailAddressPropertyWidgetState
             CustomTextField(
               controller: widget.controllerAddress,
               prefixIcon: Icons.search,
-              prefixIconColor: greyAppColor,
+              prefixIconColor: context.theme.appColors.grey1,
               label: 'Name',
               hint: "e.g. John's Amp",
             ),

@@ -41,14 +41,14 @@ class TallCardSelector extends StatelessWidget {
           height: 100.0,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.theme.appColors.background,
             borderRadius: BorderRadius.circular(15),
             border: isSelected
-                ? Border.all(color: Colors.blue, width: 2)
+                ? Border.all(color: context.theme.appColors.primary, width: 2)
                 : Border.all(color: Colors.transparent),
             boxShadow: [
               BoxShadow(
-                color: wattColorScheme.onSecondary.withAlpha(38),
+                color: context.theme.appColors.onSecondary.withAlpha(38),
                 spreadRadius: 0,
                 blurRadius: 15,
                 offset: Offset(0, 4),
@@ -66,13 +66,13 @@ class TallCardSelector extends StatelessWidget {
                       ? Container(
                           height: 60.0,
                           width: 60.0,
-                          color: lightGreyColor,
+                          color: context.theme.appColors.grey4,
                           child: Container(
                             margin: EdgeInsets.all(marginDistance ?? 0),
                             child: SvgPicture.asset(
                               svgImage ?? '',
                               colorFilter: ColorFilter.mode(
-                                iconColor ?? greyAppColor,
+                                iconColor ?? context.theme.appColors.grey1,
                                 BlendMode.srcIn,
                               ),
                             ),
@@ -81,7 +81,7 @@ class TallCardSelector extends StatelessWidget {
                       : Container(
                           height: 60.0,
                           width: 60.0,
-                          color: lightGreyColor,
+                          color: context.theme.appColors.grey4,
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Image.asset(

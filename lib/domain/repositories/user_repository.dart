@@ -12,7 +12,7 @@ abstract class UserRepository {
   Future<List<CarModel>> fetchCars();
   Future<void> updatePlateNumber(String carId, String plateNumber);
   Future<void> deleteCar(String carId);
-  Future<void> updateChargingStation(ChargingStationModel chargingStation);
+  Future<void> addChargingStation(ChargingStationModel chargingStation);
   Future<List<ChargingStationModel>> fetchChargingStations();
   Future<void> deleteUser();
 

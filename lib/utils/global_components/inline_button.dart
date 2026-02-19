@@ -3,20 +3,14 @@ import 'package:watt/utils/colors.dart';
 
 class InlineButton extends StatelessWidget {
   final String label;
-  final String? secondLabel;
   final VoidCallback? onPressed;
   final IconData? icon;
-  final Color? textColor;
-  final Color? backgroundColor;
 
   const InlineButton({
     super.key,
     required this.label,
-    this.secondLabel,
     this.onPressed,
     this.icon,
-    this.backgroundColor,
-    this.textColor,
   });
 
   @override
@@ -26,7 +20,7 @@ class InlineButton extends StatelessWidget {
         onPressed?.call();
       },
       child: Container(
-        color: backgroundColor ?? Colors.transparent,
+        color: context.theme.appColors.background,
         width: double.infinity,
         height: 60,
         child: Row(
@@ -35,11 +29,11 @@ class InlineButton extends StatelessWidget {
               child: Container(
                 width: 40,
                 height: 40,
-                color: wattColorScheme.surface,
+                color: context.theme.appColors.grey4,
                 child: Icon(
                   icon,
                   size: 24,
-                  color: wattColorScheme.primary,
+                  color: context.theme.appColors.primary,
                 ),
               ),
             ),
@@ -51,7 +45,7 @@ class InlineButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: textColor ?? wattBlackColor,
+                color: context.theme.appColors.onSurface,
               ),
             ),
             Spacer(),

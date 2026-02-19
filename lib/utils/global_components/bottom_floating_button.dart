@@ -26,7 +26,7 @@ class BottomFloatingButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: wattColorScheme.onSecondary.withAlpha(38),
+              color: context.theme.appColors.onSecondary.withAlpha(38),
               spreadRadius: 0,
               blurRadius: 15,
               offset: Offset(0, 4),
@@ -39,14 +39,14 @@ class BottomFloatingButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: context.theme.appColors.background,
           ),
           child: Text(
             label,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18.0,
-              color: wattBlackColor,
+              color: context.theme.appColors.onSurface,
             ),
           ),
         ),

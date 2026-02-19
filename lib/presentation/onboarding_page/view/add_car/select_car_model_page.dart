@@ -5,20 +5,18 @@ import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_car/components/select_car_model_form_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
-import 'package:watt/presentation/onboarding_page/view/components/short_header_onboarding.dart';
+import 'package:watt/presentation/onboarding_page/view/add_car/components/select_car_model_widget.dart';
+import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
 
 class SelectCarModelPage extends StatefulWidget {
   final String brandLogo;
   final String brandName;
-  final String? dropdownValue;
 
   const SelectCarModelPage({
     super.key,
     required this.brandLogo,
     required this.brandName,
-    this.dropdownValue,
   });
 
   @override
@@ -31,12 +29,6 @@ class _SelectCarModelPageState extends State<SelectCarModelPage> {
   String? _dropdownValue;
 
   @override
-  void initState() {
-    super.initState();
-    _dropdownValue = widget.dropdownValue;
-  }
-
-  @override
   void dispose() {
     plateController.dispose();
     super.dispose();
@@ -44,88 +36,37 @@ class _SelectCarModelPageState extends State<SelectCarModelPage> {
 
   @override
   Widget build(BuildContext context) {
-    // String? errorNameText;
-    // String? errorPhoneNumberText;
-
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
-      listener: (context, state) {
-        // if (state is NameValidState) {
-        //   errorNameText = state.value;
-        //   NameValidState(state.value, state.isNameValid);
-        // }
-        // if (state is PhoneNumberValidState) {
-        //   errorPhoneNumberText = state.value;
-        //   PhoneNumberValidState(state.value, state.isPhoneNumberValid);
-        // }
-        // if (state is ToggleNamePhoneNumberState) {
-        //   Navigator.pop(context);
-        //   ToggleNamePhoneNumberState(state.isNamePhoneNumberChanged);
-        // }
-      },
-
+    return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(70.0),
-              child: ShortHeaderOnboarding(
-                mainTitle: widget.brandName,
-              ),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                BackgroundGradient(
-                  bgHeight: 0.28,
-                ),
-                Transform.translate(
-                  offset: Offset(0, -30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.0),
-                        topRight: Radius.circular(30.0),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: SelectCarModelFormWidget(
-                        controllerPlateNumber: plateController,
-                        label: 'Model',
-                        selectedValue: _dropdownValue,
-                        listItems: items,
-                        onDropdownChanged: (String? newValue) {
-                          setState(() {
-                            _dropdownValue = newValue ?? '';
-                          });
-                        },
-                        saveLabel: 'Save',
-                        onSavePressed: () {
-                          context.read<OnboardingBloc>().add(
-                            OnboardingFilledCarModelEvent(
-                              car: CarModel(
-                                id: Uuid().v4(),
-                                brandLogo: widget.brandLogo,
-                                brandName: widget.brandName,
-                                carModel: _dropdownValue ?? '',
-                                plateNumber: plateController.text,
-                              ),
-                            ),
-                          );
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
+        return DefaultAppBar(
+          resizeToAvoidBottomInset: true,
+          extendBodyBehindAppBar: false,
+          title: widget.brandName,
+          titleColor: context.theme.appColors.onPrimary,
+          scaffoldBackgroundColor: context.theme.appColors.primary,
+          body: SelectCarModelWidget(
+            controllerPlateNumber: plateController,
+            listItems: items,
+            selectedValue: _dropdownValue,
+            onDropdownChanged: (String? newValue) {
+              setState(() {
+                _dropdownValue = newValue ?? '';
+              });
+            },
+            onSavePressed: () {
+              context.read<OnboardingBloc>().add(
+                OnboardingFilledCarModelEvent(
+                  car: CarModel(
+                    id: Uuid().v4(),
+                    brandLogo: widget.brandLogo,
+                    brandName: widget.brandName,
+                    carModel: _dropdownValue ?? '',
+                    plateNumber: plateController.text,
                   ),
                 ),
-              ],
-            ),
+              );
+              Navigator.pop(context);
+            },
           ),
         );
       },

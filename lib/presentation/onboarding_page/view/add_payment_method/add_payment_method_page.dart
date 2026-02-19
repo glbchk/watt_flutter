@@ -33,7 +33,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
           ),
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: context.theme.appColors.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -47,7 +47,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                   TallCardButton(
                     label: 'Credit Card',
                     svgImage: KCardIcons.paymentMethod,
-                    iconColor: wattColorScheme.primary,
+                    iconColor: context.theme.appColors.primary,
                     marginDistance: marginSize,
                     onPressed: () {
                       Navigator.push(
@@ -61,7 +61,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                   TallCardButton(
                     label: 'IBAN',
                     svgImage: KCardIcons.paymentMethod,
-                    iconColor: wattColorScheme.primary,
+                    iconColor: context.theme.appColors.primary,
                     marginDistance: marginSize,
                     onPressed: () {},
                   ),

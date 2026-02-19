@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/car_model.dart';
-import 'package:watt/data/models/charging_station_model.dart';
 
 abstract class OnboardingEvent extends Equatable {
   @override
@@ -54,28 +53,6 @@ class DeleteCarEvent extends OnboardingEvent {
 
   DeleteCarEvent({
     required this.carId,
-  });
-}
-
-class CreateChargingStationEvent extends OnboardingEvent {
-  final ChargingStationModel chargingStation;
-
-  CreateChargingStationEvent(this.chargingStation);
-}
-
-class UpdateChargingStationEvent extends OnboardingEvent {
-  final String chargingStationId;
-
-  UpdateChargingStationEvent({
-    required this.chargingStationId,
-  });
-}
-
-class OnboardingFilledChargingStationEvent extends OnboardingEvent {
-  final ChargingStationModel chargingStation;
-
-  OnboardingFilledChargingStationEvent({
-    required this.chargingStation,
   });
 }
 

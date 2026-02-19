@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/data/models/charging_station_model.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
+import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_address_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_available_hours_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_bank_account_property_widget.dart';
@@ -13,6 +13,7 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_plug_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_price_property_widget.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
 enum DetailPageProperties {
@@ -50,6 +51,7 @@ class _DetailsPageState extends State<DetailsPage> {
   String? tempSelectedBrand;
   String? selectedChargingEffect;
   String? selectedPlugType;
+  TimeSlotModel? availableHours;
 
   @override
   void dispose() {
@@ -74,128 +76,112 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingBloc, OnboardingState>(
+    return BlocBuilder<ChargingStationBloc, ChargingStationState>(
       builder: (context, state) {
-        final chargingStations = state.chargingStations;
-        final chargingStation =
-            chargingStations!
-                .where(
-                  (chargingStation) =>
-                      chargingStation.id == widget.chargingStationId,
-                )
-                .isNotEmpty
-            ? chargingStations.firstWhere(
-                (chargingStation) =>
-                    chargingStation.id == widget.chargingStationId,
-              )
-            : null;
+        return DefaultAppBar(
+          resizeToAvoidBottomInset: true,
+          extendBodyBehindAppBar: false,
+          title: titleSelector(),
+          foregroundColor: context.theme.appColors.onSurface,
+          appBarBackgroundColor: context.theme.appColors.surface,
 
-        tempSelectedBrand = chargingStation?.brandName;
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: _buildPropertyWidget(),
+                  ),
+                ),
 
-        return Scaffold(
-          extendBody: true,
-          appBar: AppBar(
-            title: Text(
-              titleSelector(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            foregroundColor: Colors.black,
-            backgroundColor: wattColorScheme.surface,
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              return switch (widget.property) {
-                DetailPageProperties.chargingStationName =>
-                  DetailNamePropertyWidget(
-                    controllerName: controllerName,
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20.0,
+                    top: 20.0,
+                    right: 20.0,
+                    bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                        ? 12
+                        : 34,
                   ),
-                DetailPageProperties.address => DetailAddressPropertyWidget(
-                  controllerAddress: controllerAddress,
-                ),
-                DetailPageProperties.brandName => DetailBrandPropertyWidget(
-                  selectedBrand: tempSelectedBrand ?? 'Other',
-                  onPressed: (newBrand) {
-                    setState(() {
-                      if (newBrand.isNotEmpty) {
-                        tempSelectedBrand = newBrand;
-                      } else {
-                        tempSelectedBrand = chargingStation?.brandName;
-                      }
-                    });
-                  },
-                ),
-                DetailPageProperties.chargingEffect =>
-                  DetailChargingEffectPropertyWidget(
-                    selectedValue: selectedChargingEffect,
-                    onSelected: (String value) {
-                      setState(() {
-                        selectedChargingEffect = value;
-                      });
-                    },
-                  ),
-                DetailPageProperties.plug => DetailPlugPropertyWidget(
-                  selectedValue: selectedChargingEffect,
-                  onSelected: (String value) {
-                    setState(() {
-                      selectedPlugType = value;
-                    });
-                  },
-                ),
-                DetailPageProperties.pricePerKwh => DetailPricePropertyWidget(
-                  controllerPrice: controllerPrice,
-                ),
-                DetailPageProperties.bankAccount =>
-                  DetailBankAccountPropertyWidget(
-                    onPress: () {},
-                  ),
-                DetailPageProperties.availableHours =>
-                  DetailAvailableHoursPropertyWidget(
-                    onPress: () {},
-                  ),
-              };
-            },
-          ),
-          bottomNavigationBar: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              top: 20.0,
-              right: 20.0,
-              bottom: 34.0,
-            ),
-            child:
-                (state.isNameValid ?? false) ||
-                    (state.isPhoneNumberValid ?? false)
-                ? const SizedBox()
-                : WattMainButton(
+                  child: WattMainButton(
                     label: 'Save',
                     onPressed: () {
-                      final chargingStationToSave = ChargingStationModel(
-                        id: chargingStation?.id ?? '',
-                        chargingStationName: controllerName.text,
-                        address: controllerAddress.text,
-                        brandName: tempSelectedBrand ?? 'Other',
-                        chargingEffect: selectedChargingEffect,
-                        plug: selectedPlugType,
-                        pricePerKwh: controllerPrice.text,
-                        // iban: bankAccount,
-                        // onlineCharger: isOnlineCharger,
-                        // availableHours: availableHours,
-                        // everyoneCanAccess: isEveryoneCanAccess,
-                      );
-                      context.read<OnboardingBloc>().add(
-                        CreateChargingStationEvent(chargingStationToSave),
+                      context.read<ChargingStationBloc>().add(
+                        UpdateChargingStationPropertyEvent(
+                          widget.property,
+                          _getCorrectValue(widget.property),
+                        ),
                       );
 
-                      Future.microtask(() => Navigator.pop(context));
+                      Navigator.pop(context);
                     },
                   ),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
+  }
+
+  Widget _buildPropertyWidget() {
+    return switch (widget.property) {
+      DetailPageProperties.chargingStationName => DetailNamePropertyWidget(
+        controllerName: controllerName,
+      ),
+      DetailPageProperties.address => DetailAddressPropertyWidget(
+        controllerAddress: controllerAddress,
+      ),
+      DetailPageProperties.brandName => DetailBrandPropertyWidget(
+        selectedBrand: tempSelectedBrand ?? 'Other',
+        onPressed: (newBrand) {
+          setState(() {
+            if (newBrand.isNotEmpty) {
+              tempSelectedBrand = newBrand;
+            } else {
+              tempSelectedBrand = widget.brandName;
+            }
+          });
+        },
+      ),
+      DetailPageProperties.chargingEffect => DetailChargingEffectPropertyWidget(
+        selectedValue: selectedChargingEffect,
+        onSelected: (String value) {
+          setState(() {
+            selectedChargingEffect = value;
+          });
+        },
+      ),
+      DetailPageProperties.plug => DetailPlugPropertyWidget(
+        selectedValue: selectedPlugType,
+        onSelected: (String value) {
+          setState(() {
+            selectedPlugType = value;
+          });
+        },
+      ),
+      DetailPageProperties.pricePerKwh => DetailPricePropertyWidget(
+        controllerPrice: controllerPrice,
+      ),
+      DetailPageProperties.bankAccount => DetailBankAccountPropertyWidget(
+        onPress: () {},
+      ),
+      DetailPageProperties.availableHours => DetailAvailableHoursPropertyWidget(
+        onPress: () {},
+      ),
+    };
+  }
+
+  String _getCorrectValue(DetailPageProperties property) {
+    return switch (property) {
+      DetailPageProperties.chargingStationName => controllerName.text,
+      DetailPageProperties.address => controllerAddress.text,
+      DetailPageProperties.brandName => tempSelectedBrand ?? '',
+      DetailPageProperties.chargingEffect => selectedChargingEffect ?? '',
+      DetailPageProperties.plug => selectedPlugType ?? '',
+      DetailPageProperties.pricePerKwh => controllerPrice.text,
+      _ => "",
+    };
   }
 }

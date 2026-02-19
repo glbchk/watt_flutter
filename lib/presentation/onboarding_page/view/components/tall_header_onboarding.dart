@@ -4,12 +4,13 @@ import 'package:watt/utils/colors.dart';
 class TallHeaderOnboarding extends StatefulWidget {
   final String title;
   final String label;
-  final LinearGradient backgroundColor = wattGradient;
+  final LinearGradient? backgroundColor;
 
   const TallHeaderOnboarding({
     super.key,
     required this.label,
     required this.title,
+    this.backgroundColor,
   });
 
   @override
@@ -19,14 +20,12 @@ class TallHeaderOnboarding extends StatefulWidget {
 class _TallHeaderOnboardingState extends State<TallHeaderOnboarding> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.32,
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: widget.backgroundColor,
+        gradient: widget.backgroundColor ?? wattGradient,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -43,7 +42,7 @@ class _TallHeaderOnboardingState extends State<TallHeaderOnboarding> {
             textAlign: TextAlign.center,
             widget.title,
             style: TextStyle(
-              color: theme.colorScheme.onPrimaryContainer,
+              color: context.theme.appColors.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 22,
             ),
@@ -54,7 +53,7 @@ class _TallHeaderOnboardingState extends State<TallHeaderOnboarding> {
             widget.label,
             // softWrap: true,
             style: TextStyle(
-              color: theme.colorScheme.onPrimaryContainer,
+              color: context.theme.appColors.onPrimary,
               fontWeight: FontWeight.normal,
               fontSize: 15,
             ),

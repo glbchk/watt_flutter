@@ -1,145 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/profile_page/sub_pages/property_pages/plate_number_car_details_page.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_components/watt_white_button.dart';
 
-class ProfileCarDetailsPage extends StatefulWidget {
-  final String carId;
+class ProfileCarDetailsPage extends StatelessWidget {
+  final CarModel car;
 
   const ProfileCarDetailsPage({
     super.key,
-    required this.carId,
+    required this.car,
   });
 
   @override
-  State<ProfileCarDetailsPage> createState() => _ProfileCarDetailsPageState();
-}
-
-class _ProfileCarDetailsPageState extends State<ProfileCarDetailsPage> {
-  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingBloc, OnboardingState>(
-      builder: (context, state) {
-        final cars = state.cars ?? [];
-        final car = cars.where((car) => car.id == widget.carId).isNotEmpty
-            ? cars.firstWhere((car) => car.id == widget.carId)
-            : null;
+    const List<String> carDetailsLabels = ['Name', 'Brand', 'Model', 'Plate'];
+    final List<String> carDetailsSecondLabels = [
+      "${car.brandName}, ${car.carModel}",
+      ?car.brandName,
+      ?car.carModel,
+      ?car.plateNumber,
+    ];
 
-        return Scaffold(
-          extendBody: true,
-          appBar: AppBar(
-            title: Text(
-              'Charger station details',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          backgroundColor: wattColorScheme.primary,
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight,
-                  ),
-                  child: IntrinsicHeight(
+    return DefaultAppBar(
+      resizeToAvoidBottomInset: false,
+      extendBodyBehindAppBar: false,
+      title: 'Charger station details',
+      titleColor: context.theme.appColors.onPrimary,
+      foregroundColor: context.theme.appColors.onPrimary,
+      appBarBackgroundColor: context.theme.appColors.primary,
+      scaffoldBackgroundColor: context.theme.appColors.background,
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: context.theme.appColors.background,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(30.0),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            height: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(30.0),
-                                topRight: Radius.circular(30.0),
+                        ...List.generate(
+                          carDetailsLabels.length,
+                          (index) {
+                            return RowButton(
+                              label: carDetailsLabels.elementAt(index),
+                              secondLabel: carDetailsSecondLabels.elementAt(
+                                index,
                               ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  RowButton(
-                                    label: 'Name',
-                                    secondLabel:
-                                        "${car?.brandName}, ${car?.carModel}",
-                                    onPressed: () {},
-                                    hideChevron: false,
-                                  ),
-                                  RowButton(
-                                    label: 'Brand',
-                                    secondLabel: car?.brandName,
-                                    onPressed: () {},
-                                    hideChevron: false,
-                                  ),
-                                  RowButton(
-                                    label: 'Model',
-                                    secondLabel: car?.carModel,
-                                    onPressed: () {},
-                                    hideChevron: false,
-                                  ),
-                                  RowButton(
-                                    label: 'Plate',
-                                    secondLabel: car?.plateNumber,
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              PlateNumberCarDetailsPage(
-                                                controllerPlateNumber:
-                                                    TextEditingController(
-                                                      text: car?.plateNumber,
-                                                    ),
-                                                carID: widget.carId,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                              hideChevron:
+                                  carDetailsLabels.elementAt(index) == 'Plate'
+                                  ? true
+                                  : false,
+                              onPressed: () =>
+                                  carDetailsLabels.elementAt(index) == 'Plate'
+                                  ? _navigateToPlateEdit(context)
+                                  : null,
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-          bottomNavigationBar: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.only(
-              left: 20.0,
-              top: 20.0,
-              right: 20.0,
-              bottom: 34.0,
+                  const Spacer(),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20.0,
+                        top: 20.0,
+                        right: 20.0,
+                        bottom: 10.0,
+                      ),
+                      child: WattWhiteButton(
+                        textColor: context.theme.appColors.error,
+                        label: 'Delete car',
+                        onPressed: () {
+                          context.read<OnboardingBloc>().add(
+                            DeleteCarEvent(carId: car.id),
+                          );
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: WattMainButton(
-              backgroundColor: Colors.white,
-              textColor: wattColorScheme.error,
-              label: 'Delete car',
-              onPressed: () {
-                context.read<OnboardingBloc>().add(
-                  DeleteCarEvent(carId: car?.id ?? ''),
-                );
-                Navigator.pop(context);
-              },
-            ),
           ),
-        );
-      },
+        ],
+      ),
+    );
+  }
+
+  void _navigateToPlateEdit(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PlateNumberCarDetailsPage(
+          initialPlateNumber: car.plateNumber,
+          onPressed: (plateNumber) {
+            context.read<OnboardingBloc>().add(
+              UpdatePlateNumberCarEvent(
+                carId: car.id,
+                plateNumber: plateNumber,
+              ),
+            );
+            Navigator.pop(context);
+          },
+        ),
+      ),
     );
   }
 }

@@ -3,11 +3,12 @@ import 'package:watt/utils/colors.dart';
 
 class HeaderAuth extends StatefulWidget {
   final String title;
-  final LinearGradient backgroundColor = wattGradient;
+  final LinearGradient? backgroundColor;
 
   const HeaderAuth({
     super.key,
     required this.title,
+    this.backgroundColor,
   });
 
   @override
@@ -17,14 +18,12 @@ class HeaderAuth extends StatefulWidget {
 class _HeaderAuthState extends State<HeaderAuth> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.25,
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: widget.backgroundColor,
+        gradient: widget.backgroundColor ?? wattGradient,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +40,7 @@ class _HeaderAuthState extends State<HeaderAuth> {
             textAlign: TextAlign.center,
             widget.title,
             style: TextStyle(
-              color: theme.colorScheme.onPrimaryContainer,
+              color: context.theme.appColors.onPrimary,
               fontWeight: FontWeight.bold,
               fontSize: 22,
             ),

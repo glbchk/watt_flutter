@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/rich_text_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_text_button.dart';
@@ -39,7 +40,7 @@ class ButtonsSectionWidget extends StatelessWidget {
             WattTextButton(
               callback: forgotPasswordCallback,
               label: 'Forgot password?',
-              isRegister: isRegisterMode,
+              withUnderline: true,
             ),
             SizedBox(height: 20.0),
           ] else ...[
@@ -55,7 +56,7 @@ class ButtonsSectionWidget extends StatelessWidget {
             },
             label: !isRegisterMode ? 'Sign in' : 'Sign up',
             isLoading: isLoading,
-            textColor: Colors.white,
+            textColor: context.theme.appColors.onPrimary,
           ),
           SizedBox(height: 20.0),
           Row(
@@ -65,9 +66,12 @@ class ButtonsSectionWidget extends StatelessWidget {
                 !isRegisterMode
                     ? "Don't have an account?"
                     : 'Already have an account?',
+                style: TextStyle(
+                  fontSize: 15,
+                ),
               ),
-              TextButton(
-                onPressed: () {
+              WattTextButton(
+                callback: () {
                   print(
                     'call ChangeAuthModeEvent isRegisterMode: ${!isRegisterMode}',
                   );
@@ -75,9 +79,7 @@ class ButtonsSectionWidget extends StatelessWidget {
                     ChangeAuthModeEvent(isRegisterMode: !isRegisterMode),
                   );
                 },
-                child: Text(
-                  isRegisterMode ? 'Sign in' : 'Sign up',
-                ),
+                label: isRegisterMode ? 'Sign in' : 'Sign up',
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watt/utils/colors.dart';
 
 class RichTextWidget extends StatelessWidget {
   final VoidCallback callback;
@@ -11,9 +12,9 @@ class RichTextWidget extends StatelessWidget {
       children: [
         Text(
           'By creating an account you accept ',
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 14,
+          style: TextStyle(
+            color: context.theme.appColors.grey1,
+            fontSize: 15,
           ),
         ),
         GestureDetector(
@@ -21,10 +22,11 @@ class RichTextWidget extends StatelessWidget {
           child: Text(
             'Terms & Conditions',
             style: TextStyle(
-              color: Colors.blue,
+              color: context.theme.appColors.primary,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.underline,
-              decorationColor: Colors.blue,
+              decorationColor: context.theme.appColors.primary,
             ),
           ),
         ),

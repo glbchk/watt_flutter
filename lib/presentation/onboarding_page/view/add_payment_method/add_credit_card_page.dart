@@ -64,7 +64,7 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: context.theme.appColors.background,
               ),
             ),
             // backgroundColor: wattColorScheme.primary,
@@ -76,13 +76,13 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
             //   ),
             // ),
           ),
-          backgroundColor: wattColorScheme.primary,
+          backgroundColor: context.theme.appColors.primary,
           body: Container(
             // constraints: BoxConstraints(
             //   minHeight: MediaQuery.of(context).size.height,
             // ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.theme.appColors.background,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15.0),
                 topRight: Radius.circular(15.0),

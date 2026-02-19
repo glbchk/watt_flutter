@@ -32,7 +32,7 @@ class DetailPlugPropertyWidget extends StatefulWidget {
 }
 
 class _DetailPlugPropertyWidgetState extends State<DetailPlugPropertyWidget> {
-  String? selectedPlug;
+  // String? selectedPlug;
 
   @override
   Widget build(BuildContext context) {

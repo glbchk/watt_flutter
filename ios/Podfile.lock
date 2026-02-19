@@ -1452,7 +1452,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: f57ed48f4542b2d7eb4738f4f23ba443f78b3780
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
-  google_maps_flutter_ios: 3213e1e5f5588b6134935cb8fc59acb4e6d88377
+  google_maps_flutter_ios: 0cf046caf50b00d95071f79e8031fcd5ef902beb
   GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   "gRPC-C++": cc207623316fb041a7a3e774c252cf68a058b9e8

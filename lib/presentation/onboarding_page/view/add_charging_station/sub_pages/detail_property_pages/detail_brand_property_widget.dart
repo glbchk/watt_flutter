@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/add_charging_station_page.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/tall_card_selector.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 
 List<String> chargingEffectList = [
@@ -37,7 +38,7 @@ class _DetailBrandPropertyWidgetState extends State<DetailBrandPropertyWidget> {
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        color: Colors.white,
+        color: context.theme.appColors.background,
         padding: const EdgeInsets.only(top: 20.0),
         child: Column(
           children: [

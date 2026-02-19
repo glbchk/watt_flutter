@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class WattMainButton extends StatelessWidget {
+class WattWhiteButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool? isLoading;
   final IconData? icon;
   final Color? textColor;
 
-  const WattMainButton({
+  const WattWhiteButton({
     super.key,
     required this.label,
     this.onPressed,
@@ -26,7 +26,7 @@ class WattMainButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: context.theme.appColors.primary.withAlpha(76),
+            color: context.theme.appColors.onSecondary.withAlpha(38),
             spreadRadius: 0,
             blurRadius: 8,
             offset: Offset(0, 2),
@@ -39,12 +39,12 @@ class WattMainButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: context.theme.appColors.onPrimary,
+            color: textColor ?? context.theme.appColors.onSurface,
           ),
         ),
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: context.theme.appColors.primary,
+          backgroundColor: context.theme.appColors.background,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

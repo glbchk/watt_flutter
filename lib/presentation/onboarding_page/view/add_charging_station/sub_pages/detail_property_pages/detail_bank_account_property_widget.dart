@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/constants.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_components/watt_white_button.dart';
 
 import '../../../../../../utils/colors.dart';
 
@@ -37,7 +37,7 @@ class _DetailBankAccountPropertyWidgetState
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        color: Colors.white,
+        color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,10 +49,9 @@ class _DetailBankAccountPropertyWidgetState
             SizedBox(
               height: 20.0,
             ),
-            WattMainButton(
+            WattWhiteButton(
               label: 'Add IBAN',
-              backgroundColor: Colors.white,
-              textColor: wattBlackColor,
+              textColor: context.theme.appColors.onSurface,
               onPressed: widget.onPress,
             ),
           ],

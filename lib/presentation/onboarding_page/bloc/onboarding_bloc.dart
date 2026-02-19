@@ -14,8 +14,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdatePlateNumberCarsUseCase updatePlateNumberCarUseCase =
       UpdatePlateNumberCarsUseCase();
   final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
-  final UpdateUserChargingStationUseCase updateUserChargingStationUseCase =
-      UpdateUserChargingStationUseCase();
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
 
@@ -135,55 +133,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           cars: () => updatedCarsList,
-        ),
-      );
-    });
-
-    on<CreateChargingStationEvent>((event, emit) {
-      final List<ChargingStationModel> updatedList = [
-        ...(state.chargingStations ?? []),
-        event.chargingStation,
-      ];
-
-      emit(
-        state.copyWith(
-          chargingStations: () => updatedList,
-        ),
-      );
-    });
-
-    // on<UpdateChargingStationEvent>((event, emit) async {
-    //   await updatePlateNumberCarUseCase.execute(
-    //     event.chargingStationId,
-    //   );
-    //
-    //   final List<ChargingStationModel> updatedCarsList =
-    //       (state.chargingStations ?? []).map((chargingStation) {
-    //         return chargingStation.id == event.carId
-    //             ? car.copyCarWith(plateNumber: event.plateNumber)
-    //             : car;
-    //       }).toList();
-    //
-    //   emit(
-    //     state.copyWith(
-    //       cars: () => updatedCarsList,
-    //     ),
-    //   );
-    // });
-
-    on<OnboardingFilledChargingStationEvent>((event, emit) async {
-      await updateUserChargingStationUseCase.execute(
-        event.chargingStation,
-      );
-
-      final List<ChargingStationModel> updateChargingStationsList = [
-        ...?state.chargingStations,
-        event.chargingStation,
-      ];
-
-      emit(
-        state.copyWith(
-          chargingStations: () => updateChargingStationsList,
         ),
       );
     });

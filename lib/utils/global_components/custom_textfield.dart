@@ -16,8 +16,8 @@ class CustomTextField extends StatefulWidget {
   final bool isPassword;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
-  final String? Function(String?)? validator;
   final Function(String?)? onChanged;
+  final TextCapitalization? textCapitalization;
 
   const CustomTextField({
     super.key,
@@ -32,8 +32,8 @@ class CustomTextField extends StatefulWidget {
     this.isPassword = false,
     this.keyboardType,
     this.inputFormatters,
-    this.validator,
     this.onChanged,
+    this.textCapitalization,
   });
 
   @override
@@ -43,10 +43,9 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     Timer? debounce;
 
-    void _onSearchChanged(String? value) {
+    void onSearchChanged(String? value) {
       if (debounce?.isActive ?? false) debounce!.cancel();
       debounce = Timer(const Duration(milliseconds: 500), () {
         widget.onChanged?.call(value);
@@ -58,7 +57,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.label.toUpperCase(),
-          style: TextStyle(fontWeight: FontWeight.bold, color: greyAppColor),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: context.theme.appColors.grey1,
+          ),
         ),
         SizedBox(height: 8.0),
         TextFormField(
@@ -66,16 +68,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.isPassword,
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
-          validator: widget.validator,
-          style: TextStyle(color: Colors.black),
-          onChanged: _onSearchChanged,
+          style: TextStyle(color: context.theme.appColors.onSurface),
+          textCapitalization:
+              widget.textCapitalization ?? TextCapitalization.none,
+          onChanged: onSearchChanged,
           decoration: InputDecoration(
             errorStyle: TextStyle(
-              color: theme.colorScheme.error,
+              color: context.theme.appColors.error,
               fontSize: 12,
             ),
             hintText: widget.hint,
-            hintStyle: TextStyle(color: hintTextColor),
+            hintStyle: TextStyle(color: context.theme.appColors.grey2),
+
             errorText: widget.error,
             prefixIcon: widget.prefixIcon != null
                 ? IconButton(
@@ -98,29 +102,35 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   )
                 : null,
             filled: true,
-            fillColor: wattColorScheme.surface,
+            fillColor: context.theme.appColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: borderTFColor),
+              borderSide: BorderSide(color: context.theme.appColors.grey3),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
-                color: theme.colorScheme.primary,
+                color: context.theme.appColors.primary,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: theme.colorScheme.error, width: 1),
+              borderSide: BorderSide(
+                color: context.theme.appColors.error,
+                width: 1,
+              ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: theme.colorScheme.error, width: 2),
+              borderSide: BorderSide(
+                color: context.theme.appColors.error,
+                width: 2,
+              ),
             ),
           ),
         ),

@@ -38,9 +38,9 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
             CustomTextField(
               controller: TextEditingController(),
               prefixIcon: Icons.credit_card,
-              prefixIconColor: wattColorScheme.primary,
+              prefixIconColor: context.theme.appColors.primary,
               suffixIcon: Icons.center_focus_weak,
-              suffixIconColor: greyAppColor,
+              suffixIconColor: context.theme.appColors.grey1,
               label: 'Card Number',
               hint: '0000 0000 0000 0000',
               error: widget.errorPlateNumber,
@@ -63,7 +63,7 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
                   child: CustomTextField(
                     controller: TextEditingController(),
                     suffixIcon: Icons.visibility,
-                    suffixIconColor: greyAppColor,
+                    suffixIconColor: context.theme.appColors.grey1,
                     label: 'CVV',
                     hint: '• • •',
                     error: widget.errorPlateNumber,
@@ -78,7 +78,10 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
               children: [
                 Text(
                   'Default payment method',
-                  style: TextStyle(color: wattBlackColor, fontSize: 15),
+                  style: TextStyle(
+                    color: context.theme.appColors.onSurface,
+                    fontSize: 15,
+                  ),
                 ),
                 ConstrainedBox(
                   constraints: const BoxConstraints(
@@ -91,17 +94,17 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
                       states,
                     ) {
                       if (states.contains(WidgetState.selected)) {
-                        return Colors.white;
+                        return context.theme.appColors.background;
                       }
-                      return Colors.grey;
+                      return context.theme.appColors.onSurface;
                     }),
                     trackOutlineColor: const WidgetStatePropertyAll(
                       Colors.transparent,
                     ),
                     thumbIcon: WidgetStateProperty.resolveWith<Icon?>((states) {
-                      return const Icon(
+                      return Icon(
                         Icons.circle,
-                        color: Colors.white,
+                        color: context.theme.appColors.background,
                         size: 30,
                       );
                     }),
@@ -109,9 +112,9 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
                       states,
                     ) {
                       if (states.contains(WidgetState.selected)) {
-                        return successColor;
+                        return context.theme.appColors.success;
                       }
-                      return hintTextColor;
+                      return context.theme.appColors.grey2;
                     }),
                     onChanged: (bool newValue) {
                       setState(() {

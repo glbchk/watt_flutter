@@ -7,8 +7,6 @@ class RowButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool? isLoading;
   final IconData? icon;
-  final Color? textColor;
-  final Color? backgroundColor;
   final bool? hideChevron;
 
   const RowButton({
@@ -18,8 +16,6 @@ class RowButton extends StatelessWidget {
     this.onPressed,
     this.isLoading,
     this.icon,
-    this.backgroundColor,
-    this.textColor,
     this.hideChevron = true,
   });
 
@@ -35,7 +31,7 @@ class RowButton extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: borderTFColor,
+              color: context.theme.appColors.grey3,
               width: 1.0,
             ),
           ),
@@ -47,7 +43,7 @@ class RowButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: textColor ?? wattBlackColor,
+                color: context.theme.appColors.onSurface,
               ),
             ),
             Spacer(),
@@ -58,18 +54,18 @@ class RowButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.normal,
-                  color: textColor ?? greyAppColor,
+                  color: context.theme.appColors.grey1,
                 ),
               ),
             ),
             ?hideChevron == true
                 ? Icon(
                     Icons.chevron_right,
-                    color: greyAppColor,
+                    color: context.theme.appColors.grey1,
                   )
                 : null,
             Divider(
-              color: Colors.black,
+              color: context.theme.appColors.grey3,
             ),
           ],
         ),

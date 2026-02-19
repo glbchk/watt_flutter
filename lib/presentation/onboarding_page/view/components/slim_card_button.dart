@@ -44,7 +44,7 @@ class SlimCardButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
-                color: wattColorScheme.onSecondary.withAlpha(32),
+                color: context.theme.appColors.onSecondary.withAlpha(32),
                 spreadRadius: 0,
                 blurRadius: 15,
                 offset: Offset(0, 4),
@@ -52,7 +52,7 @@ class SlimCardButton extends StatelessWidget {
             ],
           ),
           child: Card(
-            color: Colors.white,
+            color: context.theme.appColors.background,
             child: Padding(
               padding: const EdgeInsets.all(15.0),
               child: Row(
@@ -69,7 +69,7 @@ class SlimCardButton extends StatelessWidget {
                               child: SvgPicture.asset(
                                 svgImage ?? '',
                                 colorFilter: ColorFilter.mode(
-                                  iconColor ?? hintTextColor,
+                                  iconColor ?? context.theme.appColors.grey2,
                                   BlendMode.srcIn,
                                 ),
                               ),
@@ -97,7 +97,7 @@ class SlimCardButton extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 13,
-                                color: greyAppColor,
+                                color: context.theme.appColors.grey1,
                               ),
                             ),
                           ],
@@ -112,7 +112,7 @@ class SlimCardButton extends StatelessWidget {
                   Spacer(),
                   Icon(
                     Icons.chevron_right,
-                    color: hintTextColor,
+                    color: context.theme.appColors.grey2,
                   ),
                 ],
               ),

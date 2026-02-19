@@ -4,14 +4,12 @@ import 'package:watt/utils/colors.dart';
 class RowToggle extends StatelessWidget {
   final String label;
   final ValueChanged<bool> onChanged;
-  final Color? textColor;
   final bool? isSwitched;
 
   const RowToggle({
     super.key,
     required this.label,
     required this.onChanged,
-    this.textColor,
     this.isSwitched,
   });
 
@@ -23,7 +21,7 @@ class RowToggle extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: borderTFColor,
+            color: context.theme.appColors.grey3,
             width: 1.0,
           ),
         ),
@@ -35,7 +33,7 @@ class RowToggle extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: textColor ?? wattBlackColor,
+              color: context.theme.appColors.onSurface,
             ),
           ),
           Spacer(),
@@ -50,17 +48,17 @@ class RowToggle extends StatelessWidget {
                 states,
               ) {
                 if (states.contains(WidgetState.selected)) {
-                  return Colors.white;
+                  return context.theme.appColors.background;
                 }
-                return Colors.grey;
+                return context.theme.appColors.grey2;
               }),
               trackOutlineColor: const WidgetStatePropertyAll(
                 Colors.transparent,
               ),
               thumbIcon: WidgetStateProperty.resolveWith<Icon?>((states) {
-                return const Icon(
+                return Icon(
                   Icons.circle,
-                  color: Colors.white,
+                  color: context.theme.appColors.background,
                   size: 30,
                 );
               }),
@@ -68,15 +66,15 @@ class RowToggle extends StatelessWidget {
                 states,
               ) {
                 if (states.contains(WidgetState.selected)) {
-                  return successColor;
+                  return context.theme.appColors.success;
                 }
-                return hintTextColor;
+                return context.theme.appColors.grey2;
               }),
               onChanged: onChanged,
             ),
           ),
           Divider(
-            color: Colors.black,
+            color: context.theme.appColors.grey3,
           ),
         ],
       ),

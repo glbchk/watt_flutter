@@ -55,9 +55,9 @@ class DeleteCarUseCase extends UserUseCase {
   }
 }
 
-class UpdateUserChargingStationUseCase extends UserUseCase {
+class AddChargingStationUseCase extends UserUseCase {
   Future execute(ChargingStationModel chargingStation) {
-    return userRepository.updateChargingStation(chargingStation);
+    return userRepository.addChargingStation(chargingStation);
   }
 }
 

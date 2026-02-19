@@ -38,7 +38,7 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        color: Colors.white,
+        color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,7 +46,10 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
             Text(
               'This price will be visible for other users, who\n wants to book your charger',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: greyAppColor),
+              style: TextStyle(
+                fontSize: 15,
+                color: context.theme.appColors.grey1,
+              ),
             ),
             SizedBox(
               height: 100.0,
@@ -69,16 +72,18 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
                     ],
                     decoration: InputDecoration(
                       hintText: '0.00',
-                      hintStyle: TextStyle(color: borderTFColor),
+                      hintStyle: TextStyle(
+                        color: context.theme.appColors.grey3,
+                      ),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: Colors.grey.shade400,
+                          color: context.theme.appColors.grey3,
                           width: 1.0,
                         ),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: Colors.blue,
+                          color: context.theme.appColors.primary,
                           width: 2.0,
                         ),
                       ),

@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class PlateNumberCarDetailsPage extends StatefulWidget {
-  final String carID;
-  final TextEditingController controllerPlateNumber;
+  final String? initialPlateNumber;
+  final void Function(String plateNumber)? onPressed;
 
   const PlateNumberCarDetailsPage({
     super.key,
-    required this.carID,
-    required this.controllerPlateNumber,
+    this.initialPlateNumber,
+    this.onPressed,
   });
 
   @override
@@ -23,62 +20,53 @@ class PlateNumberCarDetailsPage extends StatefulWidget {
 }
 
 class _PlateNumberCarDetailsPageState extends State<PlateNumberCarDetailsPage> {
+  final controllerPlateNumber = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controllerPlateNumber.text = widget.initialPlateNumber ?? '';
+  }
+
   @override
   void dispose() {
-    widget.controllerPlateNumber.dispose();
+    controllerPlateNumber.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
-      builder: (context, state) {
-        return Scaffold(
-          extendBody: true,
-          appBar: AppBar(
-            title: Text(
-              'Plate number changed?',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+    return DefaultAppBar(
+      resizeToAvoidBottomInset: true,
+      title: 'Plate number changed?',
+      foregroundColor: context.theme.appColors.onSurface,
+      appBarBackgroundColor: context.theme.appColors.surface,
+      scaffoldBackgroundColor: context.theme.appColors.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomTextField(
+                controller: controllerPlateNumber,
+                label: 'Plate number',
+                hint: "XS2345",
+                textCapitalization: TextCapitalization.characters,
               ),
-            ),
-            foregroundColor: Colors.black,
-            backgroundColor: wattColorScheme.surface,
-          ),
-          body: Form(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CustomTextField(
-                    controller: widget.controllerPlateNumber,
-                    label: 'Plate number',
-                    hint: "XS2345",
-                  ),
-                  WattMainButton(
-                    label: 'Save',
-                    onPressed: () {
-                      context.read<OnboardingBloc>().add(
-                        UpdatePlateNumberCarEvent(
-                          carId: widget.carID,
-                          plateNumber: widget.controllerPlateNumber.text,
-                        ),
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+              Spacer(),
+              WattMainButton(
+                label: 'Save',
+                onPressed: () {
+                  if (controllerPlateNumber.text.isNotEmpty) {
+                    widget.onPressed?.call(controllerPlateNumber.text);
+                  }
+                },
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

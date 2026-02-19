@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 
@@ -34,7 +35,7 @@ class _DetailNamePropertyWidgetState extends State<DetailNamePropertyWidget> {
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        color: Colors.white,
+        color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

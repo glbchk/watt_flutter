@@ -5,6 +5,7 @@ class ChargingStationModel {
   final String? chargingStationName;
   final String? address;
   final String? brandName;
+  final String? brandLogo;
   final String? chargingEffect;
   final String? plug;
   final String? pricePerKwh;
@@ -18,6 +19,7 @@ class ChargingStationModel {
     this.chargingStationName,
     this.address,
     this.brandName,
+    this.brandLogo,
     this.chargingEffect,
     this.plug,
     this.pricePerKwh,
@@ -33,6 +35,7 @@ class ChargingStationModel {
       chargingStationName: json['charging_station_name'],
       address: json['address'],
       brandName: json['brand_name'],
+      brandLogo: json['brand_logo'],
       chargingEffect: json['charging_effect'],
       plug: json['plug'],
       pricePerKwh: json['price_per_kwh'],
@@ -49,6 +52,7 @@ class ChargingStationModel {
       'charging_station_name': chargingStationName,
       'address': address,
       'brand_name': brandName,
+      'brand_logo': brandLogo,
       'charging_effect': chargingEffect,
       'plug': plug,
       'price_per_kwh': pricePerKwh,
@@ -64,6 +68,7 @@ class ChargingStationModel {
     String? chargingStationName,
     String? address,
     String? brandName,
+    String? brandLogo,
     String? chargingEffect,
     String? plug,
     String? pricePerKwh,
@@ -77,6 +82,7 @@ class ChargingStationModel {
       chargingStationName: chargingStationName ?? this.chargingStationName,
       address: address ?? this.address,
       brandName: brandName ?? this.brandName,
+      brandLogo: brandLogo ?? this.brandLogo,
       chargingEffect: chargingEffect ?? this.chargingEffect,
       plug: plug ?? this.plug,
       pricePerKwh: pricePerKwh ?? this.pricePerKwh,

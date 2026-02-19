@@ -4,14 +4,18 @@ import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/select_car_model_page.dart';
-import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/presentation/profile_page/sub_pages/profile_car_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
-import 'package:watt/utils/global_components/bottom_floating_button.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/watt_main_button.dart';
 
-import '../components/short_header_onboarding.dart';
+class CarOption {
+  final String name;
+  final String logo;
+  CarOption(this.name, this.logo);
+}
 
 class AddYourCarPage extends StatefulWidget {
   const AddYourCarPage({super.key});
@@ -21,26 +25,12 @@ class AddYourCarPage extends StatefulWidget {
 }
 
 class _AddYourCarPageState extends State<AddYourCarPage> {
-  List<String> carList = [
-    KCarNames.audi,
-    KCarNames.bmw,
-    KCarNames.tesla,
-    KCarNames.volvo,
-    KCarNames.chevrolet,
-    KCarNames.nissan,
-    KCarNames.nissan,
-    KCarNames.nissan,
-  ];
-
-  List<String> carLogosList = [
-    KCarLogos.audi,
-    KCarLogos.bmw,
-    KCarLogos.tesla,
-    KCarLogos.volvo,
-    KCarLogos.chevrolet,
-    KCarLogos.nissan,
-    KCarLogos.nissan,
-    KCarLogos.nissan,
+  final List<CarOption> staticCarOptions = [
+    CarOption(KCarNames.audi, KCarLogos.audi),
+    CarOption(KCarNames.bmw, KCarLogos.bmw),
+    CarOption(KCarNames.tesla, KCarLogos.tesla),
+    CarOption(KCarNames.volvo, KCarLogos.volvo),
+    // ... add the rest here
   ];
 
   @override
@@ -55,102 +45,166 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
       builder: (context, state) {
         final double marginSize = 10.0;
 
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(70.0),
-              child: ShortHeaderOnboarding(
-                mainTitle: 'Add your car',
-                subtitle: 'Select your car',
-              ),
-            ),
-          ),
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                BackgroundGradient(
-                  bgHeight: 0.28,
-                ),
-                Transform.translate(
-                  offset: Offset(0, -40),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (state.cars != null && state.cars!.isNotEmpty) ...[
-                        ...state.cars!.map((car) {
-                          return TallCardButton(
-                            label: car.carModel ?? '',
-                            subLabel: car.plateNumber,
-                            pngImage: car.brandLogo,
-                            marginDistance: marginSize,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ProfileCarDetailsPage(
-                                    carId: car.id,
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }),
-                        const SizedBox(height: 30.0),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 20.0,
-                            right: 20.0,
+        return DefaultAppBar(
+          resizeToAvoidBottomInset: false,
+          extendBodyBehindAppBar: false,
+          scaffoldBackgroundColor: context.theme.appColors.primary,
+          body: Stack(
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            gradient: wattGradient,
                           ),
-                          child: Text(
-                            'Add Another Car'.toUpperCase(),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: greyAppColor,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Add your car',
+                                style: TextStyle(
+                                  color: context.theme.appColors.background,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 28,
+                                ),
+                              ),
+                              Text(
+                                'Select your car',
+                                style: TextStyle(
+                                  color: context.theme.appColors.background,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 60.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          color: context.theme.appColors.background,
+                          child: Transform.translate(
+                            offset: Offset(0, -40),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (state.cars != null &&
+                                    state.cars!.isNotEmpty) ...[
+                                  ...state.cars!.map((car) {
+                                    return TallCardButton(
+                                      label: car.carModel ?? '',
+                                      subLabel: car.plateNumber,
+                                      pngImage: car.brandLogo,
+                                      marginDistance: marginSize,
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                ProfileCarDetailsPage(
+                                                  car: car,
+                                                ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }),
+                                  const SizedBox(height: 30.0),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                    ),
+                                    child: Text(
+                                      'Add Another Car'.toUpperCase(),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: context.theme.appColors.grey1,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                ],
+                                ...List.generate(
+                                  staticCarOptions.length,
+                                  (index) {
+                                    return TallCardButton(
+                                      label: staticCarOptions
+                                          .elementAt(index)
+                                          .name,
+                                      pngImage: staticCarOptions
+                                          .elementAt(index)
+                                          .logo,
+                                      marginDistance: marginSize,
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => SelectCarModelPage(
+                                              brandLogo: staticCarOptions
+                                                  .elementAt(index)
+                                                  .logo,
+                                              brandName: staticCarOptions
+                                                  .elementAt(index)
+                                                  .name,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        SizedBox(height: 8.0),
                       ],
-                      ...List.generate(
-                        carList.length,
-                        (index) {
-                          return TallCardButton(
-                            label: carList.elementAt(index),
-                            pngImage: carLogosList.elementAt(index),
-                            marginDistance: marginSize,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => SelectCarModelPage(
-                                    brandLogo: carLogosList.elementAt(index),
-                                    brandName: carList.elementAt(index),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
+                    ),
+                  ),
+                ],
+              ),
+              if (!(state.cars?.isEmpty ?? true))
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.theme.appColors.background,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.theme.appColors.onSecondary.withAlpha(
+                            26,
+                          ),
+                          spreadRadius: 0,
+                          blurRadius: 30,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 20.0,
+                      top: 20.0,
+                      right: 20.0,
+                      bottom: 10.0,
+                    ),
+                    child: SafeArea(
+                      child: WattMainButton(
+                        label: 'Save',
+                        onPressed: () {},
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ],
-            ),
+            ],
           ),
-          bottomNavigationBar: (state.cars?.isEmpty ?? false)
-              ? const SizedBox()
-              : BottomFloatingButton(
-                  label: 'Save',
-                  callback: () {},
-
-                  ///TODO: Need to fix color and update the BottomFloatingButton
-                  ///to have different styles through ENUM
-                ),
         );
       },
     );
