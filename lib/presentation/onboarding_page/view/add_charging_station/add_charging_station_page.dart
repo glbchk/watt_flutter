@@ -51,8 +51,10 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
 
   @override
   void initState() {
+    context.read<OnboardingBloc>().add(
+      FetchUserChargingStationsEvent(),
+    );
     super.initState();
-    context.read<OnboardingBloc>().add(FetchUserChargingStationsEvent());
   }
 
   @override
@@ -111,6 +113,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                           child: Transform.translate(
                             offset: Offset(0, -40),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (state.chargingStations != null &&
                                     state.chargingStations!.isNotEmpty) ...[

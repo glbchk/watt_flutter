@@ -64,8 +64,7 @@ class OnboardingPage extends StatelessWidget {
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
                         iconColor:
-                            (state.isNameValid ?? false) ||
-                                (state.isPhoneNumberValid ?? false)
+                            state.name != null || state.phoneNumber != null
                             ? context.theme.appColors.background
                             : context.theme.appColors.grey2,
                         backgroundColor:

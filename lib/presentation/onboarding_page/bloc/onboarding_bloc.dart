@@ -38,7 +38,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     });
 
     on<PhoneNumberVerificationEvent>((event, emit) {
-      if (event.value.length < 11) {
+      final digits = event.value.replaceAll(RegExp(r'\D'), '');
+
+      if (digits.length < 11) {
         emit(
           state.copyWith(
             phoneNumberError: () => 'Phone number must contain 9 digits',

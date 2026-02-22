@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
@@ -176,30 +178,40 @@ class _AddChargingStationDetailsPageState
               right: 20.0,
               bottom: 40.0,
             ),
-            child: WattMainButton(
-              label: 'Done',
-              onPressed: () {
-                final chargingStation = ChargingStationModel(
-                  id: Uuid().v4(),
-                  chargingStationName: state.chargingStationName,
-                  address: state.address,
-                  brandName: state.brandName,
-                  brandLogo: state.brandLogo,
-                  chargingEffect: state.chargingEffect,
-                  plug: state.plug,
-                  pricePerKwh: state.pricePerKwh,
-                  bankAccount: state.bankAccount,
-                  onlineCharger: state.onlineCharger,
-                  availableHours: state.availableHours,
-                  everyoneCanAccess: state.everyoneCanAccess,
+            child: BlocListener<ChargingStationBloc, ChargingStationState>(
+              listenWhen: (previous, current) =>
+                  previous.isLoading == true && current.isLoading == false,
+              listener: (context, state) {
+                context.read<OnboardingBloc>().add(
+                  FetchUserChargingStationsEvent(),
                 );
-
-                context.read<ChargingStationBloc>().add(
-                  AddChargingStationEvent(chargingStation),
-                );
-
                 Navigator.pop(context);
               },
+              child: WattMainButton(
+                label: 'Done',
+                onPressed: () {
+                  final chargingStation = ChargingStationModel(
+                    id: Uuid().v4(),
+                    chargingStationName: state.chargingStationName,
+                    address: state.address,
+                    brandName: state.brandName,
+                    brandLogo: state.brandLogo,
+                    chargingEffect: state.chargingEffect,
+                    plug: state.plug,
+                    pricePerKwh: state.pricePerKwh,
+                    bankAccount: state.bankAccount,
+                    onlineCharger: state.onlineCharger,
+                    availableHours: state.availableHours,
+                    everyoneCanAccess: state.everyoneCanAccess,
+                  );
+
+                  context.read<ChargingStationBloc>().add(
+                    AddChargingStationEvent(chargingStation),
+                  );
+
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ),
         );

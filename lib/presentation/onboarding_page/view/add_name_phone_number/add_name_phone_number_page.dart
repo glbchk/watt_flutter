@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_name_phone_number/components/add_name_phone_number_form_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/components/background_gradient.dart';
+import 'package:watt/presentation/onboarding_page/view/add_name_phone_number/components/add_name_phone_number_widget.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
 
 class AddNameAndPhoneNumberPage extends StatefulWidget {
   const AddNameAndPhoneNumberPage({super.key});
@@ -29,11 +28,10 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
     final state = context.read<OnboardingBloc>().state;
-
     controllerName.text = state.name ?? '';
     controllerPhoneNumber.text = state.phoneNumber ?? '';
   }
@@ -42,50 +40,49 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            // elevation: 0,
-            // bottom: PreferredSize(
-            //   preferredSize: Size.fromHeight(70.0),
-            //   child: ShortHeaderOnboarding(
-            //     mainTitle: 'Add your name & email',
-            //     subtitle: 'We need email to send you receipts and updates',
-            //   ),
-            // ),
-          ),
-          backgroundColor: context.theme.appColors.background,
+        return DefaultAppBar(
+          resizeToAvoidBottomInset: true,
+          extendBodyBehindAppBar: false,
+          appBarBackgroundColor: context.theme.appColors.transparent,
+          scaffoldBackgroundColor: context.theme.appColors.primary,
           body: SingleChildScrollView(
             child: Column(
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Add your name & email',
-                      style: TextStyle(
-                        color: context.theme.appColors.background,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 28,
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    gradient: wattGradient,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Add your name & email',
+                        style: TextStyle(
+                          color: context.theme.appColors.background,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'We need email to send you receipts and updates',
-                      style: TextStyle(
-                        color: context.theme.appColors.background,
-                        fontWeight: FontWeight.normal,
-                        fontSize: 15,
+                      Text(
+                        'We need email to send you receipts and updates',
+                        style: TextStyle(
+                          color: context.theme.appColors.background,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 60.0,
+                      ),
+                    ],
+                  ),
                 ),
-                BackgroundGradient(
-                  bgHeight: 0.28,
-                ),
+
                 Transform.translate(
-                  offset: Offset(0, -30),
+                  offset: Offset(0, -40),
                   child: Container(
                     decoration: BoxDecoration(
                       color: context.theme.appColors.background,
@@ -96,7 +93,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10.0),
-                      child: AddNamePhoneNumberFormWidget(
+                      child: AddNamePhoneNumberWidget(
                         controllerName: controllerName,
                         controllerPhoneNumber: controllerPhoneNumber,
                         errorName: state.nameError,
@@ -121,27 +118,18 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                             PhoneNumberVerificationEvent(value: value ?? ''),
                           );
                         },
+                        isNameValid: state.isNameValid ?? false,
+                        isPhoneNumberValid: state.isPhoneNumberValid ?? false,
+                        onPressSave: () {
+                          context.read<OnboardingBloc>().add(
+                            OnboardingFilledNamePhoneNumberEvent(
+                              name: controllerName.text,
+                              phoneNumber: controllerPhoneNumber.text,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
                       ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible:
-                      (state.isNameValid ?? false) ||
-                      (state.isPhoneNumberValid ?? false),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: WattMainButton(
-                      label: 'Save',
-                      onPressed: () {
-                        context.read<OnboardingBloc>().add(
-                          OnboardingFilledNamePhoneNumberEvent(
-                            name: controllerName.text,
-                            phoneNumber: controllerPhoneNumber.text,
-                          ),
-                        );
-                        Navigator.pop(context);
-                      },
                     ),
                   ),
                 ),
@@ -149,7 +137,7 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
             ),
           ),
           bottomNavigationBar:
-              (state.isNameValid ?? false) ||
+              (state.isNameValid ?? false) &&
                   (state.isPhoneNumberValid ?? false)
               ? const SizedBox()
               : BottomFloatingButton(
