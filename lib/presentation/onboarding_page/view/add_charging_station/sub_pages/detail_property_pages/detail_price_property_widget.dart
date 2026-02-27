@@ -62,6 +62,15 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
                 Expanded(
                   child: TextFormField(
                     controller: widget.controllerPrice,
+                    onTapOutside: (event) {
+                      FocusScope.of(context).unfocus();
+                      final value = double.tryParse(
+                        widget.controllerPrice.text,
+                      );
+                      if (value != null) {
+                        widget.controllerPrice.text = value.toStringAsFixed(2);
+                      }
+                    },
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.right,
                     style: TextStyle(fontSize: 28, color: Colors.black),
@@ -69,6 +78,7 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
                       FilteringTextInputFormatter.allow(
                         RegExp(r'^\d+\.?\d{0,2}'),
                       ),
+                      DoubleInputFormatter(),
                     ],
                     decoration: InputDecoration(
                       hintText: '0.00',
@@ -107,5 +117,23 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
         ),
       ),
     );
+  }
+}
+
+class DoubleInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String text = newValue.text;
+
+    if (text.isEmpty) return newValue;
+
+    if (RegExp(r'^\d*\.?\d{0,2}$').hasMatch(text)) {
+      return newValue;
+    }
+
+    return oldValue;
   }
 }

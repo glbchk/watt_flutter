@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/charging_station_model.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/charger_station_details_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/watt_alert.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class AddChargingStationDetailsPage extends StatefulWidget {
@@ -28,31 +29,30 @@ class AddChargingStationDetailsPage extends StatefulWidget {
 
 class _AddChargingStationDetailsPageState
     extends State<AddChargingStationDetailsPage> {
+  IbanModel paymentMethod = IbanModel(
+    id: '',
+    isUsedForReceivingEarnings: false,
+  );
+
   @override
-  void dispose() {
-    // controllerName.dispose();
-    // controllerPhoneNumber.dispose();
-    super.dispose();
+  void initState() {
+    final state = context.read<PaymentMethodBloc>().state;
+    final paymentMethods = state.paymentMethods;
+    if (paymentMethods != null) {
+      for (final method in paymentMethods) {
+        if (method is IbanModel) {
+          paymentMethod = method;
+        }
+      }
+    }
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChargingStationBloc, ChargingStationState>(
       builder: (context, state) {
-        // final chargingStations = state.chargingStations;
-        // final chargingStation =
-        //     chargingStations!
-        //         .where(
-        //           (chargingStation) =>
-        //               chargingStation.id == widget.chargingStationId,
-        //         )
-        //         .isNotEmpty
-        //     ? chargingStations.firstWhere(
-        //         (chargingStation) =>
-        //             chargingStation.id == widget.chargingStationId,
-        //       )
-        //     : null;
-
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
           extendBodyBehindAppBar: false,
@@ -141,7 +141,8 @@ class _AddChargingStationDetailsPageState
                           ),
                         );
                       },
-                      bankAccount: state.bankAccount ?? '',
+                      bankAccount:
+                          paymentMethod.ibanNumber?.substring(0, 18) ?? '',
                       onBankAccountPressed: () {
                         Navigator.push(
                           context,
@@ -178,40 +179,58 @@ class _AddChargingStationDetailsPageState
               right: 20.0,
               bottom: 40.0,
             ),
-            child: BlocListener<ChargingStationBloc, ChargingStationState>(
-              listenWhen: (previous, current) =>
-                  previous.isLoading == true && current.isLoading == false,
-              listener: (context, state) {
-                context.read<OnboardingBloc>().add(
-                  FetchUserChargingStationsEvent(),
+            child: WattMainButton(
+              label: 'Done',
+              onPressed: () {
+                final chargingStation = ChargingStationModel(
+                  id: Uuid().v4(),
+                  chargingStationName: state.chargingStationName,
+                  address: state.address,
+                  brandName: state.brandName,
+                  brandLogo: state.brandLogo,
+                  chargingEffect: state.chargingEffect,
+                  plug: state.plug,
+                  pricePerKwh: state.pricePerKwh,
+                  bankAccount: state.bankAccount,
+                  onlineCharger: state.onlineCharger,
+                  // availableHours: state.availableHours,
+                  everyoneCanAccess: state.everyoneCanAccess,
                 );
-                Navigator.pop(context);
-              },
-              child: WattMainButton(
-                label: 'Done',
-                onPressed: () {
-                  final chargingStation = ChargingStationModel(
-                    id: Uuid().v4(),
-                    chargingStationName: state.chargingStationName,
-                    address: state.address,
-                    brandName: state.brandName,
-                    brandLogo: state.brandLogo,
-                    chargingEffect: state.chargingEffect,
-                    plug: state.plug,
-                    pricePerKwh: state.pricePerKwh,
-                    bankAccount: state.bankAccount,
-                    onlineCharger: state.onlineCharger,
-                    availableHours: state.availableHours,
-                    everyoneCanAccess: state.everyoneCanAccess,
-                  );
 
+                final Map<String, dynamic> stationMap = chargingStation
+                    .toJson();
+
+                final entries = stationMap.entries.toList();
+                final iterator = entries.iterator;
+
+                List<String> missingProperties = [];
+
+                while (iterator.moveNext()) {
+                  final key = iterator.current.key;
+                  final value = iterator.current.value;
+
+                  if (value == null || value.toString().isEmpty) {
+                    missingProperties.add(key);
+                  }
+                }
+
+                if (missingProperties.isNotEmpty) {
+                  final missingText = missingProperties.join("\n");
+
+                  WattAlert.show(
+                    context: context,
+                    title: 'Missing Information',
+                    message:
+                        'The following fields are required:\n\n$missingText',
+                    buttonLabel: 'Understood',
+                  );
+                } else {
                   context.read<ChargingStationBloc>().add(
                     AddChargingStationEvent(chargingStation),
                   );
-
-                  Navigator.pop(context);
-                },
-              ),
+                  Navigator.pop(context, chargingStation);
+                }
+              },
             ),
           ),
         );

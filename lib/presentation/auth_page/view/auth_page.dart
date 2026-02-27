@@ -85,6 +85,23 @@ class _AuthPageState extends State<AuthPage> {
                   controllerPassword: controllerPassword,
                   controllerRetypePassword: controllerRetypePassword,
                   isRegisterMode: isRegisterMode,
+                  // onChangedEmail: (String? value) {
+                  //   setState(() {
+                  //     if (value == null || !value.contains('@')) {
+                  //       emailError = 'Please enter a valid email address.';
+                  //     } else {
+                  //       emailError = null; // Clear error if valid
+                  //     }
+                  //   });
+                  onChangedEmail: (value) {
+                    value;
+                  },
+                  onChangedPassword: (value) {
+                    value;
+                  },
+                  onChangedRetypePassword: (value) {
+                    value;
+                  },
                 ),
                 ButtonsSectionWidget(
                   loginCallback: () {

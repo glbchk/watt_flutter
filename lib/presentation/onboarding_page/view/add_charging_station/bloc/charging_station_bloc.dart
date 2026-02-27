@@ -54,13 +54,14 @@ class ChargingStationBloc
           ),
 
           DetailPageProperties.bankAccount => state.copyWith(
-            bankAccount: () => event.value,
+            bankAccount: () => event.iban,
           ),
 
           DetailPageProperties.availableHours => state,
         },
       );
     });
+
     on<AddChargingStationEvent>((event, emit) async {
       await addChargingStationUseCase.execute(event.chargingStation);
     });

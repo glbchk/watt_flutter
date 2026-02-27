@@ -1,5 +1,6 @@
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
@@ -25,13 +26,13 @@ class UpdateUserNameUseCase extends UserUseCase {
   }
 }
 
-class UpdateUserPhoneNumberUseCase extends UserUseCase {
+class UpdatePhoneNumberUseCase extends UserUseCase {
   Future execute(String phoneNumber) {
     return userRepository.updatePhoneNumber(phoneNumber);
   }
 }
 
-class UpdateUserCarUseCase extends UserUseCase {
+class AddCarUseCase extends UserUseCase {
   Future execute(CarModel car) {
     return userRepository.addCar(car);
   }
@@ -64,6 +65,33 @@ class AddChargingStationUseCase extends UserUseCase {
 class FetchUserChargingStationsUseCase extends UserUseCase {
   Future execute() {
     return userRepository.fetchChargingStations();
+  }
+}
+
+class AddPaymentMethodUseCase extends UserUseCase {
+  Future execute(PaymentMethodModel paymentMethod) {
+    return userRepository.addPaymentMethod(paymentMethod);
+  }
+}
+
+class FetchPaymentMethodsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchPaymentMethods();
+  }
+}
+
+class UpdateDefaultCreditCardUseCase extends UserUseCase {
+  Future execute(String creditCardId, bool isDefault) {
+    return userRepository.updateDefaultCreditCard(creditCardId, isDefault);
+  }
+}
+
+class UpdateDefaultReceivingEarningsUseCase extends UserUseCase {
+  Future execute(String ibanId, bool isReceiver) {
+    return userRepository.updateDefaultReceivingEarnings(
+      ibanId,
+      isReceiver,
+    );
   }
 }
 

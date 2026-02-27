@@ -7,12 +7,26 @@ class AuthFormWidget extends StatelessWidget {
   final TextEditingController controllerRetypePassword;
   final bool isRegisterMode;
 
+  final Function(String?) onChangedEmail;
+  final Function(String?) onChangedPassword;
+  final Function(String?) onChangedRetypePassword;
+
+  // final String emailError;
+  // final String passwordError;
+  // final String retypePasswordError;
+
   const AuthFormWidget({
     super.key,
     required this.controllerEmail,
     required this.controllerPassword,
     required this.controllerRetypePassword,
     required this.isRegisterMode,
+    required this.onChangedEmail,
+    required this.onChangedPassword,
+    required this.onChangedRetypePassword,
+    // required this.emailError,
+    // required this.passwordError,
+    // required this.retypePasswordError,
   });
 
   @override
@@ -26,7 +40,8 @@ class AuthFormWidget extends StatelessWidget {
               controller: controllerEmail,
               label: 'Email',
               hint: 'Email...',
-              onChanged: (String? p1) {},
+              // error: emailError,
+              onChanged: onChangedEmail,
             ),
             const SizedBox(height: 20.0),
             CustomTextField(
@@ -34,6 +49,7 @@ class AuthFormWidget extends StatelessWidget {
               label: 'Password',
               hint: 'Start typing here...',
               suffixIcon: Icons.visibility_off,
+              isPassword: true,
               onChanged: (String? p1) {},
             ),
             if (isRegisterMode) ...[
@@ -43,6 +59,13 @@ class AuthFormWidget extends StatelessWidget {
                 label: 'Retype Password',
                 hint: 'Start typing here...',
                 suffixIcon: Icons.visibility_off,
+                isPassword: true,
+                validator: (value) {
+                  if (value == controllerPassword.text) {
+                    return 'Password should be the same';
+                  }
+                  return null;
+                },
                 onChanged: (String? p1) {},
               ),
             ],

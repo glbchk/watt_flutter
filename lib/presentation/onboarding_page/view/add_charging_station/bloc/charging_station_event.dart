@@ -1,11 +1,8 @@
-import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
 
-abstract class ChargingStationEvent extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class ChargingStationEvent {}
 
 class SaveBrandNameChargingStationEvent extends ChargingStationEvent {
   final String brandName;
@@ -23,8 +20,9 @@ class SaveBrandNameChargingStationEvent extends ChargingStationEvent {
 class UpdateChargingStationPropertyEvent extends ChargingStationEvent {
   final DetailPageProperties property;
   final String value;
+  final IbanModel iban;
 
-  UpdateChargingStationPropertyEvent(this.property, this.value);
+  UpdateChargingStationPropertyEvent(this.property, this.value, this.iban);
 }
 
 class AddChargingStationEvent extends ChargingStationEvent {

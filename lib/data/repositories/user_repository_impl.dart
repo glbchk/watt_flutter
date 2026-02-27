@@ -2,6 +2,7 @@ import 'package:watt/data/data_sources/auth_remote_data_source.dart';
 import 'package:watt/data/data_sources/user_remote_data_source.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
@@ -78,6 +79,38 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<List<ChargingStationModel>> fetchChargingStations() async {
     return await userRemoteDataSource.fetchChargingStations();
+  }
+
+  @override
+  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod) async {
+    return await userRemoteDataSource.addPaymentMethod(paymentMethod);
+  }
+
+  @override
+  Future<List<PaymentMethodModel>> fetchPaymentMethods() async {
+    return await userRemoteDataSource.fetchPaymentMethods();
+  }
+
+  @override
+  Future<void> updateDefaultCreditCard(
+    String creditCardId,
+    bool isDefault,
+  ) async {
+    return await userRemoteDataSource.updateDefaultCreditCard(
+      creditCardId,
+      isDefault,
+    );
+  }
+
+  @override
+  Future<void> updateDefaultReceivingEarnings(
+    String ibanId,
+    bool isReceiver,
+  ) async {
+    return await userRemoteDataSource.updateDefaultReceivingEarnings(
+      ibanId,
+      isReceiver,
+    );
   }
 
   @override

@@ -75,3 +75,11 @@ class KPlugs {
   static const String typeTwo = 'Type 2';
   static const String wall = 'Wall';
 }
+
+class KPaymentProvidersIcons {
+  static const String amex = 'assets/payment_methods/ic_american_express.svg';
+  static const String mastercard = 'assets/payment_methods/ic_mastercard.svg';
+  static const String visa = 'assets/payment_methods/ic_visa.svg';
+  static const String discover = 'assets/payment_methods/ic_discover.svg';
+  static const String generic = 'assets/payment_methods/ic_generic.svg';
+}

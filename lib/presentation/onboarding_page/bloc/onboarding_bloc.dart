@@ -1,61 +1,64 @@
 import 'package:bloc/bloc.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
-  final UpdateUserPhoneNumberUseCase updateUserPhoneNumberUseCase =
-      UpdateUserPhoneNumberUseCase();
-  final UpdateUserCarUseCase updateUserCarUseCase = UpdateUserCarUseCase();
+  final UpdatePhoneNumberUseCase updateUserPhoneNumberUseCase =
+      UpdatePhoneNumberUseCase();
+  final AddCarUseCase updateUserCarUseCase = AddCarUseCase();
   final FetchUserCarsUseCase fetchUserCarsUseCase = FetchUserCarsUseCase();
   final UpdatePlateNumberCarsUseCase updatePlateNumberCarUseCase =
       UpdatePlateNumberCarsUseCase();
   final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
+  final FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =
+      FetchPaymentMethodsUseCase();
+
+  String? _validateMinLength({
+    required String value,
+    required int minLength,
+    required String errorMessage,
+  }) {
+    if (value.isEmpty) return null;
+    if (value.length < minLength) return errorMessage;
+    return null;
+  }
 
   OnboardingBloc() : super(OnboardingState()) {
     on<NameVerificationEvent>((event, emit) {
-      if (event.value.length < 3) {
-        emit(
-          state.copyWith(
-            nameError: () => 'Name should be at least 3 symbols',
-            isNameValid: () => false,
+      emit(
+        state.copyWith(
+          nameError: () => _validateMinLength(
+            value: event.value,
+            minLength: 3,
+            errorMessage: 'Name should be at least 3 symbols',
           ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            name: () => event.value,
-            nameError: () => null,
-            isNameValid: () => true,
-          ),
-        );
-      }
+          isNameValid: () =>
+              (event.value == null || event.value.length < 3) ? false : true,
+        ),
+      );
     });
 
     on<PhoneNumberVerificationEvent>((event, emit) {
       final digits = event.value.replaceAll(RegExp(r'\D'), '');
 
-      if (digits.length < 11) {
-        emit(
-          state.copyWith(
-            phoneNumberError: () => 'Phone number must contain 9 digits',
-            isPhoneNumberValid: () => false,
+      emit(
+        state.copyWith(
+          phoneNumberError: () => _validateMinLength(
+            value: digits,
+            minLength: 10,
+            errorMessage: 'Phone number must contain 10 digits',
           ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            phoneNumber: () => event.value,
-            phoneNumberError: () => null,
-            isPhoneNumberValid: () => true,
-          ),
-        );
-      }
+          isPhoneNumberValid: () =>
+              (event.value == null || digits.length < 10) ? false : true,
+        ),
+      );
     });
 
     on<OnboardingFilledNamePhoneNumberEvent>((event, emit) async {
@@ -150,6 +153,24 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           state.copyWith(
             isLoading: false,
             chargingStations: () => chargingStations,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      }
+    });
+
+    on<FetchUserPaymentMethodsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        final List<PaymentMethodModel> paymentMethods =
+            await fetchPaymentMethodsUseCase.execute();
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            paymentMethods: () => paymentMethods,
           ),
         );
       } catch (e) {

@@ -30,7 +30,8 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
     CarOption(KCarNames.bmw, KCarLogos.bmw),
     CarOption(KCarNames.tesla, KCarLogos.tesla),
     CarOption(KCarNames.volvo, KCarLogos.volvo),
-    // ... add the rest here
+    CarOption(KCarNames.tesla, KCarLogos.tesla),
+    CarOption(KCarNames.volvo, KCarLogos.volvo),
   ];
 
   @override
@@ -48,6 +49,7 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
           extendBodyBehindAppBar: false,
+          appBarBackgroundColor: context.theme.appColors.transparent,
           scaffoldBackgroundColor: context.theme.appColors.primary,
           body: Stack(
             children: [
@@ -90,6 +92,9 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                         ),
                         Container(
                           color: context.theme.appColors.background,
+                          constraints: BoxConstraints(
+                            minHeight: MediaQuery.of(context).size.height / 1.3,
+                          ),
                           child: Transform.translate(
                             offset: Offset(0, -40),
                             child: Column(

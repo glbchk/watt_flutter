@@ -38,7 +38,7 @@ class SlimCardButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
-          height: 80.0,
+          height: 82.0,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -92,6 +92,7 @@ class SlimCardButton extends StatelessWidget {
                                 fontSize: 15,
                               ),
                             ),
+                            SizedBox(height: 2),
                             Text(
                               subLabel ?? '',
                               style: TextStyle(

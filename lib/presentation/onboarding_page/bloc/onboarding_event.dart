@@ -1,10 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/car_model.dart';
 
-abstract class OnboardingEvent extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+abstract class OnboardingEvent {}
 
 class NameVerificationEvent extends OnboardingEvent {
   final String value;
@@ -57,3 +53,5 @@ class DeleteCarEvent extends OnboardingEvent {
 }
 
 class FetchUserChargingStationsEvent extends OnboardingEvent {}
+
+class FetchUserPaymentMethodsEvent extends OnboardingEvent {}

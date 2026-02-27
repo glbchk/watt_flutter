@@ -1,7 +1,6 @@
-import 'package:equatable/equatable.dart';
-import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 
-class ChargingStationState extends Equatable {
+class ChargingStationState {
   final bool? isLoading;
   final String? errorMessage;
 
@@ -13,9 +12,9 @@ class ChargingStationState extends Equatable {
   final String? chargingEffect;
   final String? plug;
   final String? pricePerKwh;
-  final String? bankAccount;
+  final IbanModel? bankAccount;
   final bool? onlineCharger;
-  final List<TimeSlotModel>? availableHours;
+  // final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
   const ChargingStationState({
@@ -31,7 +30,7 @@ class ChargingStationState extends Equatable {
     this.pricePerKwh,
     this.bankAccount,
     this.onlineCharger = false,
-    this.availableHours,
+    // this.availableHours,
     this.everyoneCanAccess = false,
   });
 
@@ -46,9 +45,9 @@ class ChargingStationState extends Equatable {
     String? Function()? chargingEffect,
     String? Function()? plug,
     String? Function()? pricePerKwh,
-    String? Function()? bankAccount,
+    IbanModel? Function()? bankAccount,
     bool? Function()? onlineCharger,
-    List<TimeSlotModel>? Function()? availableHours,
+    // List<TimeSlotModel>? Function()? availableHours,
     bool? Function()? everyoneCanAccess,
   }) {
     return ChargingStationState(
@@ -70,30 +69,12 @@ class ChargingStationState extends Equatable {
       onlineCharger: onlineCharger != null
           ? onlineCharger()
           : this.onlineCharger,
-      availableHours: availableHours != null
-          ? availableHours()
-          : this.availableHours,
+      // availableHours: availableHours != null
+      //     ? availableHours()
+      //     : this.availableHours,
       everyoneCanAccess: everyoneCanAccess != null
           ? everyoneCanAccess()
           : this.everyoneCanAccess,
     );
   }
-
-  @override
-  List<Object?> get props => [
-    isLoading,
-    errorMessage,
-    id,
-    chargingStationName,
-    address,
-    brandName,
-    brandLogo,
-    chargingEffect,
-    plug,
-    pricePerKwh,
-    bankAccount,
-    onlineCharger,
-    availableHours,
-    everyoneCanAccess,
-  ];
 }

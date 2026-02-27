@@ -1,5 +1,6 @@
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 abstract class UserRepository {
@@ -14,6 +15,13 @@ abstract class UserRepository {
   Future<void> deleteCar(String carId);
   Future<void> addChargingStation(ChargingStationModel chargingStation);
   Future<List<ChargingStationModel>> fetchChargingStations();
+  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod);
+  Future<List<PaymentMethodModel>> fetchPaymentMethods();
+  Future<void> updateDefaultCreditCard(String creditCardId, bool isDefault);
+  Future<void> updateDefaultReceivingEarnings(
+    String ibanId,
+    bool isReceiver,
+  );
   Future<void> deleteUser();
 
   ///TODO Need to have methods for payment methods, cars, charging stations...

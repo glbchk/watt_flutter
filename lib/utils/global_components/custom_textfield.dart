@@ -11,13 +11,14 @@ class CustomTextField extends StatefulWidget {
   final String? error;
   final IconData? suffixIcon;
   final Color? suffixIconColor;
-  final IconData? prefixIcon;
+  final Widget? prefixIcon;
   final Color? prefixIconColor;
-  final bool isPassword;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final Function(String?)? onChanged;
   final TextCapitalization? textCapitalization;
+  final bool? isPassword;
+  final FormFieldValidator<String>? validator;
 
   const CustomTextField({
     super.key,
@@ -34,6 +35,7 @@ class CustomTextField extends StatefulWidget {
     this.inputFormatters,
     this.onChanged,
     this.textCapitalization,
+    this.validator,
   });
 
   @override
@@ -41,10 +43,10 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  Timer? debounce;
+  bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
-    Timer? debounce;
-
     void onSearchChanged(String? value) {
       if (debounce?.isActive ?? false) debounce!.cancel();
       debounce = Timer(const Duration(milliseconds: 500), () {
@@ -65,9 +67,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
         SizedBox(height: 8.0),
         TextFormField(
           controller: widget.controller,
-          obscureText: widget.isPassword,
-          keyboardType: widget.keyboardType,
+          obscureText: widget.isPassword ?? false ? _obscurePassword : false,
+          enableSuggestions: widget.isPassword != true,
+          autocorrect: widget.isPassword != true,
+          keyboardType: widget.isPassword ?? false
+              ? TextInputType.visiblePassword
+              : widget.keyboardType,
+          autofillHints: widget.isPassword ?? false
+              ? const [AutofillHints.password]
+              : null,
           inputFormatters: widget.inputFormatters,
+          validator: widget.validator,
           style: TextStyle(color: context.theme.appColors.onSurface),
           textCapitalization:
               widget.textCapitalization ?? TextCapitalization.none,
@@ -82,22 +92,36 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
             errorText: widget.error,
             prefixIcon: widget.prefixIcon != null
-                ? IconButton(
-                    icon: Icon(
-                      widget.prefixIcon,
-                      color: widget.prefixIconColor,
+                ? IconTheme(
+                    data: IconThemeData(
+                      color:
+                          widget.prefixIconColor ??
+                          context.theme.appColors.primary,
+                      size: 24,
                     ),
-                    iconSize: 24,
-                    padding: const EdgeInsets.only(right: 10.0, left: 15.0),
-                    onPressed: () {},
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(child: widget.prefixIcon!),
+                    ),
                   )
                 : null,
-            suffixIcon: widget.suffixIcon != null
+            suffixIcon: widget.isPassword ?? false
                 ? IconButton(
                     icon: Icon(
-                      widget.suffixIcon,
-                      color: widget.suffixIconColor,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  )
+                : widget.suffixIcon != null
+                ? IconButton(
+                    icon: Icon(widget.suffixIcon),
                     onPressed: () {},
                   )
                 : null,

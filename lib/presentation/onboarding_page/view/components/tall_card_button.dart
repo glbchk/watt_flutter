@@ -5,6 +5,7 @@ import 'package:watt/utils/colors.dart';
 class TallCardButton extends StatelessWidget {
   final String label;
   final String? subLabel;
+  final String? subSubLabel;
   final VoidCallback? onPressed;
   final String? svgImage;
   final String? pngImage;
@@ -17,6 +18,7 @@ class TallCardButton extends StatelessWidget {
     super.key,
     required this.label,
     this.subLabel,
+    this.subSubLabel,
     this.onPressed,
     this.svgImage,
     this.pngImage,
@@ -98,6 +100,29 @@ class TallCardButton extends StatelessWidget {
                             fontSize: 15,
                           ),
                         )
+                      : subSubLabel == null
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            SizedBox(height: 2.0),
+                            Text(
+                              subLabel ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: context.theme.appColors.grey1,
+                              ),
+                            ),
+                          ],
+                        )
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -112,6 +137,14 @@ class TallCardButton extends StatelessWidget {
                             SizedBox(height: 2.0),
                             Text(
                               subLabel ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: context.theme.appColors.grey1,
+                              ),
+                            ),
+                            Text(
+                              subSubLabel ?? '',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,

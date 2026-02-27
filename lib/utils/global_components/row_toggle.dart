@@ -5,12 +5,14 @@ class RowToggle extends StatelessWidget {
   final String label;
   final ValueChanged<bool> onChanged;
   final bool? isSwitched;
+  final bool? isLineVisible;
 
   const RowToggle({
     super.key,
     required this.label,
     required this.onChanged,
     this.isSwitched,
+    this.isLineVisible = true,
   });
 
   @override
@@ -20,10 +22,15 @@ class RowToggle extends StatelessWidget {
       height: 60,
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: context.theme.appColors.grey3,
-            width: 1.0,
-          ),
+          bottom: isLineVisible == true
+              ? BorderSide(
+                  color: context.theme.appColors.grey3,
+                  width: 1.0,
+                )
+              : BorderSide(
+                  color: context.theme.appColors.transparent,
+                  width: 0,
+                ),
         ),
       ),
       child: Row(

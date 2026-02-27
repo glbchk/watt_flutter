@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
 class UserRemoteDataSource {
@@ -109,6 +110,99 @@ class UserRemoteDataSource {
           ),
         )
         .toList();
+  }
+
+  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod) async {
+    User? user = auth.currentUser;
+    await firestore.collection("users").doc(user?.uid).update({
+      'payment_methods': FieldValue.arrayUnion([paymentMethod.toJson()]),
+    });
+  }
+
+  Future<List<PaymentMethodModel>> fetchPaymentMethods() async {
+    User? user = auth.currentUser;
+
+    final doc = await firestore.collection("users").doc(user?.uid).get();
+    final data = doc.data();
+    final List<dynamic> paymentMethodsJson = data?['payment_methods'] ?? [];
+
+    return paymentMethodsJson
+        .map(
+          (paymentMethod) => PaymentMethodModel.fromJson(
+            paymentMethod as Map<String, dynamic>,
+          ),
+        )
+        .toList();
+  }
+
+  Future<void> updateDefaultCreditCard(
+    String creditCardId,
+    bool isDefault,
+  ) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    List<dynamic> paymentMethodsData =
+        currentUserData.data()?['payment_methods'] ?? [];
+    List<PaymentMethodModel> paymentMethodsList = paymentMethodsData
+        .map((json) => PaymentMethodModel.fromJson(json))
+        .toList();
+
+    int index = paymentMethodsList.indexWhere(
+      (paymentMethod) => paymentMethod.id == creditCardId,
+    );
+
+    if (index != -1) {
+      if (paymentMethodsList[index] is CreditCardModel) {
+        final oldCard = paymentMethodsList[index] as CreditCardModel;
+
+        paymentMethodsList[index] = oldCard.copyCreditCardWith(
+          isDefaultPaymentMethod: isDefault,
+        );
+
+        await docRef.update({
+          'payment_methods': paymentMethodsList
+              .map((method) => method.toJson())
+              .toList(),
+        });
+      }
+    }
+  }
+
+  Future<void> updateDefaultReceivingEarnings(
+    String ibanId,
+    bool isReceiver,
+  ) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    List<dynamic> paymentMethodsData =
+        currentUserData.data()?['payment_methods'] ?? [];
+    List<PaymentMethodModel> paymentMethodsList = paymentMethodsData
+        .map((json) => PaymentMethodModel.fromJson(json))
+        .toList();
+
+    int index = paymentMethodsList.indexWhere(
+      (paymentMethod) => paymentMethod.id == ibanId,
+    );
+
+    if (index != -1) {
+      if (paymentMethodsList[index] is IbanModel) {
+        final oldCard = paymentMethodsList[index] as IbanModel;
+
+        paymentMethodsList[index] = oldCard.copyIbanWith(
+          isUsedForReceivingEarnings: isReceiver,
+        );
+
+        await docRef.update({
+          'payment_methods': paymentMethodsList
+              .map((method) => method.toJson())
+              .toList(),
+        });
+      }
+    }
   }
 
   Future<void> deleteUser() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
@@ -48,6 +49,13 @@ class AddChargingStationPage extends StatefulWidget {
 
 class _AddChargingStationPageState extends State<AddChargingStationPage> {
   final double marginSize = 10.0;
+
+  String? createLabel(String? brandName, String? chargingEffect, String? plug) {
+    if (brandName != null && chargingEffect != null && plug != null) {
+      return '$brandName, $chargingEffect, $plug';
+    }
+    return null;
+  }
 
   @override
   void initState() {
@@ -110,6 +118,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                           decoration: BoxDecoration(
                             color: context.theme.appColors.background,
                           ),
+                          constraints: BoxConstraints(
+                            minHeight: MediaQuery.of(context).size.height / 1.3,
+                          ),
                           child: Transform.translate(
                             offset: Offset(0, -40),
                             child: Column(
@@ -124,8 +135,15 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                       label:
                                           chargingStation.chargingStationName ??
                                           '',
-                                      subLabel:
-                                          "${chargingStation.brandName} - ${chargingStation.chargingEffect} - ${chargingStation.plug}",
+                                      subLabel: createLabel(
+                                        chargingStation.brandName,
+                                        chargingStation.chargingEffect,
+                                        chargingStation.plug,
+                                      ),
+                                      subSubLabel:
+                                          (chargingStation.pricePerKwh != null)
+                                          ? "${chargingStation.pricePerKwh} SEK"
+                                          : null,
                                       pngImage: chargingStation.brandLogo,
                                       marginDistance: marginSize,
                                       onPressed: () {
@@ -168,7 +186,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                           .elementAt(
                                             index,
                                           ),
-                                      onPressed: () {
+                                      onPressed: () async {
                                         context.read<ChargingStationBloc>().add(
                                           SaveBrandNameChargingStationEvent(
                                             chargingStationList.elementAt(
@@ -180,18 +198,28 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                           ),
                                         );
 
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                AddChargingStationDetailsPage(),
-                                          ),
-                                        );
+                                        final result =
+                                            await Navigator.push<
+                                              ChargingStationModel
+                                            >(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    AddChargingStationDetailsPage(),
+                                              ),
+                                            );
+
+                                        if (!context.mounted) return;
+
+                                        if (result != null) {
+                                          context.read<OnboardingBloc>().add(
+                                            FetchUserChargingStationsEvent(),
+                                          );
+                                        }
                                       },
                                     );
                                   },
                                 ),
-                                // const Spacer(),
                               ],
                             ),
                           ),

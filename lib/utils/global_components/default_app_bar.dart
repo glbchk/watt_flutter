@@ -14,6 +14,7 @@ class DefaultAppBar extends StatelessWidget {
   final Color? scaffoldBackgroundColor;
   final Widget body;
   final Widget? bottomNavigationBar;
+  final Widget? leading;
   final List<Widget>? actions;
 
   const DefaultAppBar({
@@ -29,6 +30,7 @@ class DefaultAppBar extends StatelessWidget {
     this.scaffoldBackgroundColor,
     required this.body,
     this.bottomNavigationBar,
+    this.leading,
     this.actions,
   });
 
@@ -51,6 +53,7 @@ class DefaultAppBar extends StatelessWidget {
         iconTheme: IconThemeData(
           color: foregroundColor ?? context.theme.appColors.onPrimary,
         ),
+        leading: leading,
         actions: actions,
         backgroundColor: appBarBackgroundColor ?? Colors.transparent,
         elevation: 0,

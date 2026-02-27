@@ -1,4 +1,4 @@
-import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 
 class ChargingStationModel {
   final String id;
@@ -9,9 +9,9 @@ class ChargingStationModel {
   final String? chargingEffect;
   final String? plug;
   final String? pricePerKwh;
-  final String? bankAccount;
+  final IbanModel? bankAccount;
   final bool? onlineCharger;
-  final List<TimeSlotModel>? availableHours;
+  // final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
   ChargingStationModel({
@@ -25,7 +25,7 @@ class ChargingStationModel {
     this.pricePerKwh,
     this.bankAccount,
     this.onlineCharger,
-    this.availableHours,
+    // this.availableHours,
     this.everyoneCanAccess,
   });
 
@@ -41,7 +41,7 @@ class ChargingStationModel {
       pricePerKwh: json['price_per_kwh'],
       bankAccount: json['bank_account'],
       onlineCharger: json['online_charger'],
-      availableHours: json['available_hours'],
+      // availableHours: json['available_hours'],
       everyoneCanAccess: json['everyone_can_access'],
     );
   }
@@ -58,7 +58,7 @@ class ChargingStationModel {
       'price_per_kwh': pricePerKwh,
       'bank_account': bankAccount,
       'online_charger': onlineCharger,
-      'available_hours': availableHours,
+      // 'available_hours': availableHours,
       'everyone_can_access': everyoneCanAccess,
     };
   }
@@ -72,9 +72,9 @@ class ChargingStationModel {
     String? chargingEffect,
     String? plug,
     String? pricePerKwh,
-    String? bankAccount,
+    IbanModel? bankAccount,
     bool? onlineCharger,
-    List<TimeSlotModel>? availableHours,
+    // List<TimeSlotModel>? availableHours,
     bool? everyoneCanAccess,
   }) {
     return ChargingStationModel(
@@ -88,7 +88,7 @@ class ChargingStationModel {
       pricePerKwh: pricePerKwh ?? this.pricePerKwh,
       bankAccount: bankAccount ?? this.bankAccount,
       onlineCharger: onlineCharger ?? this.onlineCharger,
-      availableHours: availableHours ?? this.availableHours,
+      // availableHours: availableHours ?? this.availableHours,
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/add_your_car_page.dart';
@@ -23,14 +24,6 @@ class OnboardingPage extends StatelessWidget {
     return '';
   }
 
-  // Color changeIconColors(bool isNameValid, bool isPhoneNumberValid) {
-  //   if (isNameValid || isPhoneNumberValid) {
-  //     return Colors.white;
-  //   } else {
-  //     return hintTextColor;
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
@@ -40,11 +33,25 @@ class OnboardingPage extends StatelessWidget {
         final cars = state.cars ?? [];
         final firstCar = cars.isNotEmpty ? cars.first : null;
 
+        final chargingStations = state.chargingStations ?? [];
+        final firstChargingStation = chargingStations.isNotEmpty
+            ? chargingStations.first
+            : null;
+
+        String? firstPaymentMethod = 'No payment method';
+
+        for (final paymentMethod in state.paymentMethods ?? []) {
+          if (paymentMethod is CreditCardModel) {
+            firstPaymentMethod = paymentMethod.cardNumber;
+            break;
+          } else if (paymentMethod is IbanModel) {
+            firstPaymentMethod = paymentMethod.ibanNumber?.substring(0, 18);
+            break;
+          }
+        }
+        debugPrint(firstPaymentMethod);
+
         return Scaffold(
-          // extendBodyBehindAppBar: true,
-          // appBar: AppBar(
-          //   backgroundColor: Colors.transparent,
-          // ),
           backgroundColor: context.theme.appColors.background,
           body: SingleChildScrollView(
             child: Column(
@@ -65,7 +72,7 @@ class OnboardingPage extends StatelessWidget {
                         marginDistance: marginSize,
                         iconColor:
                             state.name != null || state.phoneNumber != null
-                            ? context.theme.appColors.background
+                            ? context.theme.appColors.onPrimary
                             : context.theme.appColors.grey2,
                         backgroundColor:
                             state.name != null || state.phoneNumber != null
@@ -82,14 +89,20 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addCar,
-                        subLabel: firstCar != null
-                            ? createLabel(firstCar.brandName, firstCar.carModel)
+                        subLabel: state.cars != null
+                            ? createLabel(
+                                firstCar?.brandName,
+                                firstCar?.carModel,
+                              )
                             : '',
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
-                        backgroundColor: state.isPhoneNumberValid ?? false
+                        iconColor: state.cars != null
                             ? context.theme.appColors.onPrimary
-                            : context.theme.appColors.grey4,
+                            : context.theme.appColors.grey2,
+                        backgroundColor: state.cars != null
+                            ? context.theme.appColors.primary
+                            : context.theme.appColors.surface,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -101,12 +114,19 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addChargingStation,
-                        subLabel: '',
+                        subLabel:
+                            state.chargingStations != null &&
+                                state.chargingStations!.isNotEmpty
+                            ? firstChargingStation?.chargingStationName
+                            : '',
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
-                        backgroundColor: state.isNameValid ?? false
+                        iconColor: state.chargingStations != null
                             ? context.theme.appColors.onPrimary
-                            : context.theme.appColors.grey4,
+                            : context.theme.appColors.grey2,
+                        backgroundColor: state.chargingStations != null
+                            ? context.theme.appColors.primary
+                            : context.theme.appColors.surface,
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -118,12 +138,19 @@ class OnboardingPage extends StatelessWidget {
                       ),
                       SlimCardButton(
                         label: KCardTitles.addPaymentMethod,
-                        subLabel: '',
+                        subLabel:
+                            state.paymentMethods != null &&
+                                state.paymentMethods!.isNotEmpty
+                            ? firstPaymentMethod
+                            : '',
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
-                        backgroundColor: state.isNameValid ?? false
+                        iconColor: state.paymentMethods != null
                             ? context.theme.appColors.onPrimary
-                            : context.theme.appColors.grey4,
+                            : context.theme.appColors.grey2,
+                        backgroundColor: state.paymentMethods != null
+                            ? context.theme.appColors.primary
+                            : context.theme.appColors.surface,
                         onPressed: () {
                           Navigator.push(
                             context,

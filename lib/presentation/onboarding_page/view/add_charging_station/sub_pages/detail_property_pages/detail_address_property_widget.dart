@@ -49,7 +49,7 @@ class _DetailAddressPropertyWidgetState
           children: [
             CustomTextField(
               controller: widget.controllerAddress,
-              prefixIcon: Icons.search,
+              prefixIcon: Icon(Icons.search),
               prefixIconColor: context.theme.appColors.grey1,
               label: 'Name',
               hint: "e.g. John's Amp",

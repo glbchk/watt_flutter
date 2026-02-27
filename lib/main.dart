@@ -15,6 +15,7 @@ import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
 import 'presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,9 @@ Future<void> main() async {
         ),
         BlocProvider(
           create: (BuildContext context) => ChargingStationBloc(),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => PaymentMethodBloc(),
         ),
       ],
       child: const MyApp(),

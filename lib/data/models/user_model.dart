@@ -1,5 +1,6 @@
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
@@ -13,7 +14,7 @@ class UserModel {
   final String? language;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
-  final List<String>? paymentMethods;
+  final List<PaymentMethodModel>? paymentMethods;
 
   UserModel({
     this.isAnonymous,
@@ -39,7 +40,7 @@ class UserModel {
       phoneNumber: json['phone_number'] ?? '',
       isOnboardingCompleted: json['is_onboarding_completed'],
       language: json['language'] ?? 'en',
-      paymentMethods: List<String>.from(json['payment_methods'] ?? []),
+
       cars:
           (json['cars'] as List<dynamic>?)
               ?.map((item) => CarModel.fromJson(item as Map<String, dynamic>))
@@ -50,6 +51,14 @@ class UserModel {
               ?.map(
                 (item) =>
                     ChargingStationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      paymentMethods:
+          (json['payment_methods'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    PaymentMethodModel.fromJson(item as Map<String, dynamic>),
               )
               .toList() ??
           [],
@@ -66,9 +75,9 @@ class UserModel {
       'phone_number': phoneNumber,
       'is_onboarding_completed': isOnboardingCompleted,
       'language': language,
-      'payment_methods': paymentMethods,
       'cars': cars,
       'charging_stations': chargingStations,
+      'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
     };
   }
 
@@ -82,9 +91,9 @@ class UserModel {
       phoneNumber: entity.phoneNumber ?? '',
       isOnboardingCompleted: entity.isOnboardingCompleted,
       language: entity.language ?? '',
-      paymentMethods: entity.paymentMethods ?? [],
       cars: entity.cars ?? [],
       chargingStations: entity.chargingStations ?? [],
+      paymentMethods: entity.paymentMethods ?? [],
     );
   }
 
@@ -97,9 +106,9 @@ class UserModel {
     String? phoneNumber,
     bool? isOnboardingCompleted,
     String? language,
-    List<String>? paymentMethods,
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
+    List<PaymentMethodModel>? paymentMethods,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -111,9 +120,9 @@ class UserModel {
       isOnboardingCompleted:
           isOnboardingCompleted ?? this.isOnboardingCompleted,
       language: language ?? this.language,
-      paymentMethods: paymentMethods ?? this.paymentMethods,
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
+      paymentMethods: paymentMethods ?? this.paymentMethods,
     );
   }
 }

@@ -1,8 +1,8 @@
-import 'package:equatable/equatable.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 
-class OnboardingState extends Equatable {
+class OnboardingState {
   final bool isLoading;
   final String? errorMessage;
 
@@ -14,6 +14,7 @@ class OnboardingState extends Equatable {
   final bool? isPhoneNumberValid;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
+  final List<PaymentMethodModel>? paymentMethods;
 
   OnboardingState({
     this.isLoading = false,
@@ -26,6 +27,7 @@ class OnboardingState extends Equatable {
     this.isPhoneNumberValid = false,
     this.cars,
     this.chargingStations,
+    this.paymentMethods,
   });
 
   OnboardingState copyWith({
@@ -39,6 +41,7 @@ class OnboardingState extends Equatable {
     bool? Function()? isPhoneNumberValid,
     List<CarModel>? Function()? cars,
     List<ChargingStationModel>? Function()? chargingStations,
+    List<PaymentMethodModel>? Function()? paymentMethods,
   }) {
     return OnboardingState(
       isLoading: isLoading ?? this.isLoading,
@@ -57,9 +60,9 @@ class OnboardingState extends Equatable {
       chargingStations: chargingStations != null
           ? chargingStations()
           : this.chargingStations,
+      paymentMethods: paymentMethods != null
+          ? paymentMethods()
+          : this.paymentMethods,
     );
   }
-
-  @override
-  List<Object?> get props => [cars, chargingStations, isLoading, errorMessage];
 }

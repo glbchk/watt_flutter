@@ -87,7 +87,7 @@ class AddNamePhoneNumberWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 35.0),
-            ((isNameValid) && (isPhoneNumberValid))
+            ((isNameValid) || (isPhoneNumberValid))
                 ? WattMainButton(
                     label: 'Save',
                     onPressed: onPressSave,

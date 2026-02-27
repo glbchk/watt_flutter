@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
@@ -12,6 +13,7 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_name_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_plug_property_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_price_property_widget.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/add_iban_in_charging_station.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
@@ -110,6 +112,14 @@ class _DetailsPageState extends State<DetailsPage> {
                         UpdateChargingStationPropertyEvent(
                           widget.property,
                           _getCorrectValue(widget.property),
+
+                          ///TODO:Need to fix here
+                          state.bankAccount ??
+                              IbanModel(
+                                ibanNumber: '',
+                                id: '',
+                                isUsedForReceivingEarnings: false,
+                              ),
                         ),
                       );
 
@@ -165,7 +175,14 @@ class _DetailsPageState extends State<DetailsPage> {
         controllerPrice: controllerPrice,
       ),
       DetailPageProperties.bankAccount => DetailBankAccountPropertyWidget(
-        onPress: () {},
+        onPress: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddIbanInChargingStationPage(),
+            ),
+          );
+        },
       ),
       DetailPageProperties.availableHours => DetailAvailableHoursPropertyWidget(
         onPress: () {},
