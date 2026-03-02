@@ -7,6 +7,7 @@ import 'package:watt/presentation/auth_page/view/components/buttons_section.dart
 import 'package:watt/presentation/auth_page/view/components/header_auth.dart';
 import 'package:watt/presentation/onboarding_page/view/onboarding_page.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/watt_alert.dart';
 
 import '../../../utils/global_components/bottom_floating_button.dart';
 import '../../home_page/view/home_page.dart';
@@ -23,12 +24,14 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController controllerEmail = TextEditingController();
   TextEditingController controllerPassword = TextEditingController();
   TextEditingController controllerRetypePassword = TextEditingController();
+  TextEditingController forgotPasswordController = TextEditingController();
 
   @override
   void dispose() {
     controllerEmail.dispose();
     controllerPassword.dispose();
     controllerRetypePassword.dispose();
+    forgotPasswordController.dispose();
     super.dispose();
   }
 
@@ -56,14 +59,20 @@ class _AuthPageState extends State<AuthPage> {
             (route) => false,
           );
         }
-        if (state is AuthErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+        if (state is AuthUnauthenticatedState && state.errorMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage!)),
+            );
+          });
+
+          context.read<AuthBloc>().add(AuthSnackBarErrorMessageEvent(''));
         }
       },
       builder: (context, state) {
-        final isLoading = state is AuthLoadingState;
+        final isLoading = state is AuthUnauthenticatedState
+            ? state.isLoading
+            : false;
         final isRegisterMode = state is AuthUnauthenticatedState
             ? state.isRegisterMode
             : false;
@@ -85,23 +94,36 @@ class _AuthPageState extends State<AuthPage> {
                   controllerPassword: controllerPassword,
                   controllerRetypePassword: controllerRetypePassword,
                   isRegisterMode: isRegisterMode,
-                  // onChangedEmail: (String? value) {
-                  //   setState(() {
-                  //     if (value == null || !value.contains('@')) {
-                  //       emailError = 'Please enter a valid email address.';
-                  //     } else {
-                  //       emailError = null; // Clear error if valid
-                  //     }
-                  //   });
-                  onChangedEmail: (value) {
-                    value;
+                  onChangedEmail: (String? value) {
+                    context.read<AuthBloc>().add(
+                      EmailVerificationEvent(
+                        value: value ?? '',
+                      ),
+                    );
                   },
-                  onChangedPassword: (value) {
-                    value;
+                  emailError: (state is AuthUnauthenticatedState)
+                      ? state.emailError
+                      : null,
+                  onChangedPassword: (String? value) {
+                    context.read<AuthBloc>().add(
+                      PasswordVerificationEvent(
+                        value: value ?? '',
+                      ),
+                    );
                   },
-                  onChangedRetypePassword: (value) {
-                    value;
+                  passwordError: (state is AuthUnauthenticatedState)
+                      ? state.passwordError
+                      : null,
+                  onChangedRetypePassword: (String? value) {
+                    context.read<AuthBloc>().add(
+                      RetypePasswordVerificationEvent(
+                        value: value ?? '',
+                      ),
+                    );
                   },
+                  retypePasswordError: (state is AuthUnauthenticatedState)
+                      ? state.retypePasswordError
+                      : null,
                 ),
                 ButtonsSectionWidget(
                   loginCallback: () {
@@ -117,16 +139,53 @@ class _AuthPageState extends State<AuthPage> {
                       RegisterRequestedEvent(
                         email: controllerEmail.text,
                         password: controllerPassword.text,
+                        retypePassword: controllerRetypePassword.text,
                         isOnboardingCompleted: false,
                       ),
                     );
                   },
                   forgotPasswordCallback: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OnboardingPage(),
-                      ),
+                    WattAlert.show(
+                      context: context,
+                      title: 'Forgot your password?',
+                      message:
+                          'Enter your phone number or email address to reset your password',
+                      buttonLabel: 'Reset',
+                      controller: forgotPasswordController,
+                      onChanged: (String? value) {
+                        context.read<AuthBloc>().add(
+                          ForgotPasswordEmailVerificationEvent(
+                            value: value ?? '',
+                          ),
+                        );
+                      },
+                      onConfirm: () {
+                        final bloc = context.read<AuthBloc>();
+                        final email = forgotPasswordController.text;
+
+                        bloc.add(
+                          ForgotPasswordEmailVerificationEvent(value: email),
+                        );
+
+                        final state = bloc.state;
+                        if (state is AuthUnauthenticatedState &&
+                            state.forgotPasswordError == null) {
+                          bloc.add(SendPasswordResetEmailEvent(email: email));
+                        }
+
+                        WattAlert.show(
+                          context: context,
+                          svg: 'assets/icons/ic_success.svg',
+                          title: 'Password reset successfully',
+                          message:
+                              'We’ve sent you an email. Please check your inbox and reset your password.',
+                          buttonLabel: 'Okay',
+                          onConfirm: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                          },
+                        );
+                      },
                     );
                   },
                   termsAndConditionsCallback: () {},

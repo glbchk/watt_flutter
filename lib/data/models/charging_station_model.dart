@@ -1,4 +1,5 @@
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/timeslot_model.dart';
 
 class ChargingStationModel {
   final String id;
@@ -11,7 +12,7 @@ class ChargingStationModel {
   final String? pricePerKwh;
   final IbanModel? bankAccount;
   final bool? onlineCharger;
-  // final List<TimeSlotModel>? availableHours;
+  final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
   ChargingStationModel({
@@ -25,7 +26,7 @@ class ChargingStationModel {
     this.pricePerKwh,
     this.bankAccount,
     this.onlineCharger,
-    // this.availableHours,
+    this.availableHours,
     this.everyoneCanAccess,
   });
 
@@ -39,9 +40,13 @@ class ChargingStationModel {
       chargingEffect: json['charging_effect'],
       plug: json['plug'],
       pricePerKwh: json['price_per_kwh'],
-      bankAccount: json['bank_account'],
+      bankAccount: json['bank_account'] != null
+          ? IbanModel.fromJson(json['bank_account'])
+          : null,
       onlineCharger: json['online_charger'],
-      // availableHours: json['available_hours'],
+      availableHours: (json['available_hours'] as List<dynamic>?)
+          ?.map((m) => TimeSlotModel.fromJson(m))
+          .toList(),
       everyoneCanAccess: json['everyone_can_access'],
     );
   }
@@ -56,9 +61,9 @@ class ChargingStationModel {
       'charging_effect': chargingEffect,
       'plug': plug,
       'price_per_kwh': pricePerKwh,
-      'bank_account': bankAccount,
+      'bank_account': bankAccount?.toJson(),
       'online_charger': onlineCharger,
-      // 'available_hours': availableHours,
+      'available_hours': availableHours?.map((m) => m.toJson()).toList(),
       'everyone_can_access': everyoneCanAccess,
     };
   }
@@ -74,7 +79,7 @@ class ChargingStationModel {
     String? pricePerKwh,
     IbanModel? bankAccount,
     bool? onlineCharger,
-    // List<TimeSlotModel>? availableHours,
+    List<TimeSlotModel>? availableHours,
     bool? everyoneCanAccess,
   }) {
     return ChargingStationModel(
@@ -88,7 +93,7 @@ class ChargingStationModel {
       pricePerKwh: pricePerKwh ?? this.pricePerKwh,
       bankAccount: bankAccount ?? this.bankAccount,
       onlineCharger: onlineCharger ?? this.onlineCharger,
-      // availableHours: availableHours ?? this.availableHours,
+      availableHours: availableHours ?? this.availableHours,
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
     );
   }

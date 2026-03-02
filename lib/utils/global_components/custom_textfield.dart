@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
 
 class CustomTextField extends StatefulWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String label;
   final String? hint;
   final String? error;
@@ -19,6 +19,7 @@ class CustomTextField extends StatefulWidget {
   final TextCapitalization? textCapitalization;
   final bool? isPassword;
   final FormFieldValidator<String>? validator;
+  final bool? autofocus;
 
   const CustomTextField({
     super.key,
@@ -36,6 +37,7 @@ class CustomTextField extends StatefulWidget {
     this.onChanged,
     this.textCapitalization,
     this.validator,
+    this.autofocus,
   });
 
   @override
@@ -67,9 +69,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         SizedBox(height: 8.0),
         TextFormField(
           controller: widget.controller,
+          autofocus: widget.autofocus ?? true,
           obscureText: widget.isPassword ?? false ? _obscurePassword : false,
-          enableSuggestions: widget.isPassword != true,
-          autocorrect: widget.isPassword != true,
+          enableSuggestions: widget.isPassword == false,
+          autocorrect: widget.isPassword == false,
           keyboardType: widget.isPassword ?? false
               ? TextInputType.visiblePassword
               : widget.keyboardType,

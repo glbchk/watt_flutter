@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
@@ -27,6 +28,27 @@ class ChargingStationBloc
     //     ),
     //   );
     // });
+
+    on<AddIbanEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          bankAccount: () => event.iban,
+        ),
+      );
+    });
+
+    on<AddTimeSlotEvent>((event, emit) {
+      final List<TimeSlotModel> updatedTimeSlots = [
+        ...?state.availableHours,
+        event.timeSlot,
+      ];
+
+      emit(
+        state.copyWith(
+          availableHours: () => updatedTimeSlots,
+        ),
+      );
+    });
 
     on<UpdateChargingStationPropertyEvent>((event, emit) {
       emit(
@@ -57,13 +79,21 @@ class ChargingStationBloc
             bankAccount: () => event.iban,
           ),
 
-          DetailPageProperties.availableHours => state,
+          DetailPageProperties.availableHours => state.copyWith(
+            availableHours: () => event.timeSlots,
+          ),
         },
       );
     });
 
     on<AddChargingStationEvent>((event, emit) async {
       await addChargingStationUseCase.execute(event.chargingStation);
+
+      emit(const ChargingStationState());
+    });
+
+    on<ResetChargingStationFormEvent>((event, emit) {
+      emit(const ChargingStationState());
     });
 
     // on<UpdateChargingStationEvent>((event, emit) async {

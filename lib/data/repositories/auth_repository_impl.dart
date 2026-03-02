@@ -8,6 +8,11 @@ class AuthRepositoryImpl implements AuthRepository {
   final UserRemoteDataSource userRemoteDataSource = UserRemoteDataSource();
 
   @override
+  Future<UserModel> saveOnboardingDataForRegister(UserModel user) async {
+    return authRemoteDataSource.saveOnboardingDataForRegister(user);
+  }
+
+  @override
   Future<void> registerUser(String email, String password) async {
     final uid = await authRemoteDataSource.register(email, password);
 
@@ -50,12 +55,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logoutUser() async {
-    await authRemoteDataSource.logout();
+  Future<void> sendPasswordResetEmail(String email) async {
+    return authRemoteDataSource.sendPasswordResetEmail(email);
   }
 
   @override
-  Future<UserModel> saveOnboardingDataForRegister(UserModel user) async {
-    return authRemoteDataSource.saveOnboardingDataForRegister(user);
+  Future<void> logoutUser() async {
+    await authRemoteDataSource.logout();
   }
 }

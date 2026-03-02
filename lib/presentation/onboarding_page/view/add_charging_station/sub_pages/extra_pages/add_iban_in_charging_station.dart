@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_payment_method/add_iban_details_page.dart';
-import 'package:watt/presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_payment_method/bloc/payment_method_event.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -90,8 +89,8 @@ class _AddIbanDetailsPageState extends State<AddIbanInChargingStationPage> {
                           isUsedForReceivingEarnings: true,
                         );
 
-                        context.read<PaymentMethodBloc>().add(
-                          FilledIbanEvent(
+                        context.read<ChargingStationBloc>().add(
+                          AddIbanEvent(
                             iban: paymentMethod,
                           ),
                         );

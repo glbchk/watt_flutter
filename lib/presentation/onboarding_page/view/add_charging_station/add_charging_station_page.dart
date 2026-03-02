@@ -30,16 +30,6 @@ List<String> chargingStationIconsList = [
   KChargingStationsLogos.other,
 ];
 
-List<String> daysList = [
-  'M',
-  'T',
-  'W',
-  'T',
-  'F',
-  'S',
-  'S',
-];
-
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
 

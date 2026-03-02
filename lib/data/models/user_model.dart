@@ -75,8 +75,8 @@ class UserModel {
       'phone_number': phoneNumber,
       'is_onboarding_completed': isOnboardingCompleted,
       'language': language,
-      'cars': cars,
-      'charging_stations': chargingStations,
+      'cars': cars?.map((c) => c.toJson()).toList(),
+      'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
       'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
     };
   }

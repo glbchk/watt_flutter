@@ -5,11 +5,13 @@ abstract class AuthEvent {}
 class RegisterRequestedEvent extends AuthEvent {
   final String email;
   final String password;
+  final String retypePassword;
   final bool isOnboardingCompleted;
 
   RegisterRequestedEvent({
     required this.email,
     required this.password,
+    required this.retypePassword,
     required this.isOnboardingCompleted,
   });
 }
@@ -40,18 +42,47 @@ class UpdateOnboardingDataEvent extends AuthEvent {
 
 class SignInAnonymouslyEvent extends AuthEvent {}
 
-class NameVerificationEvent extends AuthEvent {
+class EmailVerificationEvent extends AuthEvent {
   final String value;
 
-  NameVerificationEvent({required this.value});
+  EmailVerificationEvent({
+    required this.value,
+  });
 }
 
-class PhoneNumberVerificationEvent extends AuthEvent {
+class PasswordVerificationEvent extends AuthEvent {
   final String value;
 
-  PhoneNumberVerificationEvent({required this.value});
+  PasswordVerificationEvent({
+    required this.value,
+  });
 }
 
-//change user
+class RetypePasswordVerificationEvent extends AuthEvent {
+  final String value;
 
-//remove user
+  RetypePasswordVerificationEvent({
+    required this.value,
+  });
+}
+
+class AuthSnackBarErrorMessageEvent extends AuthEvent {
+  final String message;
+  AuthSnackBarErrorMessageEvent(this.message);
+}
+
+class ForgotPasswordEmailVerificationEvent extends AuthEvent {
+  final String value;
+
+  ForgotPasswordEmailVerificationEvent({
+    required this.value,
+  });
+}
+
+class SendPasswordResetEmailEvent extends AuthEvent {
+  final String email;
+
+  SendPasswordResetEmailEvent({
+    required this.email,
+  });
+}

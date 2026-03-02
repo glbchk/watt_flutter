@@ -35,14 +35,14 @@ class SignInAnonymouslyUseCase extends AuthUserUseCase {
   }
 }
 
+class SendPasswordResetEmailUseCase extends AuthUserUseCase {
+  Future<void> execute(String email) {
+    return authRepository.sendPasswordResetEmail(email);
+  }
+}
+
 class LogoutUserUseCase extends AuthUserUseCase {
   Future<void> execute() {
     return authRepository.logoutUser();
   }
 }
-
-// class UpdateOnboardingDataUseCase extends AuthUserUseCase {
-//   Future<UserModel> execute(UserModel user) {
-//     return authRepository.saveOnboardingDataForRegister(user);
-//   }
-// }

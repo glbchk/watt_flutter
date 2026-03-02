@@ -11,9 +11,9 @@ class AuthFormWidget extends StatelessWidget {
   final Function(String?) onChangedPassword;
   final Function(String?) onChangedRetypePassword;
 
-  // final String emailError;
-  // final String passwordError;
-  // final String retypePasswordError;
+  final String? emailError;
+  final String? passwordError;
+  final String? retypePasswordError;
 
   const AuthFormWidget({
     super.key,
@@ -24,9 +24,9 @@ class AuthFormWidget extends StatelessWidget {
     required this.onChangedEmail,
     required this.onChangedPassword,
     required this.onChangedRetypePassword,
-    // required this.emailError,
-    // required this.passwordError,
-    // required this.retypePasswordError,
+    this.emailError,
+    this.passwordError,
+    this.retypePasswordError,
   });
 
   @override
@@ -40,7 +40,7 @@ class AuthFormWidget extends StatelessWidget {
               controller: controllerEmail,
               label: 'Email',
               hint: 'Email...',
-              // error: emailError,
+              error: emailError,
               onChanged: onChangedEmail,
             ),
             const SizedBox(height: 20.0),
@@ -50,7 +50,8 @@ class AuthFormWidget extends StatelessWidget {
               hint: 'Start typing here...',
               suffixIcon: Icons.visibility_off,
               isPassword: true,
-              onChanged: (String? p1) {},
+              error: passwordError,
+              onChanged: onChangedPassword,
             ),
             if (isRegisterMode) ...[
               SizedBox(height: 20.0),
@@ -60,13 +61,8 @@ class AuthFormWidget extends StatelessWidget {
                 hint: 'Start typing here...',
                 suffixIcon: Icons.visibility_off,
                 isPassword: true,
-                validator: (value) {
-                  if (value == controllerPassword.text) {
-                    return 'Password should be the same';
-                  }
-                  return null;
-                },
-                onChanged: (String? p1) {},
+                error: retypePasswordError,
+                onChanged: onChangedRetypePassword,
               ),
             ],
           ],

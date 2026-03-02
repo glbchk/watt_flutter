@@ -1,4 +1,5 @@
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/timeslot_model.dart';
 
 class ChargingStationState {
   final bool? isLoading;
@@ -14,7 +15,7 @@ class ChargingStationState {
   final String? pricePerKwh;
   final IbanModel? bankAccount;
   final bool? onlineCharger;
-  // final List<TimeSlotModel>? availableHours;
+  final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
   const ChargingStationState({
@@ -30,7 +31,7 @@ class ChargingStationState {
     this.pricePerKwh,
     this.bankAccount,
     this.onlineCharger = false,
-    // this.availableHours,
+    this.availableHours,
     this.everyoneCanAccess = false,
   });
 
@@ -47,7 +48,7 @@ class ChargingStationState {
     String? Function()? pricePerKwh,
     IbanModel? Function()? bankAccount,
     bool? Function()? onlineCharger,
-    // List<TimeSlotModel>? Function()? availableHours,
+    List<TimeSlotModel>? Function()? availableHours,
     bool? Function()? everyoneCanAccess,
   }) {
     return ChargingStationState(
@@ -69,9 +70,9 @@ class ChargingStationState {
       onlineCharger: onlineCharger != null
           ? onlineCharger()
           : this.onlineCharger,
-      // availableHours: availableHours != null
-      //     ? availableHours()
-      //     : this.availableHours,
+      availableHours: availableHours != null
+          ? availableHours()
+          : this.availableHours,
       everyoneCanAccess: everyoneCanAccess != null
           ? everyoneCanAccess()
           : this.everyoneCanAccess,

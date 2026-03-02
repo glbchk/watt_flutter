@@ -15,12 +15,7 @@ import 'package:watt/utils/global_components/watt_alert.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class AddChargingStationDetailsPage extends StatefulWidget {
-  // final String brandName;
-
-  const AddChargingStationDetailsPage({
-    super.key,
-    // required this.brandName,
-  });
+  const AddChargingStationDetailsPage({super.key});
 
   @override
   State<AddChargingStationDetailsPage> createState() =>
@@ -34,6 +29,8 @@ class _AddChargingStationDetailsPageState
     isUsedForReceivingEarnings: false,
   );
 
+  String days = '';
+
   @override
   void initState() {
     final state = context.read<PaymentMethodBloc>().state;
@@ -45,6 +42,13 @@ class _AddChargingStationDetailsPageState
         }
       }
     }
+
+    final stateSlots = context.read<ChargingStationBloc>().state;
+    final String daysString =
+        (stateSlots.availableHours?.first.availableDays ?? [])
+            .map((e) => e.name.substring(0, 3))
+            .join(', ');
+    days = daysString;
 
     super.initState();
   }
@@ -142,7 +146,7 @@ class _AddChargingStationDetailsPageState
                         );
                       },
                       bankAccount:
-                          paymentMethod.ibanNumber?.substring(0, 18) ?? '',
+                          state.bankAccount?.ibanNumber?.substring(0, 18) ?? '',
                       onBankAccountPressed: () {
                         Navigator.push(
                           context,
@@ -154,7 +158,8 @@ class _AddChargingStationDetailsPageState
                         );
                       },
                       onOnlineChargerPressed: (bool value) {},
-                      availableHours: 'Need to fix it',
+                      availableHours:
+                          '${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}',
                       onAvailableHoursPressed: () {
                         Navigator.push(
                           context,
@@ -193,7 +198,7 @@ class _AddChargingStationDetailsPageState
                   pricePerKwh: state.pricePerKwh,
                   bankAccount: state.bankAccount,
                   onlineCharger: state.onlineCharger,
-                  // availableHours: state.availableHours,
+                  availableHours: state.availableHours,
                   everyoneCanAccess: state.everyoneCanAccess,
                 );
 
@@ -227,6 +232,10 @@ class _AddChargingStationDetailsPageState
                 } else {
                   context.read<ChargingStationBloc>().add(
                     AddChargingStationEvent(chargingStation),
+                  );
+
+                  context.read<ChargingStationBloc>().add(
+                    ResetChargingStationFormEvent(),
                   );
                   Navigator.pop(context, chargingStation);
                 }

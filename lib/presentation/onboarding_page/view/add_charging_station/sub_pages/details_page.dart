@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
@@ -49,17 +50,21 @@ class _DetailsPageState extends State<DetailsPage> {
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerAddress = TextEditingController();
   TextEditingController controllerPrice = TextEditingController();
+  TextEditingController controllerStartTime = TextEditingController();
+  TextEditingController controllerEndTime = TextEditingController();
 
   String? tempSelectedBrand;
   String? selectedChargingEffect;
   String? selectedPlugType;
-  TimeSlotModel? availableHours;
+  List<TimeSlotModel>? availableHours = [];
 
   @override
   void dispose() {
     controllerName.dispose();
     controllerAddress.dispose();
     controllerPrice.dispose();
+    controllerStartTime.dispose();
+    controllerEndTime.dispose();
     super.dispose();
   }
 
@@ -120,6 +125,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 id: '',
                                 isUsedForReceivingEarnings: false,
                               ),
+                          availableHours ?? state.availableHours ?? [],
                         ),
                       );
 
@@ -185,7 +191,21 @@ class _DetailsPageState extends State<DetailsPage> {
         },
       ),
       DetailPageProperties.availableHours => DetailAvailableHoursPropertyWidget(
-        onPress: () {},
+        controllerStartTime: controllerStartTime,
+        controllerEndTime: controllerEndTime,
+        onPress: () {
+          final timeSlot = TimeSlotModel(
+            id: Uuid().v4(),
+            availableDays: daysList,
+            startTime: controllerStartTime.text,
+            endTime: controllerEndTime.text,
+          );
+
+          context.read<ChargingStationBloc>().add(
+            AddTimeSlotEvent(timeSlot),
+          );
+          Navigator.pop(context, timeSlot);
+        },
       ),
     };
   }
@@ -198,6 +218,8 @@ class _DetailsPageState extends State<DetailsPage> {
       DetailPageProperties.chargingEffect => selectedChargingEffect ?? '',
       DetailPageProperties.plug => selectedPlugType ?? '',
       DetailPageProperties.pricePerKwh => controllerPrice.text,
+      DetailPageProperties.bankAccount => '',
+      DetailPageProperties.availableHours => '',
       _ => "",
     };
   }
