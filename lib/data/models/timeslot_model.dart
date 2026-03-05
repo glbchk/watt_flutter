@@ -14,7 +14,9 @@ class TimeSlotModel {
   factory TimeSlotModel.fromJson(Map<String, dynamic> json) {
     return TimeSlotModel(
       id: json['id'],
-      availableDays: json['available_days'],
+      availableDays: json['available_days'] != null
+          ? List<int>.from(json['available_days'])
+          : null,
       startTime: json['start_time'],
       endTime: json['end_time'],
     );
