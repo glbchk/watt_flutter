@@ -181,7 +181,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
 
                                         final result =
                                             await Navigator.push<
-                                              ChargingStationModel
+                                              ChargingStationModel?
                                             >(
                                               context,
                                               MaterialPageRoute(
@@ -194,7 +194,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
 
                                         if (result != null) {
                                           context.read<OnboardingBloc>().add(
-                                            FetchUserChargingStationsEvent(),
+                                            AddedChargingStationEvent(
+                                              chargingStation: result,
+                                            ),
                                           );
                                         }
                                       },

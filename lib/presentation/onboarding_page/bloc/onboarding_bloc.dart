@@ -156,6 +156,25 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           ),
         );
       } catch (e) {
+        print('Error fetching charging stations: $e');
+        emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      }
+    });
+
+    on<AddedChargingStationEvent>((event, emit) async {
+      try {
+        final List<ChargingStationModel> chargingStations = [
+          ...?state.chargingStations,
+          event.chargingStation,
+        ];
+
+        emit(
+          state.copyWith(
+            chargingStations: () => chargingStations,
+          ),
+        );
+      } catch (e) {
+        print('Error adding charging station: $e');
         emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
       }
     });

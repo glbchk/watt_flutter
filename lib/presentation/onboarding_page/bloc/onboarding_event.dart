@@ -1,4 +1,5 @@
 import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 
 abstract class OnboardingEvent {}
 
@@ -49,6 +50,14 @@ class DeleteCarEvent extends OnboardingEvent {
 
   DeleteCarEvent({
     required this.carId,
+  });
+}
+
+class AddedChargingStationEvent extends OnboardingEvent {
+  final ChargingStationModel chargingStation;
+
+  AddedChargingStationEvent({
+    required this.chargingStation,
   });
 }
 
