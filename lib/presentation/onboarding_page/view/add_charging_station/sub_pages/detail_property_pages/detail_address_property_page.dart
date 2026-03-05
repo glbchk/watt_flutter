@@ -1,54 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:watt/utils/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/inline_button.dart';
 
 import '../../../../../../utils/colors.dart';
 
-List<String> chargingEffectList = [
-  KChargingEffect.three,
-  KChargingEffect.seven,
-  KChargingEffect.eleven,
-  KChargingEffect.twentyTwo,
-];
-
-List<String> plugList = [
-  KPlugs.threePhase,
-  KPlugs.typeOne,
-  KPlugs.typeTwo,
-  KPlugs.wall,
-];
-
-class DetailAddressPropertyWidget extends StatefulWidget {
-  final TextEditingController controllerAddress;
+class DetailAddressPropertyPage extends StatefulWidget {
   final VoidCallback? onPressedCurrentLocation;
   final VoidCallback? onPressedChooseOnMap;
 
-  const DetailAddressPropertyWidget({
+  const DetailAddressPropertyPage({
     super.key,
-    required this.controllerAddress,
     this.onPressedCurrentLocation,
     this.onPressedChooseOnMap,
   });
 
   @override
-  State<DetailAddressPropertyWidget> createState() =>
-      _DetailAddressPropertyWidgetState();
+  State<DetailAddressPropertyPage> createState() =>
+      _DetailAddressPropertyPageState();
 }
 
-class _DetailAddressPropertyWidgetState
-    extends State<DetailAddressPropertyWidget> {
+class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
+  TextEditingController controllerAddress = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Container(
+    return DetailsWidget(
+      title: 'Address',
+      content: Container(
         color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomTextField(
-              controller: widget.controllerAddress,
+              controller: controllerAddress,
               prefixIcon: Icon(Icons.search),
               prefixIconColor: context.theme.appColors.grey1,
               label: 'Name',
@@ -70,6 +59,15 @@ class _DetailAddressPropertyWidgetState
           ],
         ),
       ),
+      onPressed: () {
+        context.read<ChargingStationBloc>().add(
+          SaveAddressPropertyEvent(
+            controllerAddress.text,
+          ),
+        );
+
+        Navigator.pop(context);
+      },
     );
   }
 }

@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
 
 class ChargingStationBloc
     extends Bloc<ChargingStationEvent, ChargingStationState> {
@@ -29,10 +30,64 @@ class ChargingStationBloc
     //   );
     // });
 
-    on<AddIbanEvent>((event, emit) {
+    on<SaveNamePropertyEvent>((event, emit) {
       emit(
         state.copyWith(
-          bankAccount: () => event.iban,
+          chargingStationName: () => event.value,
+        ),
+      );
+    });
+
+    on<SaveAddressPropertyEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          address: () => event.value,
+        ),
+      );
+    });
+
+    on<UpdateBrandNamePropertyEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          brandName: () => event.value,
+          brandLogo: () => event.brandLogo,
+        ),
+      );
+    });
+
+    on<SaveChargingEffectPropertyEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          chargingEffect: () => event.value,
+        ),
+      );
+    });
+
+    on<SavePlugPropertyEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          plug: () => event.value,
+        ),
+      );
+    });
+
+    on<SavePricePropertyEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          pricePerKwh: () => event.value,
+        ),
+      );
+    });
+
+    on<AddIbanEvent>((event, emit) {
+      final List<IbanModel> paymentMethods = [
+        ...?state.bankAccounts,
+        event.iban,
+      ];
+
+      emit(
+        state.copyWith(
+          bankAccounts: () => paymentMethods,
         ),
       );
     });
@@ -50,44 +105,18 @@ class ChargingStationBloc
       );
     });
 
-    on<UpdateChargingStationPropertyEvent>((event, emit) {
-      emit(
-        switch (event.property) {
-          DetailPageProperties.chargingStationName => state.copyWith(
-            chargingStationName: () => event.value,
-          ),
-
-          DetailPageProperties.address => state.copyWith(
-            address: () => event.value,
-          ),
-
-          DetailPageProperties.brandName => state.copyWith(
-            brandName: () => event.value,
-          ),
-
-          DetailPageProperties.chargingEffect => state.copyWith(
-            chargingEffect: () => event.value,
-          ),
-
-          DetailPageProperties.plug => state.copyWith(plug: () => event.value),
-
-          DetailPageProperties.pricePerKwh => state.copyWith(
-            pricePerKwh: () => event.value,
-          ),
-
-          DetailPageProperties.bankAccount => state.copyWith(
-            bankAccount: () => event.iban,
-          ),
-
-          DetailPageProperties.availableHours => state.copyWith(
-            availableHours: () => event.timeSlots,
-          ),
-        },
-      );
-    });
-
     on<AddChargingStationEvent>((event, emit) async {
       await addChargingStationUseCase.execute(event.chargingStation);
+      final List<ChargingStationModel> chargingStationsUpdated = [
+        ...?state.chargingStations,
+        event.chargingStation,
+      ];
+
+      emit(
+        state.copyWith(
+          chargingStations: () => chargingStationsUpdated,
+        ),
+      );
 
       emit(const ChargingStationState());
     });

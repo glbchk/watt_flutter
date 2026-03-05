@@ -6,11 +6,19 @@ import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/charger_station_details_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
-import 'package:watt/presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_address_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_available_hours_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_bank_account_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_brand_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_charging_effect_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_name_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_plug_property_page.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_price_property_page.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/row_button.dart';
+import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_alert.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
@@ -29,26 +37,26 @@ class _AddChargingStationDetailsPageState
     isUsedForReceivingEarnings: false,
   );
 
-  String days = '';
+  // String days = '';
+  bool isOnlineChargerOn = false;
+  bool isEveryoneCanAccess = false;
 
   @override
   void initState() {
-    final state = context.read<PaymentMethodBloc>().state;
-    final paymentMethods = state.paymentMethods;
+    final state = context.read<ChargingStationBloc>().state;
+    final paymentMethods = state.bankAccounts;
     if (paymentMethods != null) {
       for (final method in paymentMethods) {
-        if (method is IbanModel) {
-          paymentMethod = method;
-        }
+        paymentMethod = method;
       }
     }
 
-    final stateSlots = context.read<ChargingStationBloc>().state;
-    final String daysString =
-        (stateSlots.availableHours?.first.availableDays ?? [])
-            .map((e) => e.name.substring(0, 3))
-            .join(', ');
-    days = daysString;
+    // final stateSlots = context.read<ChargingStationBloc>().state;
+    // final String daysString =
+    //     (stateSlots.availableHours?.first.availableDays ?? [])
+    //         .map((e) => e.name.substring(0, 3))
+    //         .join(', ');
+    // days = daysString;
 
     super.initState();
   }
@@ -77,99 +85,139 @@ class _AddChargingStationDetailsPageState
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5.0),
-                    child: ChargerStationDetailsWidget(
-                      chargingStationName: state.chargingStationName ?? '',
-                      onNamePressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property:
-                                  DetailPageProperties.chargingStationName,
-                            ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RowButton(
+                            label: 'Name',
+                            secondLabel: state.chargingStationName ?? '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailNamePropertyPage(),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      address: state.address ?? '',
-                      onAddressPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.address,
-                            ),
+                          RowButton(
+                            label: 'Address',
+                            secondLabel: state.address ?? '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailAddressPropertyPage(),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      brandName: state.brandName,
-                      onBrandPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.brandName,
-                            ),
+                          RowButton(
+                            label: 'Brand',
+                            secondLabel: state.brandName,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailBrandPropertyPage(
+                                    selectedBrand: state.brandName ?? '',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      chargingEffect: state.chargingEffect ?? '',
-                      onChargingEffectPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.chargingEffect,
-                            ),
+                          RowButton(
+                            label: 'Charging effect',
+                            secondLabel: state.chargingEffect ?? '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      DetailChargingEffectPropertyPage(
+                                        selectedValue:
+                                            state.chargingEffect ?? '',
+                                      ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      plug: state.plug ?? '',
-                      onPlugPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.plug,
-                            ),
+                          RowButton(
+                            label: 'Plug',
+                            secondLabel: state.plug ?? '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailPlugPropertyPage(
+                                    selectedValue: state.plug ?? '',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      price: state.pricePerKwh ?? '',
-                      onPricePressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.pricePerKwh,
-                            ),
+                          RowButton(
+                            label: 'Price per kWh',
+                            secondLabel: state.pricePerKwh != ''
+                                ? '${state.pricePerKwh ?? ''} SEK'
+                                : '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailPricePropertyPage(
+                                    savedPrice: state.pricePerKwh ?? '',
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      bankAccount:
-                          state.bankAccount?.ibanNumber?.substring(0, 18) ?? '',
-                      onBankAccountPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.bankAccount,
-                            ),
+                          RowButton(
+                            label: 'Bank account',
+                            secondLabel:
+                                state.bankAccounts?.first.ibanNumber?.substring(
+                                  0,
+                                  18,
+                                ) ??
+                                '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      DetailBankAccountPropertyPage(),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                      onOnlineChargerPressed: (bool value) {},
-                      availableHours:
-                          '${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}',
-                      onAvailableHoursPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailsPage(
-                              property: DetailPageProperties.availableHours,
-                            ),
+                          RowToggle(
+                            label: 'Online charger',
+                            isSwitched: isOnlineChargerOn,
+                            onChanged: (bool value) {},
                           ),
-                        );
-                      },
+                          RowButton(
+                            label: 'Available hours',
+                            secondLabel:
+                                '${formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      DetailAvailableHoursPropertyPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          RowToggle(
+                            label: 'Everyone can access',
+                            isSwitched: isEveryoneCanAccess,
+                            onChanged: (bool value) {},
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -196,7 +244,7 @@ class _AddChargingStationDetailsPageState
                   chargingEffect: state.chargingEffect,
                   plug: state.plug,
                   pricePerKwh: state.pricePerKwh,
-                  bankAccount: state.bankAccount,
+                  bankAccount: paymentMethod,
                   onlineCharger: state.onlineCharger,
                   availableHours: state.availableHours,
                   everyoneCanAccess: state.everyoneCanAccess,
@@ -234,9 +282,6 @@ class _AddChargingStationDetailsPageState
                     AddChargingStationEvent(chargingStation),
                   );
 
-                  context.read<ChargingStationBloc>().add(
-                    ResetChargingStationFormEvent(),
-                  );
                   Navigator.pop(context, chargingStation);
                 }
               },
@@ -246,4 +291,37 @@ class _AddChargingStationDetailsPageState
       },
     );
   }
+}
+
+String _formatRange(int start, int end) {
+  if (start == end) {
+    return KChargingStation.daysList[start] ?? '';
+  }
+
+  return '${KChargingStation.daysList[start]}-${KChargingStation.daysList[end]}';
+}
+
+String formatDayRanges(List<int>? chosenDays) {
+  if (chosenDays == null || chosenDays.isEmpty) return '';
+
+  final sortedDays = List<int>.from(chosenDays)..sort();
+
+  List<String> groups = [];
+  int start = sortedDays.first;
+  int prev = sortedDays.first;
+
+  for (int i = 1; i < sortedDays.length; i++) {
+    int current = sortedDays[i];
+
+    if (current != prev + 1) {
+      groups.add(_formatRange(start, prev));
+      start = current;
+    }
+
+    prev = current;
+  }
+
+  groups.add(_formatRange(start, prev));
+
+  return groups.join(', ');
 }

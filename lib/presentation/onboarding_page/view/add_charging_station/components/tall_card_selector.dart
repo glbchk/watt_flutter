@@ -11,7 +11,7 @@ class TallCardSelector extends StatelessWidget {
   final Color? textColor;
   final Color? backgroundColor;
   final bool isSelected;
-  final VoidCallback? onPressed;
+  final ValueChanged<String>? onSelected;
 
   const TallCardSelector({
     super.key,
@@ -23,13 +23,13 @@ class TallCardSelector extends StatelessWidget {
     this.textColor,
     this.backgroundColor,
     this.isSelected = false,
-    this.onPressed,
+    this.onSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: () => onSelected?.call(label),
       child: Padding(
         padding: const EdgeInsets.only(
           left: 20.0,

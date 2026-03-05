@@ -1,3 +1,4 @@
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 
@@ -13,10 +14,12 @@ class ChargingStationState {
   final String? chargingEffect;
   final String? plug;
   final String? pricePerKwh;
-  final IbanModel? bankAccount;
+  final List<IbanModel>? bankAccounts;
   final bool? onlineCharger;
   final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
+
+  final List<ChargingStationModel>? chargingStations;
 
   const ChargingStationState({
     this.isLoading = false,
@@ -29,10 +32,11 @@ class ChargingStationState {
     this.chargingEffect,
     this.plug,
     this.pricePerKwh,
-    this.bankAccount,
+    this.bankAccounts,
     this.onlineCharger = false,
     this.availableHours,
     this.everyoneCanAccess = false,
+    this.chargingStations,
   });
 
   ChargingStationState copyWith({
@@ -46,10 +50,11 @@ class ChargingStationState {
     String? Function()? chargingEffect,
     String? Function()? plug,
     String? Function()? pricePerKwh,
-    IbanModel? Function()? bankAccount,
+    List<IbanModel>? Function()? bankAccounts,
     bool? Function()? onlineCharger,
     List<TimeSlotModel>? Function()? availableHours,
     bool? Function()? everyoneCanAccess,
+    List<ChargingStationModel>? Function()? chargingStations,
   }) {
     return ChargingStationState(
       isLoading: isLoading != null ? isLoading() : this.isLoading,
@@ -66,7 +71,7 @@ class ChargingStationState {
           : this.chargingEffect,
       plug: plug != null ? plug() : this.plug,
       pricePerKwh: pricePerKwh != null ? pricePerKwh() : this.pricePerKwh,
-      bankAccount: bankAccount != null ? bankAccount() : this.bankAccount,
+      bankAccounts: bankAccounts != null ? bankAccounts() : this.bankAccounts,
       onlineCharger: onlineCharger != null
           ? onlineCharger()
           : this.onlineCharger,
@@ -76,6 +81,9 @@ class ChargingStationState {
       everyoneCanAccess: everyoneCanAccess != null
           ? everyoneCanAccess()
           : this.everyoneCanAccess,
+      chargingStations: chargingStations != null
+          ? chargingStations()
+          : this.chargingStations,
     );
   }
 }

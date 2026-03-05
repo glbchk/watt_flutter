@@ -12,24 +12,6 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 
-List<String> chargingStationList = [
-  KChargingStationsNames.abb,
-  KChargingStationsNames.easee,
-  KChargingStationsNames.garo,
-  KChargingStationsNames.vattenfall,
-  KChargingStationsNames.tesla,
-  KChargingStationsNames.other,
-];
-
-List<String> chargingStationIconsList = [
-  KChargingStationsLogos.abb,
-  KChargingStationsLogos.easee,
-  KChargingStationsLogos.garo,
-  KChargingStationsLogos.vattenfall,
-  KChargingStationsLogos.tesla,
-  KChargingStationsLogos.other,
-];
-
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
 
@@ -52,6 +34,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
     context.read<OnboardingBloc>().add(
       FetchUserChargingStationsEvent(),
     );
+    // context.read<ChargingStationBloc>().add(
+    //   ResetChargingStationFormEvent(),
+    // );
     super.initState();
   }
 
@@ -166,25 +151,31 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                   SizedBox(height: 8.0),
                                 ],
                                 ...List.generate(
-                                  chargingStationList.length,
+                                  KChargingStation.chargingStationList.length,
                                   (index) {
                                     return TallCardButton(
-                                      label: chargingStationList.elementAt(
-                                        index,
-                                      ),
-                                      pngImage: chargingStationIconsList
+                                      label: KChargingStation
+                                          .chargingStationList
+                                          .elementAt(
+                                            index,
+                                          ),
+                                      pngImage: KChargingStation
+                                          .chargingStationIconsList
                                           .elementAt(
                                             index,
                                           ),
                                       onPressed: () async {
                                         context.read<ChargingStationBloc>().add(
                                           SaveBrandNameChargingStationEvent(
-                                            chargingStationList.elementAt(
-                                              index,
-                                            ),
-                                            chargingStationIconsList.elementAt(
-                                              index,
-                                            ),
+                                            KChargingStation.chargingStationList
+                                                .elementAt(
+                                                  index,
+                                                ),
+                                            KChargingStation
+                                                .chargingStationIconsList
+                                                .elementAt(
+                                                  index,
+                                                ),
                                           ),
                                         );
 

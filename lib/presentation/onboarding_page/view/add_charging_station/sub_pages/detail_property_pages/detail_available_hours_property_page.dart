@@ -1,45 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
+import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/small_textfield.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
 import '../../../../../../utils/colors.dart';
 
-List<WeekDays> daysList = [
-  WeekDays.monday,
-  WeekDays.tuesday,
-  WeekDays.wednesday,
-  WeekDays.thursday,
-  WeekDays.friday,
-  WeekDays.saturday,
-  WeekDays.sunday,
-];
+class DetailAvailableHoursPropertyPage extends StatefulWidget {
+  // final VoidCallback onPress;
+  // final TextEditingController controllerStartTime;
+  // final TextEditingController controllerEndTime;
 
-class DetailAvailableHoursPropertyWidget extends StatefulWidget {
-  final VoidCallback onPress;
-  final TextEditingController controllerStartTime;
-  final TextEditingController controllerEndTime;
-
-  const DetailAvailableHoursPropertyWidget({
+  const DetailAvailableHoursPropertyPage({
     super.key,
-    required this.onPress,
-    required this.controllerStartTime,
-    required this.controllerEndTime,
+    // required this.onPress,
+    // required this.controllerStartTime,
+    // required this.controllerEndTime,
   });
 
   @override
-  State<DetailAvailableHoursPropertyWidget> createState() =>
-      _DetailAvailableHoursPropertyWidgetState();
+  State<DetailAvailableHoursPropertyPage> createState() =>
+      _DetailAvailableHoursPropertyPageState();
 }
 
-class _DetailAvailableHoursPropertyWidgetState
-    extends State<DetailAvailableHoursPropertyWidget> {
-  List<WeekDays> _chosenDays = [];
+class _DetailAvailableHoursPropertyPageState
+    extends State<DetailAvailableHoursPropertyPage> {
+  TextEditingController controllerStartTime = TextEditingController();
+  TextEditingController controllerEndTime = TextEditingController();
+
+  List<int> _chosenDays = [];
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Container(
+    return DetailsWidget(
+      title: 'Available hours',
+      content: Container(
         color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -75,10 +76,17 @@ class _DetailAvailableHoursPropertyWidgetState
                         width: 15,
                       ),
                       ...List.generate(
-                        daysList.length,
+                        KChargingStation.daysList.length,
                         (index) {
-                          final day = daysList[index];
-                          final isSelected = _chosenDays.contains(day);
+                          final int dayKey = KChargingStation.daysList.keys
+                              .elementAt(index);
+                          final String dayLabel =
+                              KChargingStation.daysList[dayKey]?.substring(
+                                0,
+                                1,
+                              ) ??
+                              '';
+                          final bool isSelected = _chosenDays.contains(dayKey);
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -87,15 +95,12 @@ class _DetailAvailableHoursPropertyWidgetState
                                 onTap: () {
                                   setState(() {
                                     if (isSelected) {
-                                      _chosenDays.remove(day);
+                                      _chosenDays.remove(dayKey);
                                     } else {
-                                      _chosenDays.add(day);
+                                      _chosenDays.add(dayKey);
                                     }
 
-                                    _chosenDays.sort(
-                                      (first, second) =>
-                                          first.index.compareTo(second.index),
-                                    );
+                                    _chosenDays.sort();
 
                                     print(_chosenDays);
                                   });
@@ -111,7 +116,7 @@ class _DetailAvailableHoursPropertyWidgetState
                                   ),
                                   child: Center(
                                     child: Text(
-                                      day.value,
+                                      dayLabel,
                                       style: TextStyle(
                                         color: isSelected
                                             ? context.theme.appColors.onPrimary
@@ -150,7 +155,7 @@ class _DetailAvailableHoursPropertyWidgetState
                         ),
                         SmallTextField(
                           hint: '08:00',
-                          controller: widget.controllerStartTime,
+                          controller: controllerStartTime,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(4),
@@ -181,7 +186,7 @@ class _DetailAvailableHoursPropertyWidgetState
                         ),
                         SmallTextField(
                           hint: '17:00',
-                          controller: widget.controllerEndTime,
+                          controller: controllerEndTime,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(4),
@@ -200,11 +205,26 @@ class _DetailAvailableHoursPropertyWidgetState
             WattWhiteButton(
               label: 'Add timeslot',
               textColor: context.theme.appColors.onSurface,
-              onPressed: widget.onPress,
+              onPressed: () {
+                // final String selectedDays = formatDayRanges(_chosenDays);
+
+                final timeSlot = TimeSlotModel(
+                  id: Uuid().v4(),
+                  availableDays: _chosenDays,
+                  startTime: controllerStartTime.text,
+                  endTime: controllerEndTime.text,
+                );
+
+                context.read<ChargingStationBloc>().add(
+                  AddTimeSlotEvent(timeSlot),
+                );
+                Navigator.pop(context, timeSlot);
+              },
             ),
           ],
         ),
       ),
+      onPressed: () {},
     );
   }
 }

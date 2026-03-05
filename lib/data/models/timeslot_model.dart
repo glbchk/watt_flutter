@@ -1,21 +1,6 @@
-enum WeekDays {
-  monday('M'),
-  tuesday('T'),
-  wednesday('W'),
-  thursday('T'),
-  friday('F'),
-  saturday('S'),
-  sunday('S')
-  ;
-
-  final String value;
-
-  const WeekDays(this.value);
-}
-
 class TimeSlotModel {
   final String id;
-  final List<WeekDays>? availableDays;
+  final List<int>? availableDays;
   final String? startTime;
   final String? endTime;
 
@@ -29,9 +14,7 @@ class TimeSlotModel {
   factory TimeSlotModel.fromJson(Map<String, dynamic> json) {
     return TimeSlotModel(
       id: json['id'],
-      availableDays: (json['available_days'] as List<dynamic>?)
-          ?.map((m) => WeekDays.values.byName(m))
-          .toList(),
+      availableDays: json['available_days'],
       startTime: json['start_time'],
       endTime: json['end_time'],
     );
@@ -40,7 +23,7 @@ class TimeSlotModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'available_days': availableDays?.map((m) => m.name).toList(),
+      'available_days': availableDays,
       'start_time': startTime,
       'end_time': endTime,
     };
@@ -48,7 +31,7 @@ class TimeSlotModel {
 
   TimeSlotModel copyWith({
     String? id,
-    List<WeekDays>? availableDays,
+    List<int>? availableDays,
     String? startTime,
     String? endTime,
   }) {

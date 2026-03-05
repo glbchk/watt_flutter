@@ -42,6 +42,50 @@ class KCarLogos {
   static const String nissan = 'assets/car_logos/nissan.png';
 }
 
+class KChargingStation {
+  static List<String> chargingStationList = [
+    KChargingStationsNames.abb,
+    KChargingStationsNames.easee,
+    KChargingStationsNames.garo,
+    KChargingStationsNames.vattenfall,
+    KChargingStationsNames.tesla,
+    KChargingStationsNames.other,
+  ];
+
+  static List<String> chargingStationIconsList = [
+    KChargingStationsLogos.abb,
+    KChargingStationsLogos.easee,
+    KChargingStationsLogos.garo,
+    KChargingStationsLogos.vattenfall,
+    KChargingStationsLogos.tesla,
+    KChargingStationsLogos.other,
+  ];
+
+  static List<String> chargingEffectList = [
+    KChargingEffect.three,
+    KChargingEffect.seven,
+    KChargingEffect.eleven,
+    KChargingEffect.twentyTwo,
+  ];
+
+  static List<String> plugList = [
+    KPlugs.threePhase,
+    KPlugs.typeOne,
+    KPlugs.typeTwo,
+    KPlugs.wall,
+  ];
+
+  static const Map<int, String> daysList = {
+    1: 'Mon',
+    2: 'Tue',
+    3: 'Wed',
+    4: 'Thu',
+    5: 'Fri',
+    6: 'Sat',
+    7: 'Sun',
+  };
+}
+
 class KChargingStationsNames {
   static const String abb = 'ABB';
   static const String easee = 'Easee';

@@ -1,43 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:watt/utils/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
 
 import '../../../../../../utils/colors.dart';
 
-List<String> chargingEffectList = [
-  KChargingEffect.three,
-  KChargingEffect.seven,
-  KChargingEffect.eleven,
-  KChargingEffect.twentyTwo,
-];
-
-List<String> plugList = [
-  KPlugs.threePhase,
-  KPlugs.typeOne,
-  KPlugs.typeTwo,
-  KPlugs.wall,
-];
-
-class DetailPricePropertyWidget extends StatefulWidget {
-  final TextEditingController controllerPrice;
+class DetailPricePropertyPage extends StatefulWidget {
+  // final TextEditingController controllerPrice;
+  final String savedPrice;
   final String currency;
 
-  const DetailPricePropertyWidget({
+  const DetailPricePropertyPage({
     super.key,
-    required this.controllerPrice,
+    // required this.controllerPrice,
+    required this.savedPrice,
     this.currency = 'SEK',
   });
 
   @override
-  State<DetailPricePropertyWidget> createState() =>
-      _DetailPricePropertyWidgetState();
+  State<DetailPricePropertyPage> createState() =>
+      _DetailPricePropertyPageState();
 }
 
-class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
+class _DetailPricePropertyPageState extends State<DetailPricePropertyPage> {
+  TextEditingController controllerPrice = TextEditingController();
+
+  @override
+  void initState() {
+    controllerPrice.text = widget.savedPrice;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Container(
+    return DetailsWidget(
+      title: 'Price per kWh',
+      content: Container(
         color: context.theme.appColors.background,
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -61,14 +61,14 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
                 ),
                 Expanded(
                   child: TextFormField(
-                    controller: widget.controllerPrice,
+                    controller: controllerPrice,
                     onTapOutside: (event) {
                       FocusScope.of(context).unfocus();
                       final value = double.tryParse(
-                        widget.controllerPrice.text,
+                        controllerPrice.text,
                       );
                       if (value != null) {
-                        widget.controllerPrice.text = value.toStringAsFixed(2);
+                        controllerPrice.text = value.toStringAsFixed(2);
                       }
                     },
                     keyboardType: TextInputType.number,
@@ -116,6 +116,15 @@ class _DetailPricePropertyWidgetState extends State<DetailPricePropertyWidget> {
           ],
         ),
       ),
+      onPressed: () {
+        context.read<ChargingStationBloc>().add(
+          SavePricePropertyEvent(
+            controllerPrice.text,
+          ),
+        );
+
+        Navigator.pop(context);
+      },
     );
   }
 }

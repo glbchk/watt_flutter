@@ -1,7 +1,6 @@
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/details_page.dart';
 
 abstract class ChargingStationEvent {}
 
@@ -18,14 +17,64 @@ class SaveBrandNameChargingStationEvent extends ChargingStationEvent {
 //   SaveAddressChargingStationEvent(this.address);
 // }
 
+class SaveNamePropertyEvent extends ChargingStationEvent {
+  final String value;
+
+  SaveNamePropertyEvent(
+    this.value,
+  );
+}
+
+class SaveAddressPropertyEvent extends ChargingStationEvent {
+  final String value;
+
+  SaveAddressPropertyEvent(
+    this.value,
+  );
+}
+
+class UpdateBrandNamePropertyEvent extends ChargingStationEvent {
+  final String value;
+  final String brandLogo;
+
+  UpdateBrandNamePropertyEvent(
+    this.value,
+    this.brandLogo,
+  );
+}
+
+class SaveChargingEffectPropertyEvent extends ChargingStationEvent {
+  final String value;
+
+  SaveChargingEffectPropertyEvent(
+    this.value,
+  );
+}
+
+class SavePlugPropertyEvent extends ChargingStationEvent {
+  final String value;
+
+  SavePlugPropertyEvent(
+    this.value,
+  );
+}
+
+class SavePricePropertyEvent extends ChargingStationEvent {
+  final String value;
+
+  SavePricePropertyEvent(
+    this.value,
+  );
+}
+
 class UpdateChargingStationPropertyEvent extends ChargingStationEvent {
-  final DetailPageProperties property;
+  // final DetailPageProperties property;
   final String value;
   final IbanModel? iban;
   final List<TimeSlotModel>? timeSlots;
 
   UpdateChargingStationPropertyEvent(
-    this.property,
+    // this.property,
     this.value,
     this.iban,
     this.timeSlots,
