@@ -62,6 +62,7 @@ class _DetailPricePropertyPageState extends State<DetailPricePropertyPage> {
                 Expanded(
                   child: TextFormField(
                     controller: controllerPrice,
+                    autofocus: true,
                     onTapOutside: (event) {
                       FocusScope.of(context).unfocus();
                       final value = double.tryParse(

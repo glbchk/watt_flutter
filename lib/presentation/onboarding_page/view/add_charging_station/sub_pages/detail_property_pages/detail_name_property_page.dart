@@ -7,8 +7,11 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 
 class DetailNamePropertyPage extends StatefulWidget {
+  final String name;
+
   const DetailNamePropertyPage({
     super.key,
+    required this.name,
   });
 
   @override
@@ -17,6 +20,12 @@ class DetailNamePropertyPage extends StatefulWidget {
 
 class _DetailNamePropertyPageState extends State<DetailNamePropertyPage> {
   TextEditingController controllerName = TextEditingController();
+
+  @override
+  void initState() {
+    controllerName.text = widget.name;
+    super.initState();
+  }
 
   @override
   void dispose() {

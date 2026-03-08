@@ -13,7 +13,7 @@ abstract class UserRepository {
   Future<List<CarModel>> fetchCars();
   Future<void> updatePlateNumber(String carId, String plateNumber);
   Future<void> deleteCar(String carId);
-  Future<void> addChargingStation(ChargingStationModel chargingStation);
+  Future<void> addChargingStations(List<ChargingStationModel> chargingStations);
   Future<List<ChargingStationModel>> fetchChargingStations();
   Future<void> addPaymentMethod(PaymentMethodModel paymentMethod);
   Future<List<PaymentMethodModel>> fetchPaymentMethods();

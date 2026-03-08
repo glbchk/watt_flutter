@@ -51,12 +51,8 @@ class _AddChargingStationDetailsPageState
       }
     }
 
-    // final stateSlots = context.read<ChargingStationBloc>().state;
-    // final String daysString =
-    //     (stateSlots.availableHours?.first.availableDays ?? [])
-    //         .map((e) => e.name.substring(0, 3))
-    //         .join(', ');
-    // days = daysString;
+    isOnlineChargerOn = state.onlineCharger ?? false;
+    isEveryoneCanAccess = state.everyoneCanAccess ?? false;
 
     super.initState();
   }
@@ -97,7 +93,9 @@ class _AddChargingStationDetailsPageState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DetailNamePropertyPage(),
+                                  builder: (_) => DetailNamePropertyPage(
+                                    name: state.chargingStationName ?? '',
+                                  ),
                                 ),
                               );
                             },
@@ -109,7 +107,9 @@ class _AddChargingStationDetailsPageState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => DetailAddressPropertyPage(),
+                                  builder: (_) => DetailAddressPropertyPage(
+                                    address: state.address ?? '',
+                                  ),
                                 ),
                               );
                             },
@@ -160,9 +160,9 @@ class _AddChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Price per kWh',
-                            secondLabel: state.pricePerKwh != ''
+                            secondLabel: state.pricePerKwh != null
                                 ? '${state.pricePerKwh ?? ''} SEK'
-                                : '',
+                                : null,
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -195,12 +195,18 @@ class _AddChargingStationDetailsPageState
                           RowToggle(
                             label: 'Online charger',
                             isSwitched: isOnlineChargerOn,
-                            onChanged: (bool value) {},
+                            onChanged: (bool value) {
+                              setState(() {
+                                isOnlineChargerOn = value;
+                              });
+                              print(isOnlineChargerOn);
+                            },
                           ),
                           RowButton(
                             label: 'Available hours',
-                            secondLabel:
-                                '${formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}',
+                            secondLabel: (state.availableHours?.first != null)
+                                ? '${formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}'
+                                : null,
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -214,7 +220,12 @@ class _AddChargingStationDetailsPageState
                           RowToggle(
                             label: 'Everyone can access',
                             isSwitched: isEveryoneCanAccess,
-                            onChanged: (bool value) {},
+                            onChanged: (bool value) {
+                              setState(() {
+                                isEveryoneCanAccess = value;
+                              });
+                              print(isEveryoneCanAccess);
+                            },
                           ),
                         ],
                       ),
@@ -245,9 +256,9 @@ class _AddChargingStationDetailsPageState
                   plug: state.plug,
                   pricePerKwh: state.pricePerKwh,
                   bankAccount: paymentMethod,
-                  onlineCharger: state.onlineCharger,
+                  onlineCharger: isOnlineChargerOn,
                   availableHours: state.availableHours,
-                  everyoneCanAccess: state.everyoneCanAccess,
+                  everyoneCanAccess: isEveryoneCanAccess,
                 );
 
                 final Map<String, dynamic> stationMap = chargingStation
@@ -276,14 +287,18 @@ class _AddChargingStationDetailsPageState
                     message:
                         'The following fields are required:\n\n$missingText',
                     buttonLabel: 'Understood',
+                    onConfirm: () {
+                      Navigator.pop(context);
+                    },
                   );
                 } else {
                   context.read<ChargingStationBloc>().add(
-                    AddChargingStationEvent(chargingStation),
+                    AddOneChargingStationEvent(chargingStation),
                   );
 
-                  Navigator.pop(context, chargingStation);
+                  Navigator.pop(context);
                 }
+                ;
               },
             ),
           ),
@@ -302,26 +317,20 @@ String _formatRange(int start, int end) {
 }
 
 String formatDayRanges(List<int>? chosenDays) {
-  if (chosenDays == null || chosenDays.isEmpty) return '';
+  if (chosenDays == null || chosenDays.isEmpty) {
+    return '';
+  }
 
   final sortedDays = List<int>.from(chosenDays)..sort();
 
+  if (sortedDays.isEmpty) return '';
+
   List<String> groups = [];
+
   int start = sortedDays.first;
-  int prev = sortedDays.first;
+  int last = sortedDays.last;
 
-  for (int i = 1; i < sortedDays.length; i++) {
-    int current = sortedDays[i];
+  groups.add(_formatRange(start, last));
 
-    if (current != prev + 1) {
-      groups.add(_formatRange(start, prev));
-      start = current;
-    }
-
-    prev = current;
-  }
-
-  groups.add(_formatRange(start, prev));
-
-  return groups.join(', ');
+  return groups.join(' - ');
 }

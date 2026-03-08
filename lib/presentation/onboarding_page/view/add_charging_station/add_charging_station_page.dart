@@ -3,14 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/add_charging_station_details_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
@@ -42,13 +43,25 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingBloc, OnboardingState>(
+    return BlocBuilder<ChargingStationBloc, ChargingStationState>(
       builder: (context, state) {
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
           extendBodyBehindAppBar: false,
           appBarBackgroundColor: context.theme.appColors.transparent,
           scaffoldBackgroundColor: context.theme.appColors.primary,
+          leading: BackButton(
+            onPressed: () async {
+              if (!(state.chargingStations?.isEmpty ?? true)) {
+                context.read<OnboardingBloc>().add(
+                  AddedChargingStationsEvent(
+                    chargingStations: state.chargingStations ?? [],
+                  ),
+                );
+              }
+              Navigator.pop(context);
+            },
+          ),
           body: Stack(
             children: [
               CustomScrollView(
@@ -121,6 +134,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                           : null,
                                       pngImage: chargingStation.brandLogo,
                                       marginDistance: marginSize,
+                                      isArrowIconVisible: false,
                                       onPressed: () {
                                         // Navigator.push(
                                         //   context,
@@ -178,6 +192,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                                 ),
                                           ),
                                         );
+                                        context.read<ChargingStationBloc>().add(
+                                          ResetChargingStationFormEvent(),
+                                        );
 
                                         final result =
                                             await Navigator.push<
@@ -193,9 +210,15 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                         if (!context.mounted) return;
 
                                         if (result != null) {
+                                          final updatedState = context
+                                              .read<ChargingStationBloc>()
+                                              .state;
                                           context.read<OnboardingBloc>().add(
-                                            AddedChargingStationEvent(
-                                              chargingStation: result,
+                                            AddedChargingStationsEvent(
+                                              chargingStations:
+                                                  updatedState
+                                                      .chargingStations ??
+                                                  [],
                                             ),
                                           );
                                         }
@@ -212,6 +235,50 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                   ),
                 ],
               ),
+              if (!(state.chargingStations?.isEmpty ?? true))
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.theme.appColors.background,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.theme.appColors.onSecondary.withAlpha(
+                            26,
+                          ),
+                          spreadRadius: 0,
+                          blurRadius: 30,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 20.0,
+                      top: 20.0,
+                      right: 20.0,
+                      bottom: 10.0,
+                    ),
+                    child: SafeArea(
+                      child: WattMainButton(
+                        label: 'Save',
+                        onPressed: () {
+                          final stations = state.chargingStations ?? [];
+                          context.read<OnboardingBloc>().add(
+                            AddedChargingStationsEvent(
+                              chargingStations: stations,
+                            ),
+                          );
+                          Navigator.pop(
+                            context,
+                            stations.isNotEmpty ? stations.first : null,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );

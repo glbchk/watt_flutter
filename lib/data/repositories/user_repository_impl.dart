@@ -70,10 +70,10 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> addChargingStation(
-    ChargingStationModel chargingStation,
+  Future<void> addChargingStations(
+    List<ChargingStationModel> chargingStations,
   ) async {
-    return await userRemoteDataSource.addChargingStation(chargingStation);
+    return await userRemoteDataSource.addChargingStations(chargingStations);
   }
 
   @override

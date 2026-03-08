@@ -22,6 +22,7 @@ class KCardIcons {
   static const String car = 'assets/icons/car.svg';
   static const String chargingStation = 'assets/icons/charging_station.svg';
   static const String paymentMethod = 'assets/icons/credit_card.svg';
+  static const String timeSlot = 'assets/icons/time_slot.svg';
 }
 
 class KCarNames {

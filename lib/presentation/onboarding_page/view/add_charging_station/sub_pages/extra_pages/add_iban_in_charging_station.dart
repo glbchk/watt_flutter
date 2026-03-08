@@ -94,9 +94,7 @@ class _AddIbanDetailsPageState extends State<AddIbanInChargingStationPage> {
                             iban: paymentMethod,
                           ),
                         );
-                        Navigator.of(context)
-                          ..pop()
-                          ..pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                   ),

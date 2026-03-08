@@ -9,11 +9,13 @@ import 'package:watt/utils/global_components/inline_button.dart';
 import '../../../../../../utils/colors.dart';
 
 class DetailAddressPropertyPage extends StatefulWidget {
+  final String address;
   final VoidCallback? onPressedCurrentLocation;
   final VoidCallback? onPressedChooseOnMap;
 
   const DetailAddressPropertyPage({
     super.key,
+    required this.address,
     this.onPressedCurrentLocation,
     this.onPressedChooseOnMap,
   });
@@ -25,6 +27,18 @@ class DetailAddressPropertyPage extends StatefulWidget {
 
 class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
   TextEditingController controllerAddress = TextEditingController();
+
+  @override
+  void initState() {
+    controllerAddress.text = widget.address;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controllerAddress.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -14,6 +14,8 @@ class SmallTextField extends StatefulWidget {
   final Function(String?)? onChanged;
   final TextCapitalization? textCapitalization;
   final bool? autofocus;
+  final FocusNode? focusNode;
+  final Function(PointerDownEvent)? onTapOutside;
 
   const SmallTextField({
     super.key,
@@ -26,6 +28,8 @@ class SmallTextField extends StatefulWidget {
     this.onChanged,
     this.textCapitalization,
     this.autofocus,
+    this.focusNode,
+    this.onTapOutside,
   });
 
   @override
@@ -49,10 +53,12 @@ class _SmallTextFieldState extends State<SmallTextField> {
       child: TextField(
         controller: widget.controller,
         autofocus: widget.autofocus ?? true,
+        focusNode: widget.focusNode,
         enableSuggestions: false,
         autocorrect: false,
         keyboardType: widget.keyboardType,
         inputFormatters: widget.inputFormatters,
+        onTapOutside: widget.onTapOutside,
         style: TextStyle(color: context.theme.appColors.onSurface),
         textCapitalization:
             widget.textCapitalization ?? TextCapitalization.none,

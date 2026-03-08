@@ -19,6 +19,7 @@ class ChargingStationState {
   final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
+  final ChargingStationModel? chargingStation;
   final List<ChargingStationModel>? chargingStations;
 
   const ChargingStationState({
@@ -36,6 +37,7 @@ class ChargingStationState {
     this.onlineCharger = false,
     this.availableHours,
     this.everyoneCanAccess = false,
+    this.chargingStation,
     this.chargingStations,
   });
 
@@ -54,6 +56,7 @@ class ChargingStationState {
     bool? Function()? onlineCharger,
     List<TimeSlotModel>? Function()? availableHours,
     bool? Function()? everyoneCanAccess,
+    ChargingStationModel? Function()? chargingStation,
     List<ChargingStationModel>? Function()? chargingStations,
   }) {
     return ChargingStationState(
@@ -81,6 +84,9 @@ class ChargingStationState {
       everyoneCanAccess: everyoneCanAccess != null
           ? everyoneCanAccess()
           : this.everyoneCanAccess,
+      chargingStation: chargingStation != null
+          ? chargingStation()
+          : this.chargingStation,
       chargingStations: chargingStations != null
           ? chargingStations()
           : this.chargingStations,

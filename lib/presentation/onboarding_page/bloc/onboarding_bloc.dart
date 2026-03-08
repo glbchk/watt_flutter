@@ -15,6 +15,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdatePlateNumberCarsUseCase updatePlateNumberCarUseCase =
       UpdatePlateNumberCarsUseCase();
   final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
+  final AddChargingStationsUseCase addChargingStationsUseCase =
+      AddChargingStationsUseCase();
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
   final FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =
@@ -161,12 +163,11 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       }
     });
 
-    on<AddedChargingStationEvent>((event, emit) async {
+    on<AddedChargingStationsEvent>((event, emit) async {
+      await addChargingStationsUseCase.execute(event.chargingStations);
       try {
-        final List<ChargingStationModel> chargingStations = [
-          ...?state.chargingStations,
-          event.chargingStation,
-        ];
+        final List<ChargingStationModel> chargingStations =
+            event.chargingStations;
 
         emit(
           state.copyWith(

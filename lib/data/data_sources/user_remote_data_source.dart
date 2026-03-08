@@ -89,12 +89,33 @@ class UserRemoteDataSource {
     await docRef.update({'cars': carsData});
   }
 
-  Future<void> addChargingStation(ChargingStationModel chargingStation) async {
+  Future<void> addChargingStations(
+    List<ChargingStationModel> chargingStations,
+  ) async {
     User? user = auth.currentUser;
-    await firestore.collection("users").doc(user?.uid).update({
-      'charging_stations': FieldValue.arrayUnion([chargingStation.toJson()]),
-    });
+    if (user == null) return;
+
+    List<Map<String, dynamic>> stationsJson = chargingStations
+        .map((station) => station.toJson())
+        .toList();
+
+    try {
+      await firestore.collection("users").doc(user.uid).set({
+        'charging_stations': stationsJson,
+      }, SetOptions(merge: true));
+
+      print("Full collection synced to Firebase!");
+    } catch (e) {
+      print("Error syncing collection: $e");
+    }
   }
+
+  // Future<void> addChargingStation(ChargingStationModel chargingStation) async {
+  //   User? user = auth.currentUser;
+  //   await firestore.collection("users").doc(user?.uid).update({
+  //     'charging_stations': FieldValue.arrayUnion([chargingStation.toJson()]),
+  //   });
+  // }
 
   Future<List<ChargingStationModel>> fetchChargingStations() async {
     User? user = auth.currentUser;

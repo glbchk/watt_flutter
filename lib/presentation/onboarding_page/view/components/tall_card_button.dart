@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:watt/utils/colors.dart';
 
 class TallCardButton extends StatelessWidget {
+  final EdgeInsetsGeometry? padding;
   final String label;
   final String? subLabel;
   final String? subSubLabel;
@@ -13,9 +14,11 @@ class TallCardButton extends StatelessWidget {
   final double? marginDistance;
   final Color? textColor;
   final Color? backgroundColor;
+  final bool? isArrowIconVisible;
 
   const TallCardButton({
     super.key,
+    this.padding,
     required this.label,
     this.subLabel,
     this.subSubLabel,
@@ -24,19 +27,22 @@ class TallCardButton extends StatelessWidget {
     this.pngImage,
     this.iconColor,
     this.marginDistance,
-    this.backgroundColor,
     this.textColor,
+    this.backgroundColor,
+    this.isArrowIconVisible,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 20.0,
-        top: 2.0,
-        right: 20.0,
-        bottom: 2.0,
-      ),
+      padding:
+          padding ??
+          EdgeInsets.only(
+            left: 20.0,
+            top: 2.0,
+            right: 20.0,
+            bottom: 2.0,
+          ),
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
@@ -154,10 +160,11 @@ class TallCardButton extends StatelessWidget {
                           ],
                         ),
                   Spacer(),
-                  Icon(
-                    Icons.chevron_right,
-                    color: context.theme.appColors.grey1,
-                  ),
+                  if (isArrowIconVisible ?? true)
+                    Icon(
+                      Icons.chevron_right,
+                      color: context.theme.appColors.grey1,
+                    ),
                 ],
               ),
             ),

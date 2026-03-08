@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/add_your_car_page.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/add_charging_station_page.dart';
+// import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_name_phone_number/add_name_phone_number_page.dart';
 import 'package:watt/presentation/onboarding_page/view/add_payment_method/add_payment_method_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_header_onboarding.dart';
@@ -127,13 +130,33 @@ class OnboardingPage extends StatelessWidget {
                         backgroundColor: state.chargingStations != null
                             ? context.theme.appColors.primary
                             : context.theme.appColors.surface,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => AddChargingStationPage(),
-                            ),
-                          );
+                        onPressed: () async {
+                          // context.read<ChargingStationBloc>().add(
+                          //   FetchUserChargingStationsEvent(),
+                          // );
+
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (_) => AddChargingStationPage(),
+                          //   ),
+                          // );
+
+                          final result =
+                              await Navigator.push<ChargingStationModel?>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddChargingStationPage(),
+                                ),
+                              );
+
+                          if (!context.mounted) return;
+
+                          if (result != null) {
+                            context.read<OnboardingBloc>().add(
+                              FetchUserChargingStationsEvent(),
+                            );
+                          }
                         },
                       ),
                       SlimCardButton(

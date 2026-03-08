@@ -8,8 +8,8 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc
 
 class ChargingStationBloc
     extends Bloc<ChargingStationEvent, ChargingStationState> {
-  final AddChargingStationUseCase addChargingStationUseCase =
-      AddChargingStationUseCase();
+  final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
+      FetchUserChargingStationsUseCase();
   // final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
   //     FetchUserChargingStationsUseCase();
   ChargingStationBloc() : super(ChargingStationState()) {
@@ -21,14 +21,6 @@ class ChargingStationBloc
         ),
       );
     });
-
-    // on<SaveAddressChargingStationEvent>((event, emit) {
-    //   emit(
-    //     state.copyWith(
-    //       address: () => event.address,
-    //     ),
-    //   );
-    // });
 
     on<SaveNamePropertyEvent>((event, emit) {
       emit(
@@ -105,8 +97,25 @@ class ChargingStationBloc
       );
     });
 
-    on<AddChargingStationEvent>((event, emit) async {
-      await addChargingStationUseCase.execute(event.chargingStation);
+    on<RemoveTimeSlotEvent>((event, emit) {
+      final List<TimeSlotModel> updatedList = state.availableHours!
+          .where((slot) => slot.id != event.timeSlotId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          availableHours: () => updatedList,
+        ),
+      );
+    });
+
+    on<AddOneChargingStationEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          chargingStation: () => event.chargingStation,
+        ),
+      );
+
       final List<ChargingStationModel> chargingStationsUpdated = [
         ...?state.chargingStations,
         event.chargingStation,
@@ -117,66 +126,24 @@ class ChargingStationBloc
           chargingStations: () => chargingStationsUpdated,
         ),
       );
-
-      emit(const ChargingStationState());
     });
 
     on<ResetChargingStationFormEvent>((event, emit) {
-      emit(const ChargingStationState());
+      emit(
+        state.copyWith(
+          errorMessage: () => null,
+          id: () => null,
+          chargingStationName: () => null,
+          address: () => null,
+          chargingEffect: () => null,
+          plug: () => null,
+          pricePerKwh: () => null,
+          bankAccounts: () => null,
+          onlineCharger: () => false,
+          availableHours: () => null,
+          everyoneCanAccess: () => false,
+        ),
+      );
     });
-
-    // on<UpdateChargingStationEvent>((event, emit) async {
-    //   await updatePlateNumberCarUseCase.execute(
-    //     event.chargingStationId,
-    //   );
-    //
-    //   final List<ChargingStationModel> updatedCarsList =
-    //       (state.chargingStations ?? []).map((chargingStation) {
-    //         return chargingStation.id == event.carId
-    //             ? car.copyCarWith(plateNumber: event.plateNumber)
-    //             : car;
-    //       }).toList();
-    //
-    //   emit(
-    //     state.copyWith(
-    //       cars: () => updatedCarsList,
-    //     ),
-    //   );
-    // });
-
-    // on<OnboardingFilledChargingStationEvent>((event, emit) async {
-    //   await updateUserChargingStationUseCase.execute(
-    //     event.chargingStation,
-    //   );
-
-    //   final List<ChargingStationModel> updateChargingStationsList = [
-    //     ...?state.chargingStations,
-    //     event.chargingStation,
-    //   ];
-    //
-    //   emit(
-    //     state.copyWith(
-    //       chargingStations: () => updateChargingStationsList,
-    //     ),
-    //   );
-    // });
-    //
-    // on<FetchUserChargingStationsEvent>((event, emit) async {
-    //   emit(state.copyWith(isLoading: true));
-    //
-    //   try {
-    //     final List<ChargingStationModel> chargingStations =
-    //         await fetchUserChargingStationsUseCase.execute();
-    //
-    //     emit(
-    //       state.copyWith(
-    //         isLoading: false,
-    //         chargingStations: () => chargingStations,
-    //       ),
-    //     );
-    //   } catch (e) {
-    //     emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
-    //   }
-    // });
   }
 }
