@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/add_iban_in_charging_station.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/add_iban_in_charging_station_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';

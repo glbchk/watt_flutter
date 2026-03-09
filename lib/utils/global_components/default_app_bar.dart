@@ -16,6 +16,7 @@ class DefaultAppBar extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final Widget? leading;
   final List<Widget>? actions;
+  final Widget? floatingActionButton;
 
   const DefaultAppBar({
     super.key,
@@ -32,6 +33,7 @@ class DefaultAppBar extends StatelessWidget {
     this.bottomNavigationBar,
     this.leading,
     this.actions,
+    this.floatingActionButton,
   });
 
   @override
@@ -60,6 +62,7 @@ class DefaultAppBar extends StatelessWidget {
       ),
       body: body,
       bottomNavigationBar: bottomNavigationBar,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

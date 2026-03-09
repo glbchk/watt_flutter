@@ -63,6 +63,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Future<void> _searchAddress() async {
+  //   String address = controllerAddress.text;
+  //
+  //   try {
+  //     List<Location> locations = await locationFromAddress(address);
+  //
+  //     if (locations.isNotEmpty) {
+  //       Location first = locations.first;
+  //
+  //       // 2. Move the camera to the found location
+  //       _mapController?.animateCamera(
+  //         CameraUpdate.newCameraPosition(
+  //           CameraPosition(
+  //             target: LatLng(first.latitude, first.longitude),
+  //             zoom: 15,
+  //           ),
+  //         ),
+  //       );
+  //
+  //       setState(() {
+  //         // You can add a marker to your markers set here
+  //       });
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Address not found")),
+  //     );
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(

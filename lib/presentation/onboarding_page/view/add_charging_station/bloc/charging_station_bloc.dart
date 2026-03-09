@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
@@ -10,8 +11,8 @@ class ChargingStationBloc
     extends Bloc<ChargingStationEvent, ChargingStationState> {
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
-  // final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
-  //     FetchUserChargingStationsUseCase();
+  final FetchLocationSuggestionsUseCase fetchLocationSuggestionsUseCase =
+      FetchLocationSuggestionsUseCase();
   ChargingStationBloc() : super(ChargingStationState()) {
     on<SaveBrandNameChargingStationEvent>((event, emit) {
       emit(
@@ -34,6 +35,17 @@ class ChargingStationBloc
       emit(
         state.copyWith(
           address: () => event.value,
+        ),
+      );
+    });
+
+    on<FetchLocationSuggestionsEvent>((event, emit) async {
+      final List<String> suggestions = await fetchLocationSuggestionsUseCase
+          .execute(event.value);
+
+      emit(
+        state.copyWith(
+          locationSuggestions: () => suggestions,
         ),
       );
     });

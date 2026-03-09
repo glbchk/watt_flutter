@@ -9,6 +9,7 @@ class ChargingStationState {
   final String? id;
   final String? chargingStationName;
   final String? address;
+  final List<String>? locationSuggestions;
   final String? brandName;
   final String? brandLogo;
   final String? chargingEffect;
@@ -28,6 +29,7 @@ class ChargingStationState {
     this.id,
     this.chargingStationName,
     this.address,
+    this.locationSuggestions,
     this.brandName,
     this.brandLogo,
     this.chargingEffect,
@@ -47,6 +49,7 @@ class ChargingStationState {
     String? Function()? id,
     String? Function()? chargingStationName,
     String? Function()? address,
+    List<String>? Function()? locationSuggestions,
     String? Function()? brandName,
     String? Function()? brandLogo,
     String? Function()? chargingEffect,
@@ -67,6 +70,9 @@ class ChargingStationState {
           ? chargingStationName()
           : this.chargingStationName,
       address: address != null ? address() : this.address,
+      locationSuggestions: locationSuggestions != null
+          ? locationSuggestions()
+          : this.locationSuggestions,
       brandName: brandName != null ? brandName() : this.brandName,
       brandLogo: brandLogo != null ? brandLogo() : this.brandLogo,
       chargingEffect: chargingEffect != null

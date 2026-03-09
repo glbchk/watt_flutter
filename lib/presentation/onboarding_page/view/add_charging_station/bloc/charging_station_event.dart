@@ -27,6 +27,14 @@ class SaveAddressPropertyEvent extends ChargingStationEvent {
   );
 }
 
+class FetchLocationSuggestionsEvent extends ChargingStationEvent {
+  final String value;
+
+  FetchLocationSuggestionsEvent(
+    this.value,
+  );
+}
+
 class UpdateBrandNamePropertyEvent extends ChargingStationEvent {
   final String value;
   final String brandLogo;
