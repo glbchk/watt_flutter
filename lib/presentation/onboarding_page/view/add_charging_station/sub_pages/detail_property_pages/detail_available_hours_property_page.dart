@@ -7,11 +7,13 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/add_charging_station_details_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/small_textfield.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
+import 'package:watt/utils/global_methods/textfield_helper_methods.dart';
 
 import '../../../../../../utils/colors.dart';
 
@@ -32,34 +34,6 @@ class _DetailAvailableHoursPropertyPageState
   TextEditingController controllerStartTime = TextEditingController();
   TextEditingController controllerEndTime = TextEditingController();
 
-  void _completeTimeFormatting(TextEditingController controller) {
-    String text = controller.text;
-    if (text.isEmpty) return;
-
-    List<String> parts = text.split(':');
-    String hours = parts[0];
-    String minutes = parts.length > 1 ? parts[1] : '';
-
-    if (hours.length == 1) {
-      hours = '0$hours';
-    } else if (hours.isEmpty) {
-      hours = '00';
-    }
-
-    if (minutes.isEmpty) {
-      minutes = '00';
-    } else if (minutes.length == 1) {
-      minutes = '${minutes}0';
-    }
-
-    final formatted = "$hours:$minutes";
-
-    controller.value = TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
-  }
-
   List<int> _chosenDays = [];
 
   final startFocus = FocusNode();
@@ -70,11 +44,13 @@ class _DetailAvailableHoursPropertyPageState
     super.initState();
 
     startFocus.addListener(() {
-      if (!startFocus.hasFocus) _completeTimeFormatting(controllerStartTime);
+      if (!startFocus.hasFocus)
+        TextfieldHelperMethods.completeTimeFormatting(controllerStartTime);
     });
 
     endFocus.addListener(() {
-      if (!endFocus.hasFocus) _completeTimeFormatting(controllerEndTime);
+      if (!endFocus.hasFocus)
+        TextfieldHelperMethods.completeTimeFormatting(controllerEndTime);
     });
   }
 
@@ -140,7 +116,7 @@ class _DetailAvailableHoursPropertyPageState
 
                         child: TallCardButton(
                           padding: EdgeInsets.only(top: 2, bottom: 2),
-                          label: formatDayRanges(
+                          label: StringHelperMethods.formatDayRanges(
                             timeSlot?.availableDays,
                           ),
                           subLabel:
@@ -361,56 +337,6 @@ class _DetailAvailableHoursPropertyPageState
           },
         );
       },
-    );
-  }
-}
-
-class TimeSlotFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    String digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (digits.length > 4) {
-      digits = digits.substring(0, 4);
-    }
-
-    String hours = '';
-    String minutes = '';
-
-    if (digits.length >= 1) {
-      hours = digits.substring(0, digits.length >= 2 ? 2 : 1);
-    }
-
-    if (digits.length >= 3) {
-      minutes = digits.substring(2);
-    }
-
-    if (hours.length == 2) {
-      int h = int.tryParse(hours) ?? 0;
-      if (h > 23) {
-        hours = '23';
-      }
-    }
-
-    if (minutes.length == 2) {
-      int m = int.tryParse(minutes) ?? 0;
-      if (m > 59) {
-        minutes = '59';
-      }
-    }
-
-    String formatted = hours;
-
-    if (minutes.isNotEmpty) {
-      formatted += ':$minutes';
-    }
-
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

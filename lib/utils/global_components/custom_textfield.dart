@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_methods/textfield_helper_methods.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String label;
   final String? hint;
   final String? error;
-  final IconData? suffixIcon;
+  final Widget? suffixIcon;
   final Color? suffixIconColor;
+  final VoidCallback? onSuffixIconTap;
   final Widget? prefixIcon;
   final Color? prefixIconColor;
   final TextInputType? keyboardType;
@@ -24,11 +27,13 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     required this.controller,
+    this.focusNode,
     required this.label,
     this.hint,
     this.error,
     this.suffixIcon,
     this.suffixIconColor,
+    this.onSuffixIconTap,
     this.prefixIcon,
     this.prefixIconColor,
     this.isPassword = false,
@@ -49,13 +54,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
   bool _obscurePassword = true;
   @override
   Widget build(BuildContext context) {
-    void onSearchChanged(String? value) {
-      if (debounce?.isActive ?? false) debounce!.cancel();
-      debounce = Timer(const Duration(milliseconds: 500), () {
-        widget.onChanged?.call(value);
-      });
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,6 +67,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         SizedBox(height: 8.0),
         TextFormField(
           controller: widget.controller,
+          focusNode: widget.focusNode,
           autofocus: widget.autofocus ?? true,
           obscureText: widget.isPassword ?? false ? _obscurePassword : false,
           enableSuggestions: widget.isPassword == false,
@@ -84,7 +83,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: TextStyle(color: context.theme.appColors.onSurface),
           textCapitalization:
               widget.textCapitalization ?? TextCapitalization.none,
-          onChanged: onSearchChanged,
+          onChanged: (String newValue) {
+            TextfieldHelperMethods.onSearchChanged(
+              value: newValue,
+              debounce: debounce,
+              onChanged: widget.onChanged,
+            );
+          },
           decoration: InputDecoration(
             errorStyle: TextStyle(
               color: context.theme.appColors.error,
@@ -94,22 +99,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintStyle: TextStyle(color: context.theme.appColors.grey2),
 
             errorText: widget.error,
-            prefixIcon: widget.prefixIcon != null
-                ? IconTheme(
-                    data: IconThemeData(
-                      color:
-                          widget.prefixIconColor ??
-                          context.theme.appColors.primary,
-                      size: 24,
-                    ),
-                    child: SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Center(child: widget.prefixIcon!),
-                    ),
-                  )
-                : null,
-            suffixIcon: widget.isPassword ?? false
+            prefixIcon: GestureDetector(
+              onTap: widget.onSuffixIconTap,
+              child: widget.prefixIcon != null
+                  ? IconTheme(
+                      data: IconThemeData(
+                        color:
+                            widget.prefixIconColor ??
+                            context.theme.appColors.primary,
+                        size: 24,
+                      ),
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Center(child: widget.prefixIcon!),
+                      ),
+                    )
+                  : null,
+            ),
+            suffixIcon: widget.isPassword == true
                 ? IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -122,12 +130,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       });
                     },
                   )
-                : widget.suffixIcon != null
-                ? IconButton(
-                    icon: Icon(widget.suffixIcon),
-                    onPressed: () {},
-                  )
-                : null,
+                : widget.suffixIcon,
             filled: true,
             fillColor: context.theme.appColors.surface,
             border: OutlineInputBorder(

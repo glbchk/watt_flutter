@@ -15,12 +15,12 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_plug_property_page.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_price_property_page.dart';
 import 'package:watt/utils/colors.dart';
-import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';
 import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_alert.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class AddChargingStationDetailsPage extends StatefulWidget {
   const AddChargingStationDetailsPage({super.key});
@@ -205,7 +205,7 @@ class _AddChargingStationDetailsPageState
                           RowButton(
                             label: 'Available hours',
                             secondLabel: (state.availableHours?.first != null)
-                                ? '${formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}'
+                                ? '${StringHelperMethods.formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}'
                                 : null,
                             onPressed: () {
                               Navigator.push(
@@ -306,31 +306,4 @@ class _AddChargingStationDetailsPageState
       },
     );
   }
-}
-
-String _formatRange(int start, int end) {
-  if (start == end) {
-    return KChargingStation.daysList[start] ?? '';
-  }
-
-  return '${KChargingStation.daysList[start]}-${KChargingStation.daysList[end]}';
-}
-
-String formatDayRanges(List<int>? chosenDays) {
-  if (chosenDays == null || chosenDays.isEmpty) {
-    return '';
-  }
-
-  final sortedDays = List<int>.from(chosenDays)..sort();
-
-  if (sortedDays.isEmpty) return '';
-
-  List<String> groups = [];
-
-  int start = sortedDays.first;
-  int last = sortedDays.last;
-
-  groups.add(_formatRange(start, last));
-
-  return groups.join(' - ');
 }

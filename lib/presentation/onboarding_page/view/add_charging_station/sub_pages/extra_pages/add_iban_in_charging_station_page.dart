@@ -5,11 +5,11 @@ import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
-import 'package:watt/presentation/onboarding_page/view/add_payment_method/add_iban_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class AddIbanInChargingStationPage extends StatefulWidget {
   const AddIbanInChargingStationPage({super.key});

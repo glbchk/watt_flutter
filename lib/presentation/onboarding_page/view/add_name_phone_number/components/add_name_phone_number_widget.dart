@@ -66,7 +66,7 @@ class AddNamePhoneNumberWidget extends StatelessWidget {
               error: errorName,
               onChanged: onChangedName,
               keyboardType: TextInputType.text,
-              suffixIcon: nameSuffixIcon,
+              suffixIcon: Icon(nameSuffixIcon),
               suffixIconColor: Colors.green,
             ),
 
@@ -78,7 +78,7 @@ class AddNamePhoneNumberWidget extends StatelessWidget {
               error: errorPhoneNumber,
               onChanged: onChangedPhoneNumber,
               keyboardType: TextInputType.number,
-              suffixIcon: phoneNumberSuffixIcon,
+              suffixIcon: Icon(phoneNumberSuffixIcon),
               suffixIconColor: Colors.green,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,

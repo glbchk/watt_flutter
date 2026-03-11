@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -11,6 +10,7 @@ import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class AddIbanDetailsPage extends StatefulWidget {
   const AddIbanDetailsPage({super.key});
@@ -137,45 +137,6 @@ class _AddIbanDetailsPageState extends State<AddIbanDetailsPage> {
           ),
         );
       },
-    );
-  }
-}
-
-class IbanNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    String cleanText = newValue.text.replaceAll(' ', '').toUpperCase();
-
-    if (cleanText.length > 29) {
-      cleanText = cleanText.substring(0, 29);
-    }
-
-    final buffer = StringBuffer();
-    for (int i = 0; i < cleanText.length; i++) {
-      String char = cleanText[i];
-
-      if (i < 2) {
-        if (RegExp(r'[A-Z]').hasMatch(char)) {
-          buffer.write(char);
-        } else {
-          return oldValue;
-        }
-      } else {
-        if (RegExp(r'[0-9]').hasMatch(char)) {
-          buffer.write(char);
-        } else {
-          return oldValue;
-        }
-      }
-    }
-
-    final string = buffer.toString();
-    return TextEditingValue(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
     );
   }
 }

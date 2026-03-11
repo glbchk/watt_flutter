@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
-
-import '../../../../../../utils/colors.dart';
+import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class DetailPricePropertyPage extends StatefulWidget {
   // final TextEditingController controllerPrice;
@@ -79,7 +79,7 @@ class _DetailPricePropertyPageState extends State<DetailPricePropertyPage> {
                       FilteringTextInputFormatter.allow(
                         RegExp(r'^\d+\.?\d{0,2}'),
                       ),
-                      DoubleInputFormatter(),
+                      DoublePriceInputFormatter(),
                     ],
                     decoration: InputDecoration(
                       hintText: '0.00',
@@ -127,23 +127,5 @@ class _DetailPricePropertyPageState extends State<DetailPricePropertyPage> {
         Navigator.pop(context);
       },
     );
-  }
-}
-
-class DoubleInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    String text = newValue.text;
-
-    if (text.isEmpty) return newValue;
-
-    if (RegExp(r'^\d*\.?\d{0,2}$').hasMatch(text)) {
-      return newValue;
-    }
-
-    return oldValue;
   }
 }

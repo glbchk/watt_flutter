@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/watt_dropdown_menu.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class SelectCarModelWidget extends StatefulWidget {
   final TextEditingController controllerPlateNumber;
@@ -90,36 +90,6 @@ class _SelectCarModelWidgetState extends State<SelectCarModelWidget> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class PlateNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    String cleanText = newValue.text.replaceAll(' ', '').toUpperCase();
-
-    if (cleanText.length > 6) {
-      cleanText = cleanText.substring(0, 6);
-    }
-
-    final buffer = StringBuffer();
-    for (int i = 0; i < cleanText.length; i++) {
-      buffer.write(cleanText[i]);
-
-      if (i == 2 && cleanText.length > 3) {
-        buffer.write(' ');
-      }
-    }
-
-    final string = buffer.toString();
-
-    return TextEditingValue(
-      text: string,
-      selection: TextSelection.collapsed(offset: string.length),
     );
   }
 }

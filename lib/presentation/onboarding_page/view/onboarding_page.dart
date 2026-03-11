@@ -14,18 +14,12 @@ import 'package:watt/presentation/onboarding_page/view/components/tall_header_on
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/bottom_floating_button.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 import 'components/slim_card_button.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
-
-  String createLabel(String? name, String? phoneNumber) {
-    if (name != null && phoneNumber != null) return '$name, $phoneNumber';
-    if (name != null) return name;
-    if (phoneNumber != null) return phoneNumber;
-    return '';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +64,10 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
-                        subLabel: createLabel(state.name, state.phoneNumber),
+                        subLabel: StringHelperMethods.createNameAndPhoneLabel(
+                          state.name,
+                          state.phoneNumber,
+                        ),
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
                         iconColor:
@@ -93,7 +90,7 @@ class OnboardingPage extends StatelessWidget {
                       SlimCardButton(
                         label: KCardTitles.addCar,
                         subLabel: state.cars != null
-                            ? createLabel(
+                            ? StringHelperMethods.createNameAndPhoneLabel(
                                 firstCar?.brandName,
                                 firstCar?.carModel,
                               )

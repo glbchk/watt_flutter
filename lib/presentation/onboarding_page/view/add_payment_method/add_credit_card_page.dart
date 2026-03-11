@@ -10,6 +10,7 @@ import 'package:watt/presentation/onboarding_page/view/add_payment_method/compon
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 enum CardNetwork {
   visa,
@@ -49,10 +50,10 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
         return ValueListenableBuilder(
           valueListenable: cardNumberController,
           builder: (context, value, child) {
-            String cardType = CardTypeDetector.getCardType(
+            String cardType = StringHelperMethods.getCardType(
               cardNumberController.text,
             );
-            String assetPath = _getAssetPath(cardType);
+            String assetPath = StringHelperMethods.getAssetPath(cardType);
 
             return DefaultAppBar(
               resizeToAvoidBottomInset: false,
@@ -183,43 +184,5 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
         );
       },
     );
-  }
-}
-
-class CardTypeDetector {
-  static String getCardType(String cardNumber) {
-    String cleanNumber = cardNumber.replaceAll(' ', '');
-
-    if (cleanNumber.isEmpty) return 'unknown';
-
-    if (cleanNumber.startsWith('4')) return 'visa';
-
-    if (RegExp(r'^5[1-5]').hasMatch(cleanNumber) ||
-        RegExp(
-          r'^2(22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[01][0-9]|720)',
-        ).hasMatch(cleanNumber)) {
-      return 'mastercard';
-    }
-
-    if (RegExp(r'^3[47]').hasMatch(cleanNumber)) return 'amex';
-
-    if (cleanNumber.startsWith('65')) return 'discover';
-
-    return 'unknown';
-  }
-}
-
-String _getAssetPath(String cardType) {
-  switch (cardType) {
-    case 'visa':
-      return KPaymentProvidersIcons.visa;
-    case 'mastercard':
-      return KPaymentProvidersIcons.mastercard;
-    case 'amex':
-      return KPaymentProvidersIcons.amex;
-    case 'discover':
-      return KPaymentProvidersIcons.discover;
-    default:
-      return KPaymentProvidersIcons.generic;
   }
 }

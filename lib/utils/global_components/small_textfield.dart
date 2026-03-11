@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_methods/textfield_helper_methods.dart';
 
 class SmallTextField extends StatefulWidget {
   final TextEditingController? controller;
@@ -40,13 +41,6 @@ class _SmallTextFieldState extends State<SmallTextField> {
   Timer? debounce;
   @override
   Widget build(BuildContext context) {
-    void onSearchChanged(String? value) {
-      if (debounce?.isActive ?? false) debounce!.cancel();
-      debounce = Timer(const Duration(milliseconds: 500), () {
-        widget.onChanged?.call(value);
-      });
-    }
-
     return SizedBox(
       width: 64.0,
       height: 28.0,
@@ -62,8 +56,13 @@ class _SmallTextFieldState extends State<SmallTextField> {
         style: TextStyle(color: context.theme.appColors.onSurface),
         textCapitalization:
             widget.textCapitalization ?? TextCapitalization.none,
-        onChanged: onSearchChanged,
-        // textAlignVertical: TextAlignVertical.center,
+        onChanged: (String newValue) {
+          TextfieldHelperMethods.onSearchChanged(
+            value: newValue,
+            debounce: debounce,
+            onChanged: widget.onChanged,
+          );
+        },
         decoration: InputDecoration(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(

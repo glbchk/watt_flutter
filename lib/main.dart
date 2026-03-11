@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watt/app_bloc_observer.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
@@ -25,7 +24,7 @@ Future<void> main() async {
 
   await initThemeMode();
 
-  Bloc.observer = AppBlocObserver();
+  // Bloc.observer = AppBlocObserver();
 
   runApp(
     MultiBlocProvider(

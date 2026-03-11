@@ -12,6 +12,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
@@ -22,13 +23,6 @@ class AddChargingStationPage extends StatefulWidget {
 
 class _AddChargingStationPageState extends State<AddChargingStationPage> {
   final double marginSize = 10.0;
-
-  String? createLabel(String? brandName, String? chargingEffect, String? plug) {
-    if (brandName != null && chargingEffect != null && plug != null) {
-      return '$brandName, $chargingEffect, $plug';
-    }
-    return null;
-  }
 
   @override
   void initState() {
@@ -123,11 +117,12 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                       label:
                                           chargingStation.chargingStationName ??
                                           '',
-                                      subLabel: createLabel(
-                                        chargingStation.brandName,
-                                        chargingStation.chargingEffect,
-                                        chargingStation.plug,
-                                      ),
+                                      subLabel:
+                                          StringHelperMethods.createChargingStationLabel(
+                                            chargingStation.brandName,
+                                            chargingStation.chargingEffect,
+                                            chargingStation.plug,
+                                          ),
                                       subSubLabel:
                                           (chargingStation.pricePerKwh != null)
                                           ? "${chargingStation.pricePerKwh} SEK"

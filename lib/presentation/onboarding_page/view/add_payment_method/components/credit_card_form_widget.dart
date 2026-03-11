@@ -4,6 +4,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class CreditCardFormWidget extends StatefulWidget {
   final TextEditingController controllerCardName;
@@ -72,7 +73,7 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
               controller: widget.controllerCardNumber,
               prefixIcon: widget.cardNumberPrefixIcon,
               prefixIconColor: context.theme.appColors.primary,
-              suffixIcon: Icons.center_focus_weak,
+              suffixIcon: Icon(Icons.center_focus_weak),
               suffixIconColor: context.theme.appColors.grey1,
               label: 'Card Number',
               hint: '0000 0000 0000 0000',
@@ -111,7 +112,7 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
                   child: CustomTextField(
                     controller: widget.controllerCvv,
                     isPassword: true,
-                    suffixIcon: Icons.visibility,
+                    suffixIcon: Icon(Icons.visibility),
                     suffixIconColor: context.theme.appColors.grey1,
                     label: 'CVV',
                     hint: '• • •',
@@ -143,94 +144,6 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class CardNumberFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var inputText = newValue.text.replaceAll(' ', '');
-    var buffer = StringBuffer();
-
-    for (int i = 0; i < inputText.length; i++) {
-      buffer.write(inputText[i]);
-      int index = i + 1;
-
-      if (index % 4 == 0 && index != inputText.length) {
-        buffer.write(' ');
-      }
-    }
-
-    var resultText = buffer.toString();
-
-    return TextEditingValue(
-      text: resultText,
-      selection: TextSelection.collapsed(offset: resultText.length),
-    );
-  }
-}
-
-class ExpiryDateFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    String digits = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (digits.length > 4) {
-      digits = digits.substring(0, 4);
-    }
-
-    String month = '';
-    String year = '';
-
-    if (digits.isNotEmpty) {
-      month = digits.substring(0, digits.length >= 2 ? 2 : 1);
-    }
-
-    if (digits.length >= 3) {
-      year = digits.substring(2);
-    }
-
-    if (month.length == 1) {
-      int m = int.parse(month);
-
-      if (m > 1) {
-        month = '0$m';
-      }
-    } else if (month.length == 2) {
-      int m = int.parse(month);
-
-      if (m == 0) {
-        month = '01';
-      } else if (m > 12) {
-        month = '12';
-      }
-    }
-
-    if (year.length == 2) {
-      int currentYearShort = DateTime.now().year % 100;
-      int enteredYear = int.parse(year);
-
-      if (enteredYear < currentYearShort) {
-        year = currentYearShort.toString().padLeft(2, '0');
-      }
-    }
-
-    String formatted = month;
-
-    if (year.isNotEmpty) {
-      formatted += ' / $year';
-    }
-
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

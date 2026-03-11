@@ -2,13 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class ChooseLocationOnMapPage extends StatefulWidget {
   const ChooseLocationOnMapPage({super.key});
@@ -31,66 +30,6 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
   LatLng? _selectedLocation;
 
   String address = '';
-
-  void _handleMapTap(LatLng tappedPoint) async {
-    setState(() {
-      _selectedLocation = tappedPoint;
-    });
-
-    try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        tappedPoint.latitude,
-        tappedPoint.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        Placemark place = placemarks.first;
-        address = "${place.street}, ${place.locality}";
-        searchController.text = address;
-        print("User tapped on: $address");
-
-        // You could update a TextField or show a BottomSheet here
-      }
-    } catch (e) {
-      print("Could not find address for this point.");
-    }
-  }
-
-  Future<void> _goToMyLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openAppSettings();
-      return;
-    }
-
-    const LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-    );
-
-    Position position = await Geolocator.getCurrentPosition(
-      locationSettings: locationSettings,
-    );
-
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        LatLng(position.latitude, position.longitude),
-        15,
-      ),
-    );
-  }
 
   Widget _buildSearchBar() {
     return Row(
@@ -154,7 +93,9 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
 
                 IconButton(
                   icon: const Icon(Icons.close),
-                  onPressed: _goToMyLocation,
+                  onPressed: () {
+                    GoogleMapsHelperMethods.goToMyLocation(_mapController);
+                  },
                 ),
               ],
             ),
@@ -192,7 +133,18 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
-              onTap: _handleMapTap,
+              onTap: (LatLng tappedPoint) async {
+                final tappedAddress =
+                    await GoogleMapsHelperMethods.handleMapTap(
+                      tappedPoint: tappedPoint,
+                    );
+
+                setState(() {
+                  _selectedLocation = tappedPoint;
+                  this.address = tappedAddress ?? '';
+                  searchController.text = tappedAddress ?? '';
+                });
+              },
 
               gestureRecognizers: {
                 Factory<OneSequenceGestureRecognizer>(
@@ -202,7 +154,16 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
 
               onMapCreated: (GoogleMapController controller) async {
                 _mapController = controller;
-                await _goToMyLocation();
+                await GoogleMapsHelperMethods.goToMyLocation(_mapController);
+                final position =
+                    await GoogleMapsHelperMethods.handleGoToMyLocation(
+                      controller: _mapController,
+                    );
+                final convertedAddress =
+                    await GoogleMapsHelperMethods.convertPositionToAddress(
+                      position,
+                    );
+                searchController.text = convertedAddress;
               },
               markers: _selectedLocation == null
                   ? {}
@@ -245,7 +206,9 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
             borderRadius: BorderRadiusGeometry.circular(5),
             child: IconButton(
               icon: const Icon(Icons.my_location),
-              onPressed: _goToMyLocation,
+              onPressed: () {
+                GoogleMapsHelperMethods.goToMyLocation(_mapController);
+              },
             ),
           ),
         ),
