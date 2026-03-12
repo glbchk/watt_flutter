@@ -52,6 +52,7 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   Timer? debounce;
   bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -97,12 +98,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             hintText: widget.hint,
             hintStyle: TextStyle(color: context.theme.appColors.grey2),
-
             errorText: widget.error,
-            prefixIcon: GestureDetector(
-              onTap: widget.onSuffixIconTap,
-              child: widget.prefixIcon != null
-                  ? IconTheme(
+            prefixIcon: widget.prefixIcon != null
+                ? GestureDetector(
+                    onTap: widget.onSuffixIconTap,
+                    child: IconTheme(
                       data: IconThemeData(
                         color:
                             widget.prefixIconColor ??
@@ -114,9 +114,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
                         height: 24,
                         child: Center(child: widget.prefixIcon!),
                       ),
-                    )
-                  : null,
-            ),
+                    ),
+                  )
+                : null,
             suffixIcon: widget.isPassword == true
                 ? IconButton(
                     icon: Icon(
