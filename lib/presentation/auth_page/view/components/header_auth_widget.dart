@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class HeaderAuth extends StatefulWidget {
+class HeaderAuth extends StatelessWidget {
   final String title;
   final LinearGradient? backgroundColor;
 
@@ -12,24 +12,19 @@ class HeaderAuth extends StatefulWidget {
   });
 
   @override
-  State<HeaderAuth> createState() => _HeaderAuthState();
-}
-
-class _HeaderAuthState extends State<HeaderAuth> {
-  @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.25,
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: widget.backgroundColor ?? wattGradient,
+        gradient: backgroundColor ?? wattGradient,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            height: 70.0,
+            height: 55.0,
           ),
           Image.asset(
             logo,
@@ -38,7 +33,7 @@ class _HeaderAuthState extends State<HeaderAuth> {
           const SizedBox(height: 10),
           Text(
             textAlign: TextAlign.center,
-            widget.title,
+            title,
             style: TextStyle(
               color: context.theme.appColors.onPrimary,
               fontWeight: FontWeight.bold,
