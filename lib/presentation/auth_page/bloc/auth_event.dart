@@ -66,6 +66,10 @@ class RetypePasswordVerificationEvent extends AuthEvent {
   });
 }
 
+class TogglePasswordVisibilityEvent extends AuthEvent {}
+
+class ToggleRetypePasswordVisibilityEvent extends AuthEvent {}
+
 class AuthSnackBarErrorMessageEvent extends AuthEvent {
   final String message;
   AuthSnackBarErrorMessageEvent(this.message);

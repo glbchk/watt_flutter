@@ -1,3 +1,5 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
@@ -19,11 +21,17 @@ class SaveNamePropertyEvent extends ChargingStationEvent {
   );
 }
 
-class SaveAddressPropertyEvent extends ChargingStationEvent {
-  final String value;
+class GoToMyLocationEvent extends ChargingStationEvent {}
 
-  SaveAddressPropertyEvent(
-    this.value,
+class SearchLocationEvent extends ChargingStationEvent {
+  final String address;
+  final GoogleMapController? mapController;
+  // final Function(LatLng location, String formattedAddress) onLocationFound;
+
+  SearchLocationEvent(
+    this.address,
+    this.mapController,
+    // this.onLocationFound,
   );
 }
 
@@ -34,6 +42,18 @@ class FetchLocationSuggestionsEvent extends ChargingStationEvent {
     this.value,
   );
 }
+
+class SaveAddressPropertyEvent extends ChargingStationEvent {
+  final String value;
+  final Position? addressPosition;
+
+  SaveAddressPropertyEvent(
+    this.value,
+    this.addressPosition,
+  );
+}
+
+class ClearAddressPropertyEvent extends ChargingStationEvent {}
 
 class UpdateBrandNamePropertyEvent extends ChargingStationEvent {
   final String value;

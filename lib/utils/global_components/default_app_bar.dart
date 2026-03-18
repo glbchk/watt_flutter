@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
 class DefaultAppBar extends StatelessWidget {
+  final bool showAppBar;
+
   final bool? extendBodyBehindAppBar;
   final bool resizeToAvoidBottomInset;
 
+  final AppBar? appBar;
   final String? title;
   final Color? titleColor;
   final FontWeight? fontWeight;
@@ -20,8 +23,10 @@ class DefaultAppBar extends StatelessWidget {
 
   const DefaultAppBar({
     super.key,
+    this.showAppBar = true,
     this.extendBodyBehindAppBar,
     required this.resizeToAvoidBottomInset,
+    this.appBar,
     this.title,
     this.titleColor,
     this.fontWeight,
@@ -43,23 +48,26 @@ class DefaultAppBar extends StatelessWidget {
       extendBodyBehindAppBar: extendBodyBehindAppBar ?? true,
       backgroundColor:
           scaffoldBackgroundColor ?? context.theme.appColors.background,
-      appBar: AppBar(
-        title: Text(
-          title ?? '',
-          style: TextStyle(
-            fontWeight: fontWeight ?? FontWeight.bold,
-            fontSize: fontSize ?? 18.0,
-            color: titleColor ?? context.theme.appColors.onSecondary,
-          ),
-        ),
-        iconTheme: IconThemeData(
-          color: foregroundColor ?? context.theme.appColors.onPrimary,
-        ),
-        leading: leading,
-        actions: actions,
-        backgroundColor: appBarBackgroundColor ?? Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: showAppBar
+          ? (appBar ??
+                AppBar(
+                  title: Text(
+                    title ?? '',
+                    style: TextStyle(
+                      fontWeight: fontWeight ?? FontWeight.bold,
+                      fontSize: fontSize ?? 18.0,
+                      color: titleColor ?? context.theme.appColors.onSecondary,
+                    ),
+                  ),
+                  iconTheme: IconThemeData(
+                    color: foregroundColor ?? context.theme.appColors.onPrimary,
+                  ),
+                  leading: leading,
+                  actions: actions,
+                  backgroundColor: appBarBackgroundColor ?? Colors.transparent,
+                  elevation: 0,
+                ))
+          : null,
       body: body,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,

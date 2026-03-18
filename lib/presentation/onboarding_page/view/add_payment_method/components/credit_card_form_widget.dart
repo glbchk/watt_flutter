@@ -6,7 +6,7 @@ import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
-class CreditCardFormWidget extends StatefulWidget {
+class CreditCardFormWidget extends StatelessWidget {
   final TextEditingController controllerCardName;
   final TextEditingController controllerCardNumber;
   final TextEditingController controllerExpiry;
@@ -49,11 +49,6 @@ class CreditCardFormWidget extends StatefulWidget {
   });
 
   @override
-  State<CreditCardFormWidget> createState() => _CreditCardFormWidgetState();
-}
-
-class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
-  @override
   Widget build(BuildContext context) {
     return Form(
       child: Padding(
@@ -61,27 +56,24 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
         child: Column(
           children: [
             CustomTextField(
-              controller: widget.controllerCardName,
+              controller: controllerCardName,
               label: 'Card Name',
               hint: 'e.g. Default payment method',
-              onChanged: widget.onChangedCardName,
-              error: widget.errorCardName,
+              onChanged: onChangedCardName,
+              error: errorCardName,
               keyboardType: TextInputType.text,
             ),
             const SizedBox(height: 20.0),
             CustomTextField(
-              controller: widget.controllerCardNumber,
-              prefixIcon: widget.cardNumberPrefixIcon,
+              controller: controllerCardNumber,
+              prefixIcon: cardNumberPrefixIcon,
               prefixIconColor: context.theme.appColors.primary,
               suffixIcon: Icon(Icons.center_focus_weak),
               suffixIconColor: context.theme.appColors.grey1,
               label: 'Card Number',
               hint: '0000 0000 0000 0000',
-              onChanged: (value) {
-                setState(() {});
-                widget.onChangedCardNumber(value);
-              },
-              error: widget.errorCardNumber,
+              onChanged: onChangedCardNumber,
+              error: errorCardNumber,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -94,11 +86,11 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
               children: [
                 Expanded(
                   child: CustomTextField(
-                    controller: widget.controllerExpiry,
+                    controller: controllerExpiry,
                     label: 'Expiry',
                     hint: 'MM / YY',
-                    onChanged: widget.onChangedExpiry,
-                    error: widget.errorExpiry,
+                    onChanged: onChangedExpiry,
+                    error: errorExpiry,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -110,14 +102,14 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
                 const SizedBox(width: 20.0),
                 Expanded(
                   child: CustomTextField(
-                    controller: widget.controllerCvv,
+                    controller: controllerCvv,
                     isPassword: true,
                     suffixIcon: Icon(Icons.visibility),
                     suffixIconColor: context.theme.appColors.grey1,
                     label: 'CVV',
                     hint: '• • •',
-                    onChanged: widget.onChangedCvv,
-                    error: widget.errorCvv,
+                    onChanged: onChangedCvv,
+                    error: errorCvv,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -130,15 +122,15 @@ class _CreditCardFormWidgetState extends State<CreditCardFormWidget> {
             const SizedBox(height: 25.0),
             RowToggle(
               label: 'Default payment method',
-              isSwitched: widget.isSwitched,
-              onChanged: widget.onChanged,
+              isSwitched: isSwitched,
+              onChanged: onChanged,
               isLineVisible: false,
             ),
             const SizedBox(height: 40.0),
             WattMainButton(
               label: 'Save',
               onPressed: () {
-                widget.onPressSave();
+                onPressSave();
               },
             ),
           ],

@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
-import 'package:watt/presentation/auth_page/view/components/buttons_section.dart';
-import 'package:watt/presentation/auth_page/view/components/header_auth.dart';
+import 'package:watt/presentation/auth_page/view/components/buttons_section_widget.dart';
+import 'package:watt/presentation/auth_page/view/components/header_auth_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/onboarding_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/watt_alert.dart';
 
 import '../../../utils/global_components/bottom_floating_button.dart';
 import '../../home_page/view/home_page.dart';
-import 'components/auth_form.dart';
+import 'components/auth_form_widget.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -86,7 +86,7 @@ class _AuthPageState extends State<AuthPage> {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                HeaderAuth(
+                HeaderAuthWidget(
                   title: !isRegisterMode ? 'Welcome back' : 'Create an account',
                 ),
                 AuthFormWidget(
@@ -111,6 +111,12 @@ class _AuthPageState extends State<AuthPage> {
                       ),
                     );
                   },
+                  showPassword: (state is AuthUnauthenticatedState)
+                      ? state.isPasswordVisible
+                      : null,
+                  showRetypedPassword: (state is AuthUnauthenticatedState)
+                      ? state.isRetypePasswordVisible
+                      : null,
                   passwordError: (state is AuthUnauthenticatedState)
                       ? state.passwordError
                       : null,

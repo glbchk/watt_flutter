@@ -33,34 +33,28 @@ class PaymentMethodState {
   PaymentMethodState copyWith({
     bool? isLoading,
     String? errorMessage,
-    CreditCardModel? Function()? creditCard,
-    IbanModel? Function()? iban,
-    List<PaymentMethodModel>? Function()? paymentMethods,
-    PaymentMethodType? Function()? paymentType,
-    String? Function()? cardNameError,
-    String? Function()? cardNumberError,
-    String? Function()? expiryError,
-    String? Function()? cvvError,
-    String? Function()? ibanError,
+    CreditCardModel? creditCard,
+    IbanModel? iban,
+    List<PaymentMethodModel>? paymentMethods,
+    PaymentMethodType? paymentType,
+    String? cardNameError,
+    String? cardNumberError,
+    String? expiryError,
+    String? cvvError,
+    String? ibanError,
   }) {
     return PaymentMethodState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
-      creditCard: creditCard != null ? creditCard() : this.creditCard,
-      iban: iban != null ? iban() : this.iban,
-      paymentMethods: paymentMethods != null
-          ? paymentMethods()
-          : this.paymentMethods,
-      paymentType: paymentType != null ? paymentType() : this.paymentType,
-      cardNameError: cardNameError != null
-          ? cardNameError()
-          : this.cardNameError,
-      cardNumberError: cardNumberError != null
-          ? cardNumberError()
-          : this.cardNumberError,
-      expiryError: expiryError != null ? expiryError() : this.expiryError,
-      cvvError: cvvError != null ? cvvError() : this.cvvError,
-      ibanError: ibanError != null ? ibanError() : this.ibanError,
+      creditCard: creditCard ?? this.creditCard,
+      iban: iban ?? this.iban,
+      paymentMethods: paymentMethods ?? this.paymentMethods,
+      paymentType: paymentType ?? this.paymentType,
+      cardNameError: cardNameError ?? this.cardNameError,
+      cardNumberError: cardNumberError ?? this.cardNumberError,
+      expiryError: expiryError ?? this.expiryError,
+      cvvError: cvvError ?? this.cvvError,
+      ibanError: ibanError ?? this.ibanError,
     );
   }
 }

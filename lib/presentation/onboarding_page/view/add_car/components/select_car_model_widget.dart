@@ -5,7 +5,7 @@ import 'package:watt/utils/global_components/watt_dropdown_menu.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
-class SelectCarModelWidget extends StatefulWidget {
+class SelectCarModelWidget extends StatelessWidget {
   final TextEditingController controllerPlateNumber;
   final String? selectedValue;
   final List<String> listItems;
@@ -24,16 +24,10 @@ class SelectCarModelWidget extends StatefulWidget {
     this.saveLabel,
     this.onSavePressed,
   });
-
-  @override
-  State<SelectCarModelWidget> createState() => _SelectCarModelWidgetState();
-}
-
-class _SelectCarModelWidgetState extends State<SelectCarModelWidget> {
   @override
   Widget build(BuildContext context) {
     debugPrint(
-      'onDropdownChanged is null: ${widget.onDropdownChanged == null}',
+      'onDropdownChanged is null: ${onDropdownChanged == null}',
     );
 
     return CustomScrollView(
@@ -61,17 +55,17 @@ class _SelectCarModelWidgetState extends State<SelectCarModelWidget> {
                   WattDropdownMenu(
                     label: 'Model',
                     hintText: "Select a car model",
-                    dropdownValue: widget.selectedValue,
-                    listItems: widget.listItems,
-                    onChanged: widget.onDropdownChanged,
+                    dropdownValue: selectedValue,
+                    listItems: listItems,
+                    onChanged: onDropdownChanged,
                   ),
 
                   const SizedBox(height: 20.0),
                   CustomTextField(
-                    controller: widget.controllerPlateNumber,
+                    controller: controllerPlateNumber,
                     label: 'Plate Number',
                     hint: 'Start typing here...',
-                    error: widget.errorPlateNumber,
+                    error: errorPlateNumber,
                     keyboardType: TextInputType.text,
                     textCapitalization: TextCapitalization.characters,
                     inputFormatters: [
@@ -81,7 +75,7 @@ class _SelectCarModelWidgetState extends State<SelectCarModelWidget> {
                   const SizedBox(height: 35.0),
                   WattMainButton(
                     label: 'Save',
-                    onPressed: widget.onSavePressed,
+                    onPressed: onSavePressed,
                   ),
                   const Spacer(),
                 ],

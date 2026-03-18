@@ -33,58 +33,15 @@ class GoogleMapsHelperMethods {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
         return "${place.street}, ${place.locality}";
-
-        // You could update a TextField or show a BottomSheet here
       }
     } catch (e) {
-      print("Could not find address for this point.");
+      print("Could not find address for this point: $e");
     }
     return null;
   }
 
-  static Future<void> goToMyLocation(GoogleMapController? controller) async {
-    if (controller == null) {
-      print("Map controller is null");
-      return;
-    }
-
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openAppSettings();
-      return;
-    }
-
-    const LocationSettings locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-    );
-
-    Position position = await Geolocator.getCurrentPosition(
-      locationSettings: locationSettings,
-    );
-
-    controller.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        LatLng(position.latitude, position.longitude),
-        15,
-      ),
-    );
-  }
-
-  static Future<Position?> handleGoToMyLocation({
-    required GoogleMapController? controller,
+  static Future<Position?> goToMyLocation({
+    GoogleMapController? controller,
   }) async {
     if (controller == null) {
       print("Map controller is null");
@@ -124,7 +81,82 @@ class GoogleMapsHelperMethods {
         15,
       ),
     );
-
     return position;
+  }
+
+  static Future<void> searchLocation({
+    required String address,
+    required GoogleMapController? mapController,
+    required Function(LatLng location, String formattedAddress) onLocationFound,
+  }) async {
+    if (address.isEmpty) return;
+
+    try {
+      List<Location> locations = await locationFromAddress(address);
+
+      if (locations.isNotEmpty) {
+        Location result = locations.first;
+        LatLng targetLatLng = LatLng(result.latitude, result.longitude);
+
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          result.latitude,
+          result.longitude,
+        );
+
+        String cleanAddress = address;
+        if (placemarks.isNotEmpty) {
+          final p = placemarks.first;
+          cleanAddress = "${p.street}, ${p.locality}";
+        }
+
+        mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(targetLatLng, 15),
+        );
+
+        onLocationFound(targetLatLng, cleanAddress);
+
+        mapController?.showMarkerInfoWindow(const MarkerId('selected_point'));
+      }
+    } catch (e) {
+      print("Error finding location: $e");
+      // You could trigger a SnackBar here if the address is invalid
+    }
+  }
+
+  static Future<void> extractMyCityLocation({
+    GoogleMapController? mapController,
+    required Function(LatLng location, String formattedAddress) onLocationFound,
+  }) async {
+    final position = await goToMyLocation(controller: mapController);
+
+    if (position == null) return;
+
+    final latLng = LatLng(position.latitude, position.longitude);
+
+    final placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    String formattedAddress = "";
+
+    if (placemarks.isNotEmpty) {
+      final place = placemarks.first;
+
+      final city = place.locality ?? "";
+      final country = place.country ?? "";
+
+      formattedAddress = "$city, $country";
+    }
+
+    mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(latLng, 12),
+    );
+
+    onLocationFound(latLng, formattedAddress);
+
+    mapController?.showMarkerInfoWindow(
+      const MarkerId('selected_point'),
+    );
   }
 }

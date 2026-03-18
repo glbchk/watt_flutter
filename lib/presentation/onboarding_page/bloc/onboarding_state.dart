@@ -23,8 +23,8 @@ class OnboardingState {
     this.phoneNumber,
     this.nameError,
     this.phoneNumberError,
-    this.isNameValid = false,
-    this.isPhoneNumberValid = false,
+    this.isNameValid,
+    this.isPhoneNumberValid,
     this.cars,
     this.chargingStations,
     this.paymentMethods,
@@ -33,36 +33,32 @@ class OnboardingState {
   OnboardingState copyWith({
     bool? isLoading,
     String? errorMessage,
-    String? Function()? name,
-    String? Function()? phoneNumber,
-    String? Function()? nameError,
-    String? Function()? phoneNumberError,
-    bool? Function()? isNameValid,
-    bool? Function()? isPhoneNumberValid,
-    List<CarModel>? Function()? cars,
-    List<ChargingStationModel>? Function()? chargingStations,
-    List<PaymentMethodModel>? Function()? paymentMethods,
+    String? name,
+    String? phoneNumber,
+    String? nameError,
+    String? phoneNumberError,
+    bool? isNameValid,
+    bool? isPhoneNumberValid,
+    List<CarModel>? cars,
+    List<ChargingStationModel>? chargingStations,
+    List<PaymentMethodModel>? paymentMethods,
   }) {
     return OnboardingState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage ?? this.errorMessage,
-      name: name != null ? name() : this.name,
-      phoneNumber: phoneNumber != null ? phoneNumber() : this.phoneNumber,
-      nameError: nameError != null ? nameError() : this.nameError,
+      name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      nameError: nameError != null
+          ? (nameError.isEmpty ? null : nameError)
+          : this.nameError,
       phoneNumberError: phoneNumberError != null
-          ? phoneNumberError()
+          ? (phoneNumberError.isEmpty ? null : phoneNumberError)
           : this.phoneNumberError,
-      isNameValid: isNameValid != null ? isNameValid() : this.isNameValid,
-      isPhoneNumberValid: isPhoneNumberValid != null
-          ? isPhoneNumberValid()
-          : this.isPhoneNumberValid,
-      cars: cars != null ? cars() : this.cars,
-      chargingStations: chargingStations != null
-          ? chargingStations()
-          : this.chargingStations,
-      paymentMethods: paymentMethods != null
-          ? paymentMethods()
-          : this.paymentMethods,
+      isNameValid: isNameValid ?? this.isNameValid,
+      isPhoneNumberValid: isPhoneNumberValid ?? this.isPhoneNumberValid,
+      cars: cars ?? this.cars,
+      chargingStations: chargingStations ?? this.chargingStations,
+      paymentMethods: paymentMethods ?? this.paymentMethods,
     );
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class HeaderAuth extends StatelessWidget {
+class HeaderAuthWidget extends StatelessWidget {
   final String title;
   final LinearGradient? backgroundColor;
 
-  const HeaderAuth({
+  const HeaderAuthWidget({
     super.key,
     required this.title,
     this.backgroundColor,

@@ -40,6 +40,8 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
+        print(state.nameError);
+        print(state.phoneNumberError);
         return DefaultAppBar(
           resizeToAvoidBottomInset: true,
           extendBodyBehindAppBar: false,

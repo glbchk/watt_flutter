@@ -25,6 +25,8 @@ class OnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
+        print("Name: ${state.name}");
+        print("phoneNumber: ${state.phoneNumber}");
         final double marginSize = 8.0;
 
         final cars = state.cars ?? [];
@@ -64,10 +66,13 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       SlimCardButton(
                         label: KCardTitles.addNameAndPhoneNumber,
-                        subLabel: StringHelperMethods.createNameAndPhoneLabel(
-                          state.name,
-                          state.phoneNumber,
-                        ),
+                        subLabel:
+                            (state.name != null || state.phoneNumber != null)
+                            ? StringHelperMethods.createNameAndPhoneLabel(
+                                state.name,
+                                state.phoneNumber,
+                              )
+                            : '',
                         svgImage: KCardIcons.profile,
                         marginDistance: marginSize,
                         iconColor:
@@ -97,10 +102,11 @@ class OnboardingPage extends StatelessWidget {
                             : '',
                         svgImage: KCardIcons.car,
                         marginDistance: marginSize,
-                        iconColor: state.cars != null
+                        iconColor: state.cars != null && state.cars!.isNotEmpty
                             ? context.theme.appColors.onPrimary
                             : context.theme.appColors.grey2,
-                        backgroundColor: state.cars != null
+                        backgroundColor:
+                            state.cars != null && state.cars!.isNotEmpty
                             ? context.theme.appColors.primary
                             : context.theme.appColors.surface,
                         onPressed: () {
@@ -121,24 +127,17 @@ class OnboardingPage extends StatelessWidget {
                             : '',
                         svgImage: KCardIcons.chargingStation,
                         marginDistance: marginSize,
-                        iconColor: state.chargingStations != null
+                        iconColor:
+                            state.chargingStations != null &&
+                                state.chargingStations!.isNotEmpty
                             ? context.theme.appColors.onPrimary
                             : context.theme.appColors.grey2,
-                        backgroundColor: state.chargingStations != null
+                        backgroundColor:
+                            state.chargingStations != null &&
+                                state.chargingStations!.isNotEmpty
                             ? context.theme.appColors.primary
                             : context.theme.appColors.surface,
                         onPressed: () async {
-                          // context.read<ChargingStationBloc>().add(
-                          //   FetchUserChargingStationsEvent(),
-                          // );
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (_) => AddChargingStationPage(),
-                          //   ),
-                          // );
-
                           final result =
                               await Navigator.push<ChargingStationModel?>(
                                 context,
@@ -165,10 +164,14 @@ class OnboardingPage extends StatelessWidget {
                             : '',
                         svgImage: KCardIcons.paymentMethod,
                         marginDistance: marginSize,
-                        iconColor: state.paymentMethods != null
+                        iconColor:
+                            state.paymentMethods != null &&
+                                state.paymentMethods!.isNotEmpty
                             ? context.theme.appColors.onPrimary
                             : context.theme.appColors.grey2,
-                        backgroundColor: state.paymentMethods != null
+                        backgroundColor:
+                            state.paymentMethods != null &&
+                                state.paymentMethods!.isNotEmpty
                             ? context.theme.appColors.primary
                             : context.theme.appColors.surface,
                         onPressed: () {

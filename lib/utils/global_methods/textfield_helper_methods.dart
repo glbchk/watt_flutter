@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 class TextfieldHelperMethods {
@@ -31,14 +29,14 @@ class TextfieldHelperMethods {
     );
   }
 
-  static void onSearchChanged({
-    required String? value,
-    required Timer? debounce,
-    required Function(String?)? onChanged,
-  }) {
-    if (debounce?.isActive ?? false) debounce!.cancel();
-    debounce = Timer(const Duration(milliseconds: 500), () {
-      onChanged?.call(value);
-    });
-  }
+  // static void onSearchChanged({
+  //   required String? value,
+  //   required Timer? debounce,
+  //   required Function(String?)? onChanged,
+  // }) {
+  //   if (debounce?.isActive ?? false) debounce!.cancel();
+  //   debounce = Timer(const Duration(milliseconds: 500), () {
+  //     onChanged?.call(value);
+  //   });
+  // }
 }

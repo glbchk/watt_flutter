@@ -1,11 +1,22 @@
 import 'package:watt/utils/constants.dart';
 
 class StringHelperMethods {
-  static String createNameAndPhoneLabel(String? name, String? phoneNumber) {
+  static String? validateMinLength({
+    required String value,
+    required int minLength,
+    required String errorMessage,
+  }) {
+    print(value.length);
+    if (value.isEmpty) return null;
+    if (value.length < minLength) return errorMessage;
+    return null;
+  }
+
+  static String? createNameAndPhoneLabel(String? name, String? phoneNumber) {
     if (name != null && phoneNumber != null) return '$name, $phoneNumber';
     if (name != null) return name;
     if (phoneNumber != null) return phoneNumber;
-    return '';
+    return null;
   }
 
   static String? createChargingStationLabel(

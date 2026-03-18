@@ -24,8 +24,6 @@ Future<void> main() async {
 
   await initThemeMode();
 
-  // Bloc.observer = AppBlocObserver();
-
   runApp(
     MultiBlocProvider(
       providers: [

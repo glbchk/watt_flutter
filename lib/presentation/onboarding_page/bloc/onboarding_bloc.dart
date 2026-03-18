@@ -5,6 +5,7 @@ import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
@@ -22,74 +23,80 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =
       FetchPaymentMethodsUseCase();
 
-  String? _validateMinLength({
-    required String value,
-    required int minLength,
-    required String errorMessage,
-  }) {
-    if (value.isEmpty) return null;
-    if (value.length < minLength) return errorMessage;
-    return null;
-  }
-
   OnboardingBloc() : super(OnboardingState()) {
     on<NameVerificationEvent>((event, emit) {
+      final validationError = StringHelperMethods.validateMinLength(
+        value: event.value,
+        minLength: 3,
+        errorMessage: 'Name should be at least 3 symbols',
+      );
+
+      print(validationError);
       emit(
         state.copyWith(
-          nameError: () => _validateMinLength(
-            value: event.value,
-            minLength: 3,
-            errorMessage: 'Name should be at least 3 symbols',
-          ),
-          isNameValid: () =>
-              (event.value == null || event.value.length < 3) ? false : true,
+          nameError: validationError ?? "",
+          isNameValid: event.value.length >= 3,
         ),
       );
     });
 
     on<PhoneNumberVerificationEvent>((event, emit) {
       final digits = event.value.replaceAll(RegExp(r'\D'), '');
+      final validationError = StringHelperMethods.validateMinLength(
+        value: digits,
+        minLength: 10,
+        errorMessage: 'Phone number must contain 10 digits',
+      );
+
+      print("Phone number error: $validationError");
 
       emit(
         state.copyWith(
-          phoneNumberError: () => _validateMinLength(
-            value: digits,
-            minLength: 10,
-            errorMessage: 'Phone number must contain 10 digits',
-          ),
-          isPhoneNumberValid: () =>
-              (event.value == null || digits.length < 10) ? false : true,
+          phoneNumberError: validationError ?? "",
+          isPhoneNumberValid: event.value.length >= 10,
         ),
       );
     });
 
     on<OnboardingFilledNamePhoneNumberEvent>((event, emit) async {
-      await updateUserNameUseCase.execute(
-        event.name,
-      );
-      await updateUserPhoneNumberUseCase.execute(
-        event.phoneNumber,
-      );
-      emit(
-        state.copyWith(
-          name: () => event.name,
-          phoneNumber: () => event.phoneNumber,
-        ),
-      );
+      try {
+        if (event.name.isNotEmpty) {
+          await updateUserNameUseCase.execute(
+            event.name,
+          );
+        }
+        if (event.phoneNumber.isNotEmpty) {
+          await updateUserPhoneNumberUseCase.execute(
+            event.phoneNumber,
+          );
+        }
+        emit(
+          state.copyWith(
+            name: event.name,
+            phoneNumber: event.phoneNumber,
+          ),
+        );
+      } catch (e) {
+        print('Error: $e');
+      }
     });
 
     on<OnboardingFilledCarModelEvent>((event, emit) async {
-      await updateUserCarUseCase.execute(
-        event.car,
-      );
+      try {
+        await updateUserCarUseCase.execute(
+          event.car,
+        );
 
-      final List<CarModel> updateCarsList = [...?state.cars, event.car];
+        final List<CarModel> updateCarsList = [...?state.cars, event.car];
 
-      emit(
-        state.copyWith(
-          cars: () => updateCarsList,
-        ),
-      );
+        emit(
+          state.copyWith(
+            cars: updateCarsList,
+          ),
+        );
+      } catch (e) {
+        print('Error: $e');
+      }
     });
 
     on<FetchUserCarsEvent>((event, emit) async {
@@ -101,7 +108,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         emit(
           state.copyWith(
             isLoading: false,
-            cars: () => cars,
+            cars: cars,
           ),
         );
       } catch (e) {
@@ -110,38 +117,46 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     });
 
     on<UpdatePlateNumberCarEvent>((event, emit) async {
-      await updatePlateNumberCarUseCase.execute(
-        event.carId,
-        event.plateNumber,
-      );
+      try {
+        await updatePlateNumberCarUseCase.execute(
+          event.carId,
+          event.plateNumber,
+        );
 
-      final List<CarModel> updatedCarsList = (state.cars ?? []).map((car) {
-        return car.id == event.carId
-            ? car.copyCarWith(plateNumber: event.plateNumber)
-            : car;
-      }).toList();
+        final List<CarModel> updatedCarsList = (state.cars ?? []).map((car) {
+          return car.id == event.carId
+              ? car.copyCarWith(plateNumber: event.plateNumber)
+              : car;
+        }).toList();
 
-      emit(
-        state.copyWith(
-          cars: () => updatedCarsList,
-        ),
-      );
+        emit(
+          state.copyWith(
+            cars: updatedCarsList,
+          ),
+        );
+      } catch (e) {
+        print('Error: $e');
+      }
     });
 
     on<DeleteCarEvent>((event, emit) async {
-      await deleteCarUseCase.execute(
-        event.carId,
-      );
+      try {
+        await deleteCarUseCase.execute(
+          event.carId,
+        );
 
-      final updatedCarsList = (state.cars ?? [])
-          .where((car) => car.id != event.carId)
-          .toList();
+        final updatedCarsList = (state.cars ?? [])
+            .where((car) => car.id != event.carId)
+            .toList();
 
-      emit(
-        state.copyWith(
-          cars: () => updatedCarsList,
-        ),
-      );
+        emit(
+          state.copyWith(
+            cars: updatedCarsList,
+          ),
+        );
+      } catch (e) {
+        print('Error: $e');
+      }
     });
 
     on<FetchUserChargingStationsEvent>((event, emit) async {
@@ -154,7 +169,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         emit(
           state.copyWith(
             isLoading: false,
-            chargingStations: () => chargingStations,
+            chargingStations: chargingStations,
           ),
         );
       } catch (e) {
@@ -164,14 +179,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     });
 
     on<AddedChargingStationsEvent>((event, emit) async {
-      await addChargingStationsUseCase.execute(event.chargingStations);
       try {
+        await addChargingStationsUseCase.execute(event.chargingStations);
         final List<ChargingStationModel> chargingStations =
             event.chargingStations;
 
         emit(
           state.copyWith(
-            chargingStations: () => chargingStations,
+            chargingStations: chargingStations,
           ),
         );
       } catch (e) {
@@ -190,7 +205,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         emit(
           state.copyWith(
             isLoading: false,
-            paymentMethods: () => paymentMethods,
+            paymentMethods: paymentMethods,
           ),
         );
       } catch (e) {

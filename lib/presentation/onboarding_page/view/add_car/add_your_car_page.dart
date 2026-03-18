@@ -54,6 +54,7 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
           body: Stack(
             children: [
               CustomScrollView(
+                physics: ClampingScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(
                     child: Column(
@@ -166,6 +167,9 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                                     );
                                   },
                                 ),
+                                SizedBox(
+                                  height: 100,
+                                ),
                               ],
                             ),
                           ),
@@ -203,7 +207,9 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                     child: SafeArea(
                       child: WattMainButton(
                         label: 'Save',
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                   ),

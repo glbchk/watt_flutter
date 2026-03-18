@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/choose_location_on_map_page.dart';
 import 'package:watt/utils/colors.dart';
-
-import '../../presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_available_hours_property_page.dart';
 
 class UiHelperMethods {
   static OverlayEntry? removeOverlay(OverlayEntry? overlayEntry) {
@@ -20,7 +19,7 @@ class UiHelperMethods {
     required FocusNode focusNode,
     required VoidCallback onDismiss,
   }) {
-    final overlay = Overlay.of(context);
+    final overlay = Overlay.of(context, rootOverlay: true);
 
     OverlayEntry? overlayEntry;
 
@@ -88,8 +87,9 @@ class UiHelperMethods {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      DetailAvailableHoursPropertyPage(),
+                                  builder: (_) => ChooseLocationOnMapPage(
+                                    autoDetectMyLocation: true,
+                                  ),
                                 ),
                               );
                             },

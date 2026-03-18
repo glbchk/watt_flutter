@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
@@ -9,6 +10,8 @@ class ChargingStationState {
   final String? id;
   final String? chargingStationName;
   final String? address;
+  // final LatLng? addressLatLng;
+  final Position? addressPosition;
   final List<String>? locationSuggestions;
   final String? brandName;
   final String? brandLogo;
@@ -29,6 +32,8 @@ class ChargingStationState {
     this.id,
     this.chargingStationName,
     this.address,
+    // this.addressLatLng,
+    this.addressPosition,
     this.locationSuggestions,
     this.brandName,
     this.brandLogo,
@@ -44,58 +49,46 @@ class ChargingStationState {
   });
 
   ChargingStationState copyWith({
-    bool? Function()? isLoading,
-    String? Function()? errorMessage,
-    String? Function()? id,
-    String? Function()? chargingStationName,
-    String? Function()? address,
-    List<String>? Function()? locationSuggestions,
-    String? Function()? brandName,
-    String? Function()? brandLogo,
-    String? Function()? chargingEffect,
-    String? Function()? plug,
-    String? Function()? pricePerKwh,
-    List<IbanModel>? Function()? bankAccounts,
-    bool? Function()? onlineCharger,
-    List<TimeSlotModel>? Function()? availableHours,
-    bool? Function()? everyoneCanAccess,
-    ChargingStationModel? Function()? chargingStation,
-    List<ChargingStationModel>? Function()? chargingStations,
+    bool? isLoading,
+    String? errorMessage,
+    String? id,
+    String? chargingStationName,
+    String? address,
+    // LatLng? addressLatLng,
+    Position? addressPosition,
+    List<String>? locationSuggestions,
+    String? brandName,
+    String? brandLogo,
+    String? chargingEffect,
+    String? plug,
+    String? pricePerKwh,
+    List<IbanModel>? bankAccounts,
+    bool? onlineCharger,
+    List<TimeSlotModel>? availableHours,
+    bool? everyoneCanAccess,
+    ChargingStationModel? chargingStation,
+    List<ChargingStationModel>? chargingStations,
   }) {
     return ChargingStationState(
-      isLoading: isLoading != null ? isLoading() : this.isLoading,
-      errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
-      id: id != null ? id() : this.id,
-      chargingStationName: chargingStationName != null
-          ? chargingStationName()
-          : this.chargingStationName,
-      address: address != null ? address() : this.address,
-      locationSuggestions: locationSuggestions != null
-          ? locationSuggestions()
-          : this.locationSuggestions,
-      brandName: brandName != null ? brandName() : this.brandName,
-      brandLogo: brandLogo != null ? brandLogo() : this.brandLogo,
-      chargingEffect: chargingEffect != null
-          ? chargingEffect()
-          : this.chargingEffect,
-      plug: plug != null ? plug() : this.plug,
-      pricePerKwh: pricePerKwh != null ? pricePerKwh() : this.pricePerKwh,
-      bankAccounts: bankAccounts != null ? bankAccounts() : this.bankAccounts,
-      onlineCharger: onlineCharger != null
-          ? onlineCharger()
-          : this.onlineCharger,
-      availableHours: availableHours != null
-          ? availableHours()
-          : this.availableHours,
-      everyoneCanAccess: everyoneCanAccess != null
-          ? everyoneCanAccess()
-          : this.everyoneCanAccess,
-      chargingStation: chargingStation != null
-          ? chargingStation()
-          : this.chargingStation,
-      chargingStations: chargingStations != null
-          ? chargingStations()
-          : this.chargingStations,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage ?? this.errorMessage,
+      id: id ?? this.id,
+      chargingStationName: chargingStationName ?? this.chargingStationName,
+      address: address ?? this.address,
+      // addressLatLng: addressLatLng ?? this.addressLatLng,
+      addressPosition: addressPosition ?? this.addressPosition,
+      locationSuggestions: locationSuggestions ?? this.locationSuggestions,
+      brandName: brandName ?? this.brandName,
+      brandLogo: brandLogo ?? this.brandLogo,
+      chargingEffect: chargingEffect ?? this.chargingEffect,
+      plug: plug ?? this.plug,
+      pricePerKwh: pricePerKwh ?? this.pricePerKwh,
+      bankAccounts: bankAccounts ?? this.bankAccounts,
+      onlineCharger: onlineCharger ?? this.onlineCharger,
+      availableHours: availableHours ?? this.availableHours,
+      everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
+      chargingStation: chargingStation ?? this.chargingStation,
+      chargingStations: chargingStations ?? this.chargingStations,
     );
   }
 }

@@ -35,7 +35,7 @@ class AddNamePhoneNumberWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var maskFormatter = new MaskTextInputFormatter(
+    final maskFormatter = MaskTextInputFormatter(
       mask: '(###) ###-####',
       filter: {"#": RegExp(r'[0-9]')},
       type: MaskAutoCompletionType.lazy,

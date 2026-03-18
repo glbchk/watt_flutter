@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
-import 'package:watt/utils/global_methods/textfield_helper_methods.dart';
 
-class SmallTextField extends StatefulWidget {
+class SmallTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? label;
   final String? hint;
@@ -34,35 +31,22 @@ class SmallTextField extends StatefulWidget {
   });
 
   @override
-  State<SmallTextField> createState() => _SmallTextFieldState();
-}
-
-class _SmallTextFieldState extends State<SmallTextField> {
-  Timer? debounce;
-  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 64.0,
       height: 28.0,
       child: TextField(
-        controller: widget.controller,
-        autofocus: widget.autofocus ?? true,
-        focusNode: widget.focusNode,
+        controller: controller,
+        autofocus: autofocus ?? true,
+        focusNode: focusNode,
         enableSuggestions: false,
         autocorrect: false,
-        keyboardType: widget.keyboardType,
-        inputFormatters: widget.inputFormatters,
-        onTapOutside: widget.onTapOutside,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        onTapOutside: onTapOutside,
         style: TextStyle(color: context.theme.appColors.onSurface),
-        textCapitalization:
-            widget.textCapitalization ?? TextCapitalization.none,
-        onChanged: (String newValue) {
-          TextfieldHelperMethods.onSearchChanged(
-            value: newValue,
-            debounce: debounce,
-            onChanged: widget.onChanged,
-          );
-        },
+        textCapitalization: textCapitalization ?? TextCapitalization.none,
+        onChanged: (String value) => onChanged?.call(value),
         decoration: InputDecoration(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(
@@ -73,7 +57,7 @@ class _SmallTextFieldState extends State<SmallTextField> {
             color: context.theme.appColors.error,
             fontSize: 12,
           ),
-          hintText: widget.hint,
+          hintText: hint,
           hintStyle: TextStyle(
             color: context.theme.appColors.grey2,
           ),
