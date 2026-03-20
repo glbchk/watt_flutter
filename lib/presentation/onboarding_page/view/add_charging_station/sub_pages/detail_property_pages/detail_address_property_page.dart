@@ -30,11 +30,10 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
   TextEditingController controllerAddress = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool showSuggestions = false;
+  bool _isCleared = false;
 
   @override
   void initState() {
-    controllerAddress.text = widget.address;
-
     _focusNode.addListener(() {
       if (!mounted) return;
 
@@ -55,7 +54,17 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChargingStationBloc, ChargingStationState>(
+    return BlocConsumer<ChargingStationBloc, ChargingStationState>(
+      listener: (context, state) {
+        if (_isCleared) return;
+
+        if (controllerAddress.text != state.address) {
+          controllerAddress.text = state.address ?? "";
+          controllerAddress.selection = TextSelection.fromPosition(
+            TextPosition(offset: state.address?.length ?? 0),
+          );
+        }
+      },
       builder: (context, state) {
         final suggestions = state.locationSuggestions ?? [];
 
@@ -73,19 +82,30 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                       controller: controllerAddress,
                       label: 'Address',
                       focusNode: _focusNode,
+                      onFocusChange: (hasFocus) {
+                        setState(() {
+                          showSuggestions = hasFocus;
+                        });
+                      },
                       prefixIcon: const Icon(Icons.search),
                       prefixIconColor: context.theme.appColors.grey1,
                       hint: "e.g. John's Amp",
                       suffixIcon: Icon(Icons.close),
                       suffixIconColor: context.theme.appColors.grey1,
                       onSuffixIconTap: () {
+                        _isCleared = true;
+                        controllerAddress.clear();
+                        _isCleared = false;
+                        context.read<ChargingStationBloc>().add(
+                          ClearAddressPropertyEvent(),
+                        );
                         _focusNode.unfocus();
-
                         setState(() {
                           showSuggestions = false;
                         });
                       },
                       onChanged: (value) {
+                        if (_isCleared) return;
                         context.read<ChargingStationBloc>().add(
                           FetchLocationSuggestionsEvent(value ?? ''),
                         );

@@ -10,7 +10,6 @@ class ChargingStationState {
   final String? id;
   final String? chargingStationName;
   final String? address;
-  // final LatLng? addressLatLng;
   final Position? addressPosition;
   final List<String>? locationSuggestions;
   final String? brandName;
@@ -32,7 +31,6 @@ class ChargingStationState {
     this.id,
     this.chargingStationName,
     this.address,
-    // this.addressLatLng,
     this.addressPosition,
     this.locationSuggestions,
     this.brandName,
@@ -53,9 +51,8 @@ class ChargingStationState {
     String? errorMessage,
     String? id,
     String? chargingStationName,
-    String? address,
-    // LatLng? addressLatLng,
-    Position? addressPosition,
+    String? Function()? address,
+    Position? Function()? addressPosition,
     List<String>? locationSuggestions,
     String? brandName,
     String? brandLogo,
@@ -74,9 +71,10 @@ class ChargingStationState {
       errorMessage: errorMessage ?? this.errorMessage,
       id: id ?? this.id,
       chargingStationName: chargingStationName ?? this.chargingStationName,
-      address: address ?? this.address,
-      // addressLatLng: addressLatLng ?? this.addressLatLng,
-      addressPosition: addressPosition ?? this.addressPosition,
+      address: address != null ? address() : this.address,
+      addressPosition: addressPosition != null
+          ? addressPosition()
+          : this.addressPosition,
       locationSuggestions: locationSuggestions ?? this.locationSuggestions,
       brandName: brandName ?? this.brandName,
       brandLogo: brandLogo ?? this.brandLogo,

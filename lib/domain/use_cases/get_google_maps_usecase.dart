@@ -18,13 +18,23 @@ class SearchLocationUseCase extends GoogleMapsUseCase {
   Future<LocationResult?> execute(
     String address,
     GoogleMapController? mapController,
-    // Function(LatLng location, String formattedAddress) onLocationFound,
   ) {
     return googleMapsRepository.searchLocation(
       address,
       mapController,
-      // onLocationFound,
     );
+  }
+}
+
+class HandleMapTapUseCase extends GoogleMapsUseCase {
+  Future<String?> execute(LatLng tappedPoint) {
+    return googleMapsRepository.handleMapTap(tappedPoint);
+  }
+}
+
+class ChooseLocationOnMapUseCase extends GoogleMapsUseCase {
+  Future<LocationResult?> execute() {
+    return googleMapsRepository.chooseLocationOnMap();
   }
 }
 

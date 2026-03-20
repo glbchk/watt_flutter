@@ -21,12 +21,22 @@ class GoogleMapsRepositoryImpl implements GoogleMapsRepository {
   Future<LocationResult?> searchLocation(
     String address,
     GoogleMapController? mapController,
-    // Function(LatLng location, String formattedAddress) onLocationFound,
   ) async {
     return await googleMapsRemoteDataSource.searchLocation(
       address: address,
       mapController: mapController,
-      // onLocationFound: onLocationFound,
     );
+  }
+
+  @override
+  Future<String?> handleMapTap(LatLng tappedPoint) async {
+    return await googleMapsRemoteDataSource.handleMapTap(
+      tappedPoint: tappedPoint,
+    );
+  }
+
+  @override
+  Future<LocationResult?> chooseLocationOnMap() async {
+    return await googleMapsRemoteDataSource.chooseLocationOnMap();
   }
 }

@@ -5,9 +5,11 @@ import 'package:watt/utils/colors.dart';
 class SearchBarWidget extends StatelessWidget {
   final VoidCallback onBackPressed;
   final BuildContext context;
+  final FocusNode? focusNode;
+  final void Function(bool)? onFocusChange;
   final TextEditingController controller;
   final GoogleMapController? mapController;
-  final void Function(String) onSubmitted;
+  final void Function(String)? onSubmitted;
   final void Function(String)? onChanged;
   final VoidCallback onIconPressed;
 
@@ -15,9 +17,11 @@ class SearchBarWidget extends StatelessWidget {
     super.key,
     required this.onBackPressed,
     required this.context,
+    this.focusNode,
+    required this.onFocusChange,
     required this.controller,
     required this.mapController,
-    required this.onSubmitted,
+    this.onSubmitted,
     this.onChanged,
     required this.onIconPressed,
   });
@@ -72,14 +76,18 @@ class SearchBarWidget extends StatelessWidget {
                 const SizedBox(width: 10),
 
                 Expanded(
-                  child: TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      hintText: "Search location",
-                      border: InputBorder.none,
+                  child: Focus(
+                    onFocusChange: onFocusChange,
+                    child: TextField(
+                      focusNode: focusNode,
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        hintText: "Search location",
+                        border: InputBorder.none,
+                      ),
+                      onChanged: onChanged,
+                      onSubmitted: onSubmitted,
                     ),
-                    onChanged: onChanged,
-                    onSubmitted: onSubmitted,
                   ),
                 ),
 

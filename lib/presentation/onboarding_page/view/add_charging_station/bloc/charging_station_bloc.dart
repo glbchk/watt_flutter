@@ -11,12 +11,13 @@ import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class ChargingStationBloc
     extends Bloc<ChargingStationEvent, ChargingStationState> {
-  // final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
-  //     FetchUserChargingStationsUseCase();
   final FetchLocationSuggestionsUseCase fetchLocationSuggestionsUseCase =
       FetchLocationSuggestionsUseCase();
   final GoToMyLocationUseCase goToMyLocationUseCase = GoToMyLocationUseCase();
   final SearchLocationUseCase searchLocationUseCase = SearchLocationUseCase();
+  final HandleMapTapUseCase handleMapTapUseCase = HandleMapTapUseCase();
+  final ChooseLocationOnMapUseCase chooseLocationOnMapUseCase =
+      ChooseLocationOnMapUseCase();
 
   ChargingStationBloc() : super(ChargingStationState()) {
     on<SaveBrandNameChargingStationEvent>((event, emit) {
@@ -47,8 +48,8 @@ class ChargingStationBloc
           print("Position: $address");
           emit(
             state.copyWith(
-              address: address,
-              addressPosition: position,
+              address: () => address,
+              addressPosition: () => position,
             ),
           );
         }
@@ -65,14 +66,13 @@ class ChargingStationBloc
             .execute(
               event.address,
               event.mapController,
-              // event.onLocationFound,
             );
 
         if (locationResult == null) {
           emit(
             state.copyWith(
-              address: null,
-              addressPosition: null,
+              address: () => null,
+              addressPosition: () => null,
             ),
           );
           return;
@@ -80,8 +80,65 @@ class ChargingStationBloc
           print("Position: ${locationResult.position}");
           emit(
             state.copyWith(
-              address: locationResult.address,
-              addressPosition: locationResult.position,
+              address: () => locationResult.address,
+              addressPosition: () => locationResult.position,
+            ),
+          );
+        }
+      } catch (e) {
+        print("Not possible to find address: $e");
+      }
+    });
+
+    on<HandleMapTapEvent>((event, emit) async {
+      try {
+        print('mapController result: ${event.tappedPoint}');
+
+        final String? tapResult = await handleMapTapUseCase.execute(
+          event.tappedPoint,
+        );
+
+        if (tapResult == null) {
+          emit(
+            state.copyWith(
+              address: () => null,
+              addressPosition: () => null,
+            ),
+          );
+          return;
+        } else {
+          final Position? addressPosition =
+              await GoogleMapsHelperMethods.convertAddressToPosition(tapResult);
+          emit(
+            state.copyWith(
+              address: () => tapResult,
+              addressPosition: () => addressPosition,
+            ),
+          );
+        }
+      } catch (e) {
+        print("Not possible to find address: $e");
+      }
+    });
+
+    on<ChooseLocationOnMapEvent>((event, emit) async {
+      try {
+        final LocationResult? locationResult = await chooseLocationOnMapUseCase
+            .execute();
+
+        if (locationResult == null) {
+          emit(
+            state.copyWith(
+              address: () => null,
+              addressPosition: () => null,
+            ),
+          );
+          return;
+        } else {
+          emit(
+            state.copyWith(
+              address: () => locationResult.address,
+              addressPosition: () => locationResult.position,
             ),
           );
         }
@@ -108,8 +165,8 @@ class ChargingStationBloc
     on<SaveAddressPropertyEvent>((event, emit) {
       emit(
         state.copyWith(
-          address: event.value,
-          addressPosition: event.addressPosition,
+          address: () => event.value,
+          addressPosition: () => event.addressPosition,
         ),
       );
     });
@@ -117,8 +174,8 @@ class ChargingStationBloc
     on<ClearAddressPropertyEvent>((event, emit) {
       emit(
         state.copyWith(
-          address: null,
-          addressPosition: null,
+          address: () => null,
+          addressPosition: () => null,
         ),
       );
     });

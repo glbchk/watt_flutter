@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:watt/data/keys/api_keys.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class LocationResult {
   final Position position;
@@ -55,14 +56,7 @@ class GoogleMapsRemoteDataSource {
     }
   }
 
-  Future<Position?> goToMyLocation()
-  // GoogleMapController? mapController,
-  async {
-    // if (mapController == null) {
-    //   print("Map controller is null");
-    //   return null;
-    // }
-
+  Future<Position?> goToMyLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return null;
@@ -90,19 +84,12 @@ class GoogleMapsRemoteDataSource {
       locationSettings: locationSettings,
     );
 
-    // mapController.animateCamera(
-    //   CameraUpdate.newLatLngZoom(
-    //     LatLng(position.latitude, position.longitude),
-    //     15,
-    //   ),
-    // );
     return position;
   }
 
   Future<LocationResult?> searchLocation({
     required String address,
     required GoogleMapController? mapController,
-    // required Function(LatLng location, String formattedAddress) onLocationFound,
   }) async {
     if (address.isEmpty) return null;
 
@@ -140,24 +127,77 @@ class GoogleMapsRemoteDataSource {
 
         LocationResult locationResult = LocationResult(position, cleanAddress);
 
-        // String cleanAddress = address;
-        // if (placemarks.isNotEmpty) {
-        //   final p = placemarks.first;
-        //   cleanAddress = "${p.street}, ${p.locality}";
-        // }
-
         mapController?.animateCamera(
           CameraUpdate.newLatLngZoom(targetLatLng, 15),
         );
         return locationResult;
-        // onLocationFound(targetLatLng, cleanAddress);
-
-        // mapController?.showMarkerInfoWindow(const MarkerId('selected_point'));
       }
     } catch (e) {
       print("Error finding location: $e");
       // You could trigger a SnackBar here if the address is invalid
     }
     return null;
+  }
+
+  Future<String?> handleMapTap({
+    required LatLng tappedPoint,
+  }) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        tappedPoint.latitude,
+        tappedPoint.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        return "${place.street}, ${place.locality}";
+      }
+    } catch (e) {
+      print("Could not find address for this point: $e");
+    }
+    return null;
+  }
+
+  Future<LocationResult?> chooseLocationOnMap() async {
+    //Extracting city location
+    final position = await goToMyLocation();
+
+    if (position == null) return null;
+
+    final placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    String formattedAddress = "";
+
+    if (placemarks.isNotEmpty) {
+      final place = placemarks.first;
+
+      final city = place.locality ?? "";
+      final country = place.country ?? "";
+
+      formattedAddress = "$city, $country";
+    }
+
+    final convertedPosition =
+        await GoogleMapsHelperMethods.convertAddressToPosition(
+          formattedAddress,
+        );
+
+    final resultPosition = Position(
+      longitude: convertedPosition?.longitude ?? 0.0,
+      latitude: convertedPosition?.latitude ?? 0.0,
+      timestamp: DateTime.now(),
+      accuracy: 0.0,
+      altitude: 0.0,
+      altitudeAccuracy: 0.0,
+      heading: 0.0,
+      headingAccuracy: 0.0,
+      speed: 0.0,
+      speedAccuracy: 0.0,
+    );
+
+    return LocationResult(resultPosition, formattedAddress);
   }
 }

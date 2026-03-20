@@ -10,7 +10,6 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
-import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class ChooseLocationOnMapPage extends StatefulWidget {
   final bool autoDetectMyLocation;
@@ -29,6 +28,8 @@ class ChooseLocationOnMapPage extends StatefulWidget {
 
 class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
   TextEditingController searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  bool showSuggestions = false;
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(51.5074, -0.1278), // Example: London
@@ -37,42 +38,12 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
 
   GoogleMapController? _mapController;
 
-  LatLng? _selectedLocation;
-
   String address = '';
-
-  late final StreamSubscription _subscription;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final bloc = context.read<ChargingStationBloc>();
-
-    _subscription = bloc.stream.listen((state) {
-      if (state.addressPosition != null && _mapController != null) {
-        final latLng = LatLng(
-          state.addressPosition!.latitude,
-          state.addressPosition!.longitude,
-        );
-
-        _mapController!.animateCamera(
-          CameraUpdate.newLatLngZoom(latLng, 15),
-        );
-
-        _mapController!.showMarkerInfoWindow(
-          const MarkerId('selected_point'),
-        );
-
-        searchController.text = state.address ?? '';
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _subscription.cancel();
     searchController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -80,30 +51,37 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChargingStationBloc, ChargingStationState>(
       listener: (context, state) {
-        // if (state.addressPosition != null) {
-        //   final latLng = LatLng(
-        //     state.addressPosition?.latitude ?? 0.0,
-        //     state.addressPosition?.longitude ?? 0.0,
-        //   );
-        //
-        //   searchController.text = state.address ?? "";
-        //
-        //   if (_mapController != null) {
-        //     _mapController
-        //         ?.animateCamera(
-        //           CameraUpdate.newLatLngZoom(latLng, 15),
-        //         )
-        //         .then((_) {
-        //           Future.delayed(const Duration(milliseconds: 300), () {
-        //             _mapController?.showMarkerInfoWindow(
-        //               const MarkerId('selected_point'),
-        //             );
-        //           });
-        //         });
-        //   }
-        // }
+        if (state.addressPosition != null && state.address != null) {
+          final latLng = LatLng(
+            state.addressPosition?.latitude ?? 0.0,
+            state.addressPosition?.longitude ?? 0.0,
+          );
+
+          if (searchController.text != state.address) {
+            searchController.text = state.address ?? "";
+            searchController.selection = TextSelection.fromPosition(
+              TextPosition(offset: searchController.text.length),
+            );
+          }
+
+          if (_mapController != null) {
+            _mapController
+                ?.animateCamera(
+                  CameraUpdate.newLatLngZoom(latLng, 15),
+                )
+                .then((_) {
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    _mapController?.showMarkerInfoWindow(
+                      const MarkerId('selected_point'),
+                    );
+                  });
+                });
+          }
+        }
       },
       builder: (context, state) {
+        final suggestions = state.locationSuggestions ?? [];
+
         return DefaultAppBar(
           showAppBar: false,
           resizeToAvoidBottomInset: false,
@@ -127,20 +105,9 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                 myLocationButtonEnabled: false,
                 zoomControlsEnabled: false,
                 onTap: (LatLng tappedPoint) async {
-                  // final tappedAddress =
-                  //     await GoogleMapsHelperMethods.handleMapTap(
-                  //       tappedPoint: tappedPoint,
-                  //     );
-                  //
-                  // _mapController?.showMarkerInfoWindow(
-                  //   const MarkerId('selected_point'),
-                  // );
-
-                  // setState(() {
-                  //   _selectedLocation = tappedPoint;
-                  //   this.address = tappedAddress ?? '';
-                  //   searchController.text = tappedAddress ?? '';
-                  // });
+                  context.read<ChargingStationBloc>().add(
+                    HandleMapTapEvent(tappedPoint),
+                  );
                 },
 
                 onMapCreated: (GoogleMapController controller) async {
@@ -150,41 +117,11 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                     context.read<ChargingStationBloc>().add(
                       GoToMyLocationEvent(),
                     );
-
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      _mapController?.showMarkerInfoWindow(
-                        const MarkerId('selected_point'),
-                      );
-                    });
-
-                    // setState(() {
-                    //   _selectedLocation = LatLng(
-                    //     state.addressPosition?.latitude ?? 0.0,
-                    //     state.addressPosition?.longitude ?? 0.0,
-                    //   );
-                    // });
-                    // searchController.text = state.address ?? '';
-                    // Future.delayed(const Duration(milliseconds: 100), () {
-                    //   _mapController?.showMarkerInfoWindow(
-                    //     const MarkerId('selected_point'),
-                    //   );
-                    // });
                   }
                   if (widget.autoDetectMyLocation == false &&
                       widget.findOnMapLocation == true) {
-                    await GoogleMapsHelperMethods.extractMyCityLocation(
-                      mapController: _mapController,
-                      onLocationFound: (location, formattedAddress) {
-                        Future.delayed(const Duration(milliseconds: 100), () {
-                          _mapController?.showMarkerInfoWindow(
-                            const MarkerId('selected_point'),
-                          );
-                        });
-
-                        // setState(() {
-                        //   _selectedLocation = location;
-                        // });
-                      },
+                    context.read<ChargingStationBloc>().add(
+                      ChooseLocationOnMapEvent(),
                     );
                   }
                 },
@@ -267,28 +204,28 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                                     );
                                   },
                                 );
-
-                                // setState(() {
-                                //   _selectedLocation = LatLng(
-                                //     state.addressPosition?.latitude ?? 0.0,
-                                //     state.addressPosition?.longitude ?? 0.0,
-                                //   );
-                                // });
-                                // searchController.text = state.address ?? '';
-                                // Future.delayed(
-                                //   const Duration(milliseconds: 100),
-                                //   () {
-                                //     _mapController?.showMarkerInfoWindow(
-                                //       const MarkerId('selected_point'),
-                                //     );
-                                //   },
-                                // );
                               },
                             ),
                           ),
                         ),
                       ],
                     ),
+                  ),
+                ),
+              ),
+
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: MediaQuery.of(context).viewPadding.top + 75,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    _focusNode.unfocus();
+                  },
+                  child: Container(
+                    color: Colors.transparent,
                   ),
                 ),
               ),
@@ -301,52 +238,87 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                   children: [
                     SearchBarWidget(
                       onBackPressed: () {
-                        // setState(() {
-                        //   _selectedLocation = null;
-                        // });
-                        // searchController.clear();
+                        searchController.clear();
                         context.read<ChargingStationBloc>().add(
                           ClearAddressPropertyEvent(),
                         );
                         Navigator.of(context).pop();
                       },
                       context: context,
+                      focusNode: _focusNode,
+                      onFocusChange: (hasFocus) {
+                        setState(() {
+                          showSuggestions = hasFocus;
+                        });
+                      },
+
                       controller: searchController,
                       mapController: _mapController,
-                      onSubmitted: (value) {
+                      onChanged: (value) {
                         context.read<ChargingStationBloc>().add(
-                          SearchLocationEvent(
-                            value,
-                            _mapController,
-                          ),
+                          FetchLocationSuggestionsEvent(value),
                         );
-                        // Future.delayed(const Duration(milliseconds: 100), () {
-                        //   _mapController?.showMarkerInfoWindow(
-                        //     const MarkerId('selected_point'),
-                        //   );
-                        // });
-                        // setState(() {
-                        //   _selectedLocation = LatLng(
-                        //     state.addressPosition?.latitude ?? 0.0,
-                        //     state.addressPosition?.longitude ?? 0.0,
-                        //   );
-                        // });
-                        // searchController.text = state.address ?? '';
                       },
                       onIconPressed: () {
-                        // setState(() {
-                        //   _selectedLocation = null;
-                        // });
-
+                        searchController.clear();
                         context.read<ChargingStationBloc>().add(
                           ClearAddressPropertyEvent(),
                         );
-                        searchController.clear();
                       },
                     ),
                   ],
                 ),
               ),
+
+              if (showSuggestions && suggestions.isNotEmpty)
+                Positioned(
+                  top: 108,
+                  left: 85,
+                  right: 20,
+                  child: Material(
+                    elevation: 4,
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(10),
+                    color: context.theme.appColors.surface,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: 400,
+                      ),
+                      decoration: BoxDecoration(
+                        color: context.theme.appColors.background,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: suggestions.length,
+                        itemBuilder: (context, index) {
+                          final suggestion = suggestions[index];
+
+                          return ListTile(
+                            leading: const Icon(
+                              Icons.location_on_outlined,
+                            ),
+                            title: Text(suggestion),
+                            onTap: () {
+                              searchController.text = suggestion;
+                              setState(() {
+                                showSuggestions = false;
+                              });
+                              _focusNode.unfocus();
+
+                              context.read<ChargingStationBloc>().add(
+                                SearchLocationEvent(
+                                  suggestion,
+                                  _mapController,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         );

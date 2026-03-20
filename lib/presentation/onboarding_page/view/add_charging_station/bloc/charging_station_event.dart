@@ -26,14 +26,22 @@ class GoToMyLocationEvent extends ChargingStationEvent {}
 class SearchLocationEvent extends ChargingStationEvent {
   final String address;
   final GoogleMapController? mapController;
-  // final Function(LatLng location, String formattedAddress) onLocationFound;
 
   SearchLocationEvent(
     this.address,
     this.mapController,
-    // this.onLocationFound,
   );
 }
+
+class HandleMapTapEvent extends ChargingStationEvent {
+  final LatLng tappedPoint;
+
+  HandleMapTapEvent(
+    this.tappedPoint,
+  );
+}
+
+class ChooseLocationOnMapEvent extends ChargingStationEvent {}
 
 class FetchLocationSuggestionsEvent extends ChargingStationEvent {
   final String value;

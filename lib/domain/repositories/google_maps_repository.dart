@@ -8,6 +8,7 @@ abstract class GoogleMapsRepository {
   Future<LocationResult?> searchLocation(
     String address,
     GoogleMapController? mapController,
-    // Function(LatLng location, String formattedAddress) onLocationFound,
   );
+  Future<String?> handleMapTap(LatLng tappedPoint);
+  Future<LocationResult?> chooseLocationOnMap();
 }
