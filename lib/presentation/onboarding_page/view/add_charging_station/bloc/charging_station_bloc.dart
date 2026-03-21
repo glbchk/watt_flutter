@@ -23,8 +23,21 @@ class ChargingStationBloc
     on<SaveBrandNameChargingStationEvent>((event, emit) {
       emit(
         state.copyWith(
+          errorMessage: null,
+          id: null,
+          chargingStationName: "",
+          address: () => null,
+          addressPosition: () => null,
+          locationSuggestions: [],
           brandName: event.brandName,
           brandLogo: event.brandLogo,
+          chargingEffect: "",
+          plug: "",
+          pricePerKwh: "",
+          bankAccounts: [],
+          onlineCharger: false,
+          availableHours: [],
+          everyoneCanAccess: false,
         ),
       );
     });
@@ -176,6 +189,7 @@ class ChargingStationBloc
         state.copyWith(
           address: () => null,
           addressPosition: () => null,
+          locationSuggestions: [],
         ),
       );
     });
@@ -226,6 +240,72 @@ class ChargingStationBloc
       );
     });
 
+    on<AvailableHoursVerificationEvent>((event, emit) {
+      String? daysError;
+      String? startError;
+      String? endError;
+
+      if (event.availableDays.isEmpty) {
+        daysError = 'At least one day should be added.';
+      }
+
+      if (event.startTime.isEmpty) {
+        startError = 'Start time should be selected.';
+      }
+
+      if (event.endTime.isEmpty) {
+        endError = 'End time should be selected.';
+      }
+
+      emit(
+        state.copyWith(
+          availableDaysError: () => daysError,
+          startTimeError: () => startError,
+          endTimeError: () => endError,
+        ),
+      );
+    });
+
+    // on<StartTimeVerificationEvent>((event, emit) {
+    //   final timeSlots = state.availableHours;
+    //
+    //   timeSlots?.forEach((slot) {
+    //     if (slot.startTime == null) {
+    //       emit(
+    //         state.copyWith(
+    //           startTimeError: 'Start time should be selected.',
+    //         ),
+    //       );
+    //     } else {
+    //       emit(
+    //         state.copyWith(
+    //           startTimeError: null,
+    //         ),
+    //       );
+    //     }
+    //   });
+    // });
+    //
+    // on<EndTimeVerificationEvent>((event, emit) {
+    //   final timeSlots = state.availableHours;
+    //
+    //   timeSlots?.forEach((slot) {
+    //     if (slot.endTime == null) {
+    //       emit(
+    //         state.copyWith(
+    //           endTimeError: 'End time should be selected.',
+    //         ),
+    //       );
+    //     } else {
+    //       emit(
+    //         state.copyWith(
+    //           endTimeError: null,
+    //         ),
+    //       );
+    //     }
+    //   });
+    // });
+
     on<AddTimeSlotEvent>((event, emit) {
       final List<TimeSlotModel> updatedTimeSlots = [
         ...?state.availableHours,
@@ -270,22 +350,25 @@ class ChargingStationBloc
       );
     });
 
-    on<ResetChargingStationFormEvent>((event, emit) {
-      emit(
-        state.copyWith(
-          errorMessage: null,
-          id: null,
-          chargingStationName: null,
-          address: null,
-          chargingEffect: null,
-          plug: null,
-          pricePerKwh: null,
-          bankAccounts: null,
-          onlineCharger: false,
-          availableHours: null,
-          everyoneCanAccess: false,
-        ),
-      );
-    });
+    // on<ResetChargingStationFormEvent>((event, emit) {
+    //   emit(ChargingStationState());
+    //   // emit(
+    //   //   state.copyWith(
+    //   //     errorMessage: null,
+    //   //     id: null,
+    //   //     chargingStationName: "",
+    //   //     address: () => null,
+    //   //     addressPosition: () => null,
+    //   //     locationSuggestions: [],
+    //   //     chargingEffect: "",
+    //   //     plug: "",
+    //   //     pricePerKwh: "",
+    //   //     bankAccounts: [],
+    //   //     onlineCharger: false,
+    //   //     availableHours: [],
+    //   //     everyoneCanAccess: false,
+    //   //   ),
+    //   // );
+    // });
   }
 }

@@ -176,8 +176,9 @@ class _DetailAvailableHoursPropertyPageState
                               );
 
                               return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15.0,
+                                padding: const EdgeInsets.only(
+                                  top: 15.0,
+                                  bottom: 5.0,
                                 ),
                                 child: ClipOval(
                                   child: GestureDetector(
@@ -227,7 +228,23 @@ class _DetailAvailableHoursPropertyPageState
                             },
                           ),
                           SizedBox(
-                            width: 15,
+                            width: 20,
+                          ),
+                        ],
+                      ),
+
+                      Column(
+                        children: [
+                          state.availableDaysError != null
+                              ? Text(
+                                  state.availableDaysError ?? '',
+                                  style: TextStyle(
+                                    color: context.theme.appColors.error,
+                                  ),
+                                )
+                              : SizedBox(),
+                          SizedBox(
+                            height: 10,
                           ),
                         ],
                       ),
@@ -241,17 +258,33 @@ class _DetailAvailableHoursPropertyPageState
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Start',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Start',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                state.startTimeError != null
+                                    ? Text(
+                                        state.startTimeError ?? '',
+                                        style: TextStyle(
+                                          color: context.theme.appColors.error,
+                                        ),
+                                      )
+                                    : SizedBox(),
+                              ],
                             ),
                             SmallTextField(
                               hint: '08:00',
+                              error: state.startTimeError,
                               controller: controllerStartTime,
                               focusNode: startFocus,
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(4),
@@ -275,18 +308,37 @@ class _DetailAvailableHoursPropertyPageState
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: Text(
-                                'End',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'End',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  state.endTimeError != null
+                                      ? Text(
+                                          state.endTimeError ?? '',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color:
+                                                context.theme.appColors.error,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ],
                               ),
                             ),
+
                             SmallTextField(
                               hint: '17:00',
+                              error: state.endTimeError,
                               controller: controllerEndTime,
                               focusNode: endFocus,
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
                                 LengthLimitingTextInputFormatter(4),
@@ -316,17 +368,37 @@ class _DetailAvailableHoursPropertyPageState
                       endTime: controllerEndTime.text,
                     );
 
-                    context.read<ChargingStationBloc>().add(
-                      AddTimeSlotEvent(timeSlot),
-                    );
+                    if ((timeSlot.availableDays?.isEmpty ?? true) ||
+                        (timeSlot.startTime?.isEmpty ?? true) ||
+                        (timeSlot.endTime?.isEmpty ?? true)) {
+                      context.read<ChargingStationBloc>().add(
+                        AvailableHoursVerificationEvent(
+                          availableDays: _chosenDays,
+                          startTime: controllerStartTime.text,
+                          endTime: controllerEndTime.text,
+                        ),
+                      );
+                    } else {
+                      context.read<ChargingStationBloc>().add(
+                        AddTimeSlotEvent(timeSlot),
+                      );
 
-                    setState(() {
-                      controllerStartTime.clear();
-                      controllerEndTime.clear();
-                      _chosenDays.clear();
-                    });
+                      setState(() {
+                        controllerStartTime.clear();
+                        controllerEndTime.clear();
+                        _chosenDays.clear();
+                      });
 
-                    FocusScope.of(context).unfocus();
+                      FocusScope.of(context).unfocus();
+
+                      context.read<ChargingStationBloc>().add(
+                        AvailableHoursVerificationEvent(
+                          availableDays: [1],
+                          startTime: 'valid',
+                          endTime: 'valid',
+                        ),
+                      );
+                    }
                   },
                 ),
               ],

@@ -187,9 +187,6 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                                 ),
                                           ),
                                         );
-                                        context.read<ChargingStationBloc>().add(
-                                          ResetChargingStationFormEvent(),
-                                        );
 
                                         final result =
                                             await Navigator.push<

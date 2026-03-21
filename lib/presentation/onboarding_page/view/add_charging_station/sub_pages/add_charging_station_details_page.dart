@@ -37,7 +37,6 @@ class _AddChargingStationDetailsPageState
     isUsedForReceivingEarnings: false,
   );
 
-  // String days = '';
   bool isOnlineChargerOn = false;
   bool isEveryoneCanAccess = false;
 
@@ -53,6 +52,10 @@ class _AddChargingStationDetailsPageState
 
     isOnlineChargerOn = state.onlineCharger ?? false;
     isEveryoneCanAccess = state.everyoneCanAccess ?? false;
+
+    // context.read<ChargingStationBloc>().add(
+    //   ResetChargingStationFormEvent(),
+    // );
 
     super.initState();
   }
@@ -160,7 +163,7 @@ class _AddChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Price per kWh',
-                            secondLabel: state.pricePerKwh != null
+                            secondLabel: state.pricePerKwh != ""
                                 ? '${state.pricePerKwh ?? ''} SEK'
                                 : null,
                             onPressed: () {
@@ -176,12 +179,14 @@ class _AddChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Bank account',
-                            secondLabel:
-                                state.bankAccounts?.first.ibanNumber?.substring(
-                                  0,
-                                  18,
-                                ) ??
-                                '',
+                            secondLabel: state.bankAccounts?.isNotEmpty ?? false
+                                ? state.bankAccounts?.first.ibanNumber
+                                          ?.substring(
+                                            0,
+                                            18,
+                                          ) ??
+                                      ''
+                                : null,
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -204,7 +209,8 @@ class _AddChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Available hours',
-                            secondLabel: (state.availableHours?.first != null)
+                            secondLabel:
+                                (state.availableHours?.isNotEmpty ?? false)
                                 ? '${StringHelperMethods.formatDayRanges(state.availableHours?.first.availableDays)}, ${state.availableHours?.first.startTime ?? ''} - ${state.availableHours?.first.endTime ?? ''}'
                                 : null,
                             onPressed: () {
@@ -295,7 +301,9 @@ class _AddChargingStationDetailsPageState
                   context.read<ChargingStationBloc>().add(
                     AddOneChargingStationEvent(chargingStation),
                   );
-
+                  // context.read<ChargingStationBloc>().add(
+                  //   ResetChargingStationFormEvent(),
+                  // );
                   Navigator.pop(context);
                 }
                 ;

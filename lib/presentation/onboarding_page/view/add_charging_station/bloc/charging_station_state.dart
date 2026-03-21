@@ -22,6 +22,10 @@ class ChargingStationState {
   final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
 
+  final String? availableDaysError;
+  final String? startTimeError;
+  final String? endTimeError;
+
   final ChargingStationModel? chargingStation;
   final List<ChargingStationModel>? chargingStations;
 
@@ -42,6 +46,9 @@ class ChargingStationState {
     this.onlineCharger = false,
     this.availableHours,
     this.everyoneCanAccess = false,
+    this.availableDaysError,
+    this.startTimeError,
+    this.endTimeError,
     this.chargingStation,
     this.chargingStations,
   });
@@ -63,6 +70,9 @@ class ChargingStationState {
     bool? onlineCharger,
     List<TimeSlotModel>? availableHours,
     bool? everyoneCanAccess,
+    String? Function()? availableDaysError,
+    String? Function()? startTimeError,
+    String? Function()? endTimeError,
     ChargingStationModel? chargingStation,
     List<ChargingStationModel>? chargingStations,
   }) {
@@ -85,6 +95,13 @@ class ChargingStationState {
       onlineCharger: onlineCharger ?? this.onlineCharger,
       availableHours: availableHours ?? this.availableHours,
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
+      availableDaysError: availableDaysError != null
+          ? availableDaysError()
+          : this.availableDaysError,
+      startTimeError: startTimeError != null
+          ? startTimeError()
+          : this.startTimeError,
+      endTimeError: endTimeError != null ? endTimeError() : this.endTimeError,
       chargingStation: chargingStation ?? this.chargingStation,
       chargingStations: chargingStations ?? this.chargingStations,
     );

@@ -29,19 +29,14 @@ class DetailAddressPropertyPage extends StatefulWidget {
 class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
   TextEditingController controllerAddress = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  bool showSuggestions = false;
-  bool _isCleared = false;
 
   @override
   void initState() {
+    final s = context.read<ChargingStationBloc>().state;
+    controllerAddress.text = s.address ?? "";
     _focusNode.addListener(() {
-      if (!mounted) return;
-
-      setState(() {
-        showSuggestions = _focusNode.hasFocus;
-      });
+      setState(() {});
     });
-
     super.initState();
   }
 
@@ -56,8 +51,6 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChargingStationBloc, ChargingStationState>(
       listener: (context, state) {
-        if (_isCleared) return;
-
         if (controllerAddress.text != state.address) {
           controllerAddress.text = state.address ?? "";
           controllerAddress.selection = TextSelection.fromPosition(
@@ -81,31 +74,22 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                     CustomTextField(
                       controller: controllerAddress,
                       label: 'Address',
+                      autofocus: false,
                       focusNode: _focusNode,
-                      onFocusChange: (hasFocus) {
-                        setState(() {
-                          showSuggestions = hasFocus;
-                        });
-                      },
                       prefixIcon: const Icon(Icons.search),
                       prefixIconColor: context.theme.appColors.grey1,
                       hint: "e.g. John's Amp",
                       suffixIcon: Icon(Icons.close),
                       suffixIconColor: context.theme.appColors.grey1,
                       onSuffixIconTap: () {
-                        _isCleared = true;
                         controllerAddress.clear();
-                        _isCleared = false;
                         context.read<ChargingStationBloc>().add(
                           ClearAddressPropertyEvent(),
                         );
-                        _focusNode.unfocus();
-                        setState(() {
-                          showSuggestions = false;
-                        });
+
+                        FocusScope.of(context).unfocus();
                       },
                       onChanged: (value) {
-                        if (_isCleared) return;
                         context.read<ChargingStationBloc>().add(
                           FetchLocationSuggestionsEvent(value ?? ''),
                         );
@@ -119,6 +103,7 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                       label: 'Use my current location',
                       icon: Icons.my_location,
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -133,6 +118,7 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                       label: 'Choose location on map',
                       icon: Icons.location_on_outlined,
                       onPressed: () {
+                        FocusScope.of(context).unfocus();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -148,17 +134,17 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                 ),
               ),
               onPressed: () {
-                // context.read<ChargingStationBloc>().add(
-                //   SaveAddressPropertyEvent(
-                //     state.address ?? "",
-                //     state.addressLatLng,
-                //   ),
-                // );
+                context.read<ChargingStationBloc>().add(
+                  SaveAddressPropertyEvent(
+                    state.address ?? "",
+                    state.addressPosition,
+                  ),
+                );
 
                 Navigator.pop(context);
               },
             ),
-            if (showSuggestions && suggestions.isNotEmpty)
+            if (_focusNode.hasFocus && suggestions.isNotEmpty)
               Positioned(
                 top: 222,
                 left: 20,
@@ -209,10 +195,6 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                               );
 
                               _focusNode.unfocus();
-
-                              setState(() {
-                                showSuggestions = false;
-                              });
                             },
                           );
                         }
@@ -225,9 +207,6 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                           title: Text(suggestion),
                           onTap: () {
                             controllerAddress.text = suggestion;
-                            setState(() {
-                              showSuggestions = false;
-                            });
                             _focusNode.unfocus();
                           },
                         );

@@ -117,6 +117,30 @@ class AddIbanEvent extends ChargingStationEvent {
   });
 }
 
+class AvailableHoursVerificationEvent extends ChargingStationEvent {
+  final List<int> availableDays;
+  final String startTime;
+  final String endTime;
+
+  AvailableHoursVerificationEvent({
+    required this.availableDays,
+    required this.startTime,
+    required this.endTime,
+  });
+}
+
+// class StartTimeVerificationEvent extends ChargingStationEvent {
+//   final String value;
+//
+//   StartTimeVerificationEvent({required this.value});
+// }
+//
+// class EndTimeVerificationEvent extends ChargingStationEvent {
+//   final String value;
+//
+//   EndTimeVerificationEvent({required this.value});
+// }
+
 class AddTimeSlotEvent extends ChargingStationEvent {
   final TimeSlotModel timeSlot;
 
