@@ -34,12 +34,26 @@ class FilledCreditCardEvent extends PaymentMethodEvent {
   });
 }
 
+class IbanVerificationEvent extends PaymentMethodEvent {
+  final String value;
+
+  IbanVerificationEvent({
+    required this.value,
+  });
+}
+
 class FilledIbanEvent extends PaymentMethodEvent {
   final IbanModel iban;
 
   FilledIbanEvent({
     required this.iban,
   });
+}
+
+class RemovePaymentMethodEvent extends PaymentMethodEvent {
+  final String paymentMethodId;
+
+  RemovePaymentMethodEvent(this.paymentMethodId);
 }
 
 class FetchPaymentMethodsEvent extends PaymentMethodEvent {}

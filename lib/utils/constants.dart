@@ -1,13 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:watt/data/models/mock_data_models.dart';
 
 class KConstants {
   static const String themeModeKey = 'isDarkModeKey';
-}
-
-class AppColors {
-  static const Color primaryColor = Color(0xFF1581FF);
-  // static const Color secondaryBrand = Color(0xFF444FAB);
-  // static const Color errorColor = Color(0xFFB00020);
 }
 
 class KCardTitles {
@@ -25,55 +19,114 @@ class KCardIcons {
   static const String timeSlot = 'assets/icons/time_slot.svg';
 }
 
-class KCarNames {
-  static const String audi = 'Audi';
-  static const String bmw = 'BMW';
-  static const String tesla = 'Tesla';
-  static const String volvo = 'Volvo';
-  static const String chevrolet = 'Chevrolet';
-  static const String nissan = 'Nissan';
-}
-
-class KCarLogos {
-  static const String audi = 'assets/car_logos/audi.png';
-  static const String bmw = 'assets/car_logos/bmw.png';
-  static const String tesla = 'assets/car_logos/tesla.png';
-  static const String volvo = 'assets/car_logos/volvo.png';
-  static const String chevrolet = 'assets/car_logos/chevrolet.png';
-  static const String nissan = 'assets/car_logos/nissan.png';
-}
-
-class KChargingStation {
-  static List<String> chargingStationList = [
-    KChargingStationsNames.abb,
-    KChargingStationsNames.easee,
-    KChargingStationsNames.garo,
-    KChargingStationsNames.vattenfall,
-    KChargingStationsNames.tesla,
-    KChargingStationsNames.other,
+class KMockedData {
+  static List<MockedCarOption> cars = [
+    MockedCarOption('Audi', 'assets/car_logos/audi.png', MockedCarBrand.audi),
+    MockedCarOption('BMW', 'assets/car_logos/bmw.png', MockedCarBrand.bmw),
+    MockedCarOption(
+      'Tesla',
+      'assets/car_logos/tesla.png',
+      MockedCarBrand.tesla,
+    ),
+    MockedCarOption(
+      'Volvo',
+      'assets/car_logos/volvo.png',
+      MockedCarBrand.volvo,
+    ),
+    MockedCarOption(
+      'Chevrolet',
+      'assets/car_logos/chevrolet.png',
+      MockedCarBrand.chevrolet,
+    ),
+    MockedCarOption(
+      'Nissan',
+      'assets/car_logos/nissan.png',
+      MockedCarBrand.nissan,
+    ),
   ];
 
-  static List<String> chargingStationIconsList = [
-    KChargingStationsLogos.abb,
-    KChargingStationsLogos.easee,
-    KChargingStationsLogos.garo,
-    KChargingStationsLogos.vattenfall,
-    KChargingStationsLogos.tesla,
-    KChargingStationsLogos.other,
+  static List<MockedChargingStationOption> chargingStations = [
+    MockedChargingStationOption('ABB', 'assets/charging_station_logos/abb.png'),
+    MockedChargingStationOption(
+      'Easee',
+      'assets/charging_station_logos/easee.png',
+    ),
+    MockedChargingStationOption(
+      'Garo',
+      'assets/charging_station_logos/garo.png',
+    ),
+    MockedChargingStationOption(
+      'Vattenfall',
+      'assets/charging_station_logos/vattenfall.png',
+    ),
+    MockedChargingStationOption(
+      'Tesla',
+      'assets/charging_station_logos/tesla.png',
+    ),
+    MockedChargingStationOption(
+      'Other',
+      'assets/charging_station_logos/other_ev_station.png',
+    ),
   ];
 
-  static List<String> chargingEffectList = [
-    KChargingEffect.three,
-    KChargingEffect.seven,
-    KChargingEffect.eleven,
-    KChargingEffect.twentyTwo,
+  static const Map<MockedCarBrand, List<String>> carModels = {
+    MockedCarBrand.audi: [
+      'Q4 e-tron',
+      'Q4 Sportback e-tron',
+      'Q6 e-tron',
+      'Q6 Sportback e-tron',
+      'Q8 e-tron',
+      'Q8 Sportback e-tron',
+      'e-tron GT',
+      'RS e-tron GT',
+    ],
+    MockedCarBrand.bmw: [
+      'i3',
+      'i4',
+      'i5',
+      'i7',
+      'iX1',
+      'iX3',
+      'iX',
+    ],
+    MockedCarBrand.tesla: [
+      'Model S',
+      'Model 3',
+      'Model X',
+      'Model Y',
+      'Cybertruck',
+    ],
+    MockedCarBrand.volvo: [
+      'EX30',
+      'EX40',
+      'EC40',
+      'EX90',
+    ],
+    MockedCarBrand.chevrolet: [
+      'Bolt EV',
+      'Bolt EUV',
+      'Blazer EV',
+      'Equinox EV',
+      'Silverado EV',
+    ],
+    MockedCarBrand.nissan: [
+      'Leaf',
+      'Ariya',
+    ],
+  };
+
+  static List<String> chargingEffects = [
+    '3,7 kW',
+    '7,0 kW',
+    '11,0 kW',
+    '22,0 kW',
   ];
 
-  static List<String> plugList = [
-    KPlugs.threePhase,
-    KPlugs.typeOne,
-    KPlugs.typeTwo,
-    KPlugs.wall,
+  static List<String> plugs = [
+    '3-phase (CEE)',
+    'Type 1',
+    'Type 2',
+    'Wall',
   ];
 
   static const Map<int, String> daysList = {
@@ -85,40 +138,6 @@ class KChargingStation {
     6: 'Sat',
     7: 'Sun',
   };
-}
-
-class KChargingStationsNames {
-  static const String abb = 'ABB';
-  static const String easee = 'Easee';
-  static const String garo = 'Garo';
-  static const String vattenfall = 'Vattenfall';
-  static const String tesla = 'Tesla';
-  static const String other = 'Other';
-}
-
-class KChargingStationsLogos {
-  static const String abb = 'assets/charging_station_logos/abb.png';
-  static const String easee = 'assets/charging_station_logos/easee.png';
-  static const String garo = 'assets/charging_station_logos/garo.png';
-  static const String vattenfall =
-      'assets/charging_station_logos/vattenfall.png';
-  static const String tesla = 'assets/charging_station_logos/tesla.png';
-  static const String other =
-      'assets/charging_station_logos/other_ev_station.png';
-}
-
-class KChargingEffect {
-  static const String three = '3,7 kW';
-  static const String seven = '7,0 kW';
-  static const String eleven = '11,0 kW';
-  static const String twentyTwo = '22,0 kW';
-}
-
-class KPlugs {
-  static const String threePhase = '3-phase (CEE)';
-  static const String typeOne = 'Type 1';
-  static const String typeTwo = 'Type 2';
-  static const String wall = 'Wall';
 }
 
 class KPaymentProvidersIcons {

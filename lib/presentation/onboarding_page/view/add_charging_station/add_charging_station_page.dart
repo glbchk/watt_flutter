@@ -9,10 +9,10 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/add_charging_station_details_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/utils/colors.dart';
-import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
+import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class AddChargingStationPage extends StatefulWidget {
   const AddChargingStationPage({super.key});
@@ -29,9 +29,9 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
     context.read<OnboardingBloc>().add(
       FetchUserChargingStationsEvent(),
     );
-    // context.read<ChargingStationBloc>().add(
-    //   ResetChargingStationFormEvent(),
-    // );
+    context.read<ChargingStationBloc>().add(
+      FetchMockedChargingStationOptionsEvent(),
+    );
     super.initState();
   }
 
@@ -113,34 +113,52 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                   ...state.chargingStations!.map((
                                     chargingStation,
                                   ) {
-                                    return TallCardButton(
-                                      label:
-                                          chargingStation.chargingStationName ??
-                                          '',
-                                      subLabel:
-                                          StringHelperMethods.createChargingStationLabel(
-                                            chargingStation.brandName,
-                                            chargingStation.chargingEffect,
-                                            chargingStation.plug,
-                                          ),
-                                      subSubLabel:
-                                          (chargingStation.pricePerKwh != null)
-                                          ? "${chargingStation.pricePerKwh} SEK"
-                                          : null,
-                                      pngImage: chargingStation.brandLogo,
-                                      marginDistance: marginSize,
-                                      isArrowIconVisible: false,
-                                      onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (_) =>
-                                        //         ProfileCarDetailsPage(
-                                        //           car: car,
-                                        //         ),
-                                        //   ),
-                                        // );
-                                      },
+                                    return Column(
+                                      spacing: 10,
+                                      children: [
+                                        TallCardButton(
+                                          isDismissible: true,
+                                          dismissableKey: chargingStation.id,
+                                          onDismissableDismissed: () {
+                                            context
+                                                .read<ChargingStationBloc>()
+                                                .add(
+                                                  RemoveChargingStationEvent(
+                                                    chargingStation.id,
+                                                  ),
+                                                );
+                                          },
+                                          label:
+                                              chargingStation
+                                                  .chargingStationName ??
+                                              '',
+                                          subLabel:
+                                              StringHelperMethods.createChargingStationLabel(
+                                                chargingStation.brandName,
+                                                chargingStation.chargingEffect,
+                                                chargingStation.plug,
+                                              ),
+                                          subSubLabel:
+                                              (chargingStation.pricePerKwh !=
+                                                  null)
+                                              ? "${chargingStation.pricePerKwh} SEK"
+                                              : null,
+                                          pngImage: chargingStation.brandLogo,
+                                          marginDistance: marginSize,
+                                          isArrowIconVisible: false,
+                                          onPressed: () {
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (_) =>
+                                            //         ProfileCarDetailsPage(
+                                            //           car: car,
+                                            //         ),
+                                            //   ),
+                                            // );
+                                          },
+                                        ),
+                                      ],
                                     );
                                   }),
                                   const SizedBox(height: 30.0),
@@ -159,64 +177,75 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                   ),
                                   SizedBox(height: 8.0),
                                 ],
-                                ...List.generate(
-                                  KChargingStation.chargingStationList.length,
-                                  (index) {
-                                    return TallCardButton(
-                                      label: KChargingStation
-                                          .chargingStationList
-                                          .elementAt(
-                                            index,
-                                          ),
-                                      pngImage: KChargingStation
-                                          .chargingStationIconsList
-                                          .elementAt(
-                                            index,
-                                          ),
-                                      onPressed: () async {
-                                        context.read<ChargingStationBloc>().add(
-                                          SaveBrandNameChargingStationEvent(
-                                            KChargingStation.chargingStationList
-                                                .elementAt(
-                                                  index,
-                                                ),
-                                            KChargingStation
-                                                .chargingStationIconsList
-                                                .elementAt(
-                                                  index,
-                                                ),
-                                          ),
-                                        );
+                                Column(
+                                  spacing: 10,
+                                  children: [
+                                    state.isLoading
+                                        ? UiHelperMethods.buildCarOptionsShimmer(
+                                            context,
+                                          )
+                                        : Column(
+                                            spacing: 10,
+                                            children: [
+                                              ...(state.chargingStationOptions ?? []).map((
+                                                option,
+                                              ) {
+                                                return TallCardButton(
+                                                  isDismissible: false,
+                                                  label: option.name,
+                                                  pngImage: option.logo,
+                                                  marginDistance: marginSize,
+                                                  onPressed: () async {
+                                                    context
+                                                        .read<
+                                                          ChargingStationBloc
+                                                        >()
+                                                        .add(
+                                                          SaveBrandNameChargingStationEvent(
+                                                            option.name,
+                                                            option.logo,
+                                                          ),
+                                                        );
 
-                                        final result =
-                                            await Navigator.push<
-                                              ChargingStationModel?
-                                            >(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    AddChargingStationDetailsPage(),
-                                              ),
-                                            );
+                                                    final result =
+                                                        await Navigator.push<
+                                                          ChargingStationModel?
+                                                        >(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (_) =>
+                                                                AddChargingStationDetailsPage(),
+                                                          ),
+                                                        );
 
-                                        if (!context.mounted) return;
+                                                    if (!context.mounted)
+                                                      return;
 
-                                        if (result != null) {
-                                          final updatedState = context
-                                              .read<ChargingStationBloc>()
-                                              .state;
-                                          context.read<OnboardingBloc>().add(
-                                            AddedChargingStationsEvent(
-                                              chargingStations:
-                                                  updatedState
-                                                      .chargingStations ??
-                                                  [],
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    );
-                                  },
+                                                    if (result != null) {
+                                                      final updatedState = context
+                                                          .read<
+                                                            ChargingStationBloc
+                                                          >()
+                                                          .state;
+                                                      context
+                                                          .read<
+                                                            OnboardingBloc
+                                                          >()
+                                                          .add(
+                                                            AddedChargingStationsEvent(
+                                                              chargingStations:
+                                                                  updatedState
+                                                                      .chargingStations ??
+                                                                  [],
+                                                            ),
+                                                          );
+                                                    }
+                                                  },
+                                                );
+                                              }),
+                                            ],
+                                          ),
+                                  ],
                                 ),
                               ],
                             ),

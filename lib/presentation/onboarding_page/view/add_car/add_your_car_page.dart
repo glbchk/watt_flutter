@@ -5,17 +5,10 @@ import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_car/select_car_model_page.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
-import 'package:watt/presentation/profile_page/sub_pages/profile_car_details_page.dart';
 import 'package:watt/utils/colors.dart';
-import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
-
-class CarOption {
-  final String name;
-  final String logo;
-  CarOption(this.name, this.logo);
-}
+import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class AddYourCarPage extends StatefulWidget {
   const AddYourCarPage({super.key});
@@ -25,19 +18,11 @@ class AddYourCarPage extends StatefulWidget {
 }
 
 class _AddYourCarPageState extends State<AddYourCarPage> {
-  final List<CarOption> staticCarOptions = [
-    CarOption(KCarNames.audi, KCarLogos.audi),
-    CarOption(KCarNames.bmw, KCarLogos.bmw),
-    CarOption(KCarNames.tesla, KCarLogos.tesla),
-    CarOption(KCarNames.volvo, KCarLogos.volvo),
-    CarOption(KCarNames.tesla, KCarLogos.tesla),
-    CarOption(KCarNames.volvo, KCarLogos.volvo),
-  ];
-
   @override
   void initState() {
     super.initState();
     context.read<OnboardingBloc>().add(FetchUserCarsEvent());
+    context.read<OnboardingBloc>().add(FetchMockedCarOptionsEvent());
   }
 
   @override
@@ -92,7 +77,9 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                           ),
                         ),
                         Container(
-                          color: context.theme.appColors.background,
+                          decoration: BoxDecoration(
+                            color: context.theme.appColors.background,
+                          ),
                           constraints: BoxConstraints(
                             minHeight: MediaQuery.of(context).size.height / 1.3,
                           ),
@@ -103,25 +90,39 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                               children: [
                                 if (state.cars != null &&
                                     state.cars!.isNotEmpty) ...[
-                                  ...state.cars!.map((car) {
-                                    return TallCardButton(
-                                      label: car.carModel ?? '',
-                                      subLabel: car.plateNumber,
-                                      pngImage: car.brandLogo,
-                                      marginDistance: marginSize,
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                ProfileCarDetailsPage(
-                                                  car: car,
-                                                ),
-                                          ),
+                                  Column(
+                                    spacing: 10,
+                                    children: [
+                                      ...state.cars!.map((car) {
+                                        return TallCardButton(
+                                          isDismissible: true,
+                                          dismissableKey: car.id,
+                                          onDismissableDismissed: () {
+                                            context.read<OnboardingBloc>().add(
+                                              DeleteCarEvent(
+                                                carId: car.id,
+                                              ),
+                                            );
+                                          },
+                                          label: car.carModel ?? '',
+                                          subLabel: car.plateNumber,
+                                          pngImage: car.brandLogo,
+                                          marginDistance: marginSize,
+                                          onPressed: () {
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (_) =>
+                                            //         ProfileCarDetailsPage(
+                                            //           car: car,
+                                            //         ),
+                                            //   ),
+                                            // );
+                                          },
                                         );
-                                      },
-                                    );
-                                  }),
+                                      }),
+                                    ],
+                                  ),
                                   const SizedBox(height: 30.0),
                                   Padding(
                                     padding: const EdgeInsets.only(
@@ -138,34 +139,45 @@ class _AddYourCarPageState extends State<AddYourCarPage> {
                                   ),
                                   SizedBox(height: 8.0),
                                 ],
-                                ...List.generate(
-                                  staticCarOptions.length,
-                                  (index) {
-                                    return TallCardButton(
-                                      label: staticCarOptions
-                                          .elementAt(index)
-                                          .name,
-                                      pngImage: staticCarOptions
-                                          .elementAt(index)
-                                          .logo,
-                                      marginDistance: marginSize,
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => SelectCarModelPage(
-                                              brandLogo: staticCarOptions
-                                                  .elementAt(index)
-                                                  .logo,
-                                              brandName: staticCarOptions
-                                                  .elementAt(index)
-                                                  .name,
-                                            ),
+                                Column(
+                                  spacing: 10,
+                                  children: [
+                                    state.isLoading
+                                        ? UiHelperMethods.buildCarOptionsShimmer(
+                                            context,
+                                          )
+                                        : Column(
+                                            spacing: 10,
+                                            children: [
+                                              ...(state.carOptions ?? []).map((
+                                                option,
+                                              ) {
+                                                return TallCardButton(
+                                                  isDismissible: false,
+                                                  label: option.name,
+                                                  pngImage: option.logo,
+                                                  marginDistance: marginSize,
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            SelectCarModelPage(
+                                                              brandLogo:
+                                                                  option.logo,
+                                                              brandName:
+                                                                  option.name,
+                                                              brand:
+                                                                  option.brand,
+                                                            ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              }),
+                                            ],
                                           ),
-                                        );
-                                      },
-                                    );
-                                  },
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 100,

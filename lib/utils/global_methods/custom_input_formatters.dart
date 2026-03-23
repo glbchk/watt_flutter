@@ -106,8 +106,8 @@ class IbanNumberFormatter extends TextInputFormatter {
   ) {
     String cleanText = newValue.text.replaceAll(' ', '').toUpperCase();
 
-    if (cleanText.length > 29) {
-      cleanText = cleanText.substring(0, 29);
+    if (cleanText.length > 34) {
+      cleanText = cleanText.substring(0, 34);
     }
 
     final buffer = StringBuffer();
@@ -115,17 +115,16 @@ class IbanNumberFormatter extends TextInputFormatter {
       String char = cleanText[i];
 
       if (i < 2) {
-        if (RegExp(r'[A-Z]').hasMatch(char)) {
-          buffer.write(char);
-        } else {
-          return oldValue;
-        }
+        if (!RegExp(r'[A-Z]').hasMatch(char)) return oldValue;
       } else {
-        if (RegExp(r'[0-9]').hasMatch(char)) {
-          buffer.write(char);
-        } else {
-          return oldValue;
-        }
+        if (!RegExp(r'[0-9]').hasMatch(char)) return oldValue;
+      }
+
+      buffer.write(char);
+
+      int index = i + 1;
+      if (index % 4 == 0 && index != cleanText.length) {
+        buffer.write(' ');
       }
     }
 
@@ -209,6 +208,11 @@ class ExpiryDateFormatter extends TextInputFormatter {
 
       if (enteredYear < currentYearShort) {
         year = currentYearShort.toString().padLeft(2, '0');
+      }
+
+      if (enteredYear > currentYearShort + 5) {
+        final maximumPossibleYear = currentYearShort + 5;
+        year = maximumPossibleYear.toString().padLeft(2, '0');
       }
     }
 

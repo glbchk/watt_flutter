@@ -24,6 +24,16 @@ class _AddIbanDetailsPageState extends State<AddIbanDetailsPage> {
   bool isUsedForReceivingEarnings = false;
 
   @override
+  void initState() {
+    context.read<PaymentMethodBloc>().add(
+      IbanVerificationEvent(
+        value: ibanNumberController.text,
+      ),
+    );
+    super.initState();
+  }
+
+  @override
   void dispose() {
     ibanNumberController.dispose();
     super.dispose();
@@ -31,9 +41,7 @@ class _AddIbanDetailsPageState extends State<AddIbanDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PaymentMethodBloc, PaymentMethodState>(
-      listener: (context, state) {},
-
+    return BlocBuilder<PaymentMethodBloc, PaymentMethodState>(
       builder: (context, state) {
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
@@ -66,6 +74,7 @@ class _AddIbanDetailsPageState extends State<AddIbanDetailsPage> {
                   SizedBox(height: 20),
                   CustomTextField(
                     controller: ibanNumberController,
+                    error: state.ibanError,
                     label: 'Iban Number',
                     hint: '000000000000',
                     inputFormatters: [
@@ -109,25 +118,44 @@ class _AddIbanDetailsPageState extends State<AddIbanDetailsPage> {
 
                         if (shouldBeUsedForReceivingEarnings &&
                             (state.paymentMethods?.isNotEmpty ?? false)) {
-                          for (var method in state.paymentMethods!) {
+                          for (var method in state.paymentMethods ?? []) {
                             if (method is IbanModel &&
                                 method.isUsedForReceivingEarnings == true) {
                               context.read<PaymentMethodBloc>().add(
                                 UpdateDefaultReceivingEarningsEvent(
                                   ibanId: method.id,
-                                  isReceiver: false,
+                                  isReceiver: isUsedForReceivingEarnings,
                                 ),
                               );
                             }
                           }
                         }
 
-                        context.read<PaymentMethodBloc>().add(
-                          FilledIbanEvent(
-                            iban: paymentMethod,
-                          ),
+                        final cleanIban = ibanNumberController.text.replaceAll(
+                          ' ',
+                          '',
                         );
-                        Navigator.pop(context, paymentMethod);
+
+                        if (cleanIban.length >= 15 && cleanIban.length <= 34) {
+                          context.read<PaymentMethodBloc>().add(
+                            FilledIbanEvent(
+                              iban: paymentMethod,
+                            ),
+                          );
+
+                          context.read<PaymentMethodBloc>().add(
+                            IbanVerificationEvent(
+                              value: ibanNumberController.text,
+                            ),
+                          );
+                          Navigator.pop(context, paymentMethod);
+                        } else {
+                          context.read<PaymentMethodBloc>().add(
+                            IbanVerificationEvent(
+                              value: ibanNumberController.text,
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

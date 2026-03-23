@@ -32,10 +32,10 @@ class StringHelperMethods {
 
   static String _formatRange(int start, int end) {
     if (start == end) {
-      return KChargingStation.daysList[start] ?? '';
+      return KMockedData.daysList[start] ?? '';
     }
 
-    return '${KChargingStation.daysList[start]}-${KChargingStation.daysList[end]}';
+    return '${KMockedData.daysList[start]}-${KMockedData.daysList[end]}';
   }
 
   static String formatDayRanges(List<int>? chosenDays) {

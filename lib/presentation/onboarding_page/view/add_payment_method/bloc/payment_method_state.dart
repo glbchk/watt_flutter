@@ -37,11 +37,11 @@ class PaymentMethodState {
     IbanModel? iban,
     List<PaymentMethodModel>? paymentMethods,
     PaymentMethodType? paymentType,
-    String? cardNameError,
-    String? cardNumberError,
-    String? expiryError,
-    String? cvvError,
-    String? ibanError,
+    String? Function()? cardNameError,
+    String? Function()? cardNumberError,
+    String? Function()? expiryError,
+    String? Function()? cvvError,
+    String? Function()? ibanError,
   }) {
     return PaymentMethodState(
       isLoading: isLoading ?? this.isLoading,
@@ -50,11 +50,15 @@ class PaymentMethodState {
       iban: iban ?? this.iban,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       paymentType: paymentType ?? this.paymentType,
-      cardNameError: cardNameError ?? this.cardNameError,
-      cardNumberError: cardNumberError ?? this.cardNumberError,
-      expiryError: expiryError ?? this.expiryError,
-      cvvError: cvvError ?? this.cvvError,
-      ibanError: ibanError ?? this.ibanError,
+      cardNameError: cardNameError != null
+          ? cardNameError()
+          : this.cardNameError,
+      cardNumberError: cardNumberError != null
+          ? cardNumberError()
+          : this.cardNumberError,
+      expiryError: expiryError != null ? expiryError() : this.expiryError,
+      cvvError: cvvError != null ? cvvError() : this.cvvError,
+      ibanError: ibanError != null ? ibanError() : this.ibanError,
     );
   }
 }

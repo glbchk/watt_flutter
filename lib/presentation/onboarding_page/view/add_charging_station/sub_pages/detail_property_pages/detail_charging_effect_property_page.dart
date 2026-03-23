@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
-import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/tile_selector_widget.dart';
+import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class DetailChargingEffectPropertyPage extends StatefulWidget {
   final String selectedValue;
-  // final ValueChanged<String> onSelected;
 
   const DetailChargingEffectPropertyPage({
     super.key,
     required this.selectedValue,
-    // required this.onSelected,
   });
 
   @override
@@ -27,31 +26,40 @@ class _DetailChargingEffectPropertyPageState
 
   @override
   void initState() {
+    context.read<ChargingStationBloc>().add(
+      FetchMockedChargingEffectOptionsEvent(),
+    );
     selectedChargingEffect = widget.selectedValue;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DetailsWidget(
-      title: 'Charging effect',
-      content: TileSelectorWidget(
-        list: KChargingStation.chargingEffectList,
-        selectedValue: selectedChargingEffect,
-        onSelected: (String value) {
-          setState(() {
-            selectedChargingEffect = value;
-          });
-        },
-      ),
-      onPressed: () {
-        context.read<ChargingStationBloc>().add(
-          SaveChargingEffectPropertyEvent(
-            selectedChargingEffect ?? '',
-          ),
-        );
+    return BlocBuilder<ChargingStationBloc, ChargingStationState>(
+      builder: (context, state) {
+        return DetailsWidget(
+          title: 'Charging effect',
+          content: state.isLoading
+              ? UiHelperMethods.buildListOptionsShimmer(context)
+              : TileSelectorWidget(
+                  list: state.chargingEffectOptions ?? [],
+                  selectedValue: selectedChargingEffect,
+                  onSelected: (String value) {
+                    setState(() {
+                      selectedChargingEffect = value;
+                    });
+                  },
+                ),
+          onPressed: () {
+            context.read<ChargingStationBloc>().add(
+              SaveChargingEffectPropertyEvent(
+                selectedChargingEffect ?? '',
+              ),
+            );
 
-        Navigator.pop(context);
+            Navigator.pop(context);
+          },
+        );
       },
     );
   }

@@ -33,6 +33,10 @@ class OnboardingFilledCarModelEvent extends OnboardingEvent {
   });
 }
 
+class FetchMockedCarOptionsEvent extends OnboardingEvent {}
+
+class FetchMockedCarModelOptionsEvent extends OnboardingEvent {}
+
 class FetchUserCarsEvent extends OnboardingEvent {}
 
 class UpdatePlateNumberCarEvent extends OnboardingEvent {

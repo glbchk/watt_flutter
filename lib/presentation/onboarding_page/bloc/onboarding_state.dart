@@ -1,5 +1,6 @@
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 
 class OnboardingState {
@@ -12,6 +13,8 @@ class OnboardingState {
   final String? phoneNumberError;
   final bool? isNameValid;
   final bool? isPhoneNumberValid;
+  final List<MockedCarOption>? carOptions;
+  final Map<MockedCarBrand, List<String>>? carModelOptions;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
   final List<PaymentMethodModel>? paymentMethods;
@@ -25,6 +28,8 @@ class OnboardingState {
     this.phoneNumberError,
     this.isNameValid,
     this.isPhoneNumberValid,
+    this.carOptions,
+    this.carModelOptions,
     this.cars,
     this.chargingStations,
     this.paymentMethods,
@@ -39,6 +44,8 @@ class OnboardingState {
     String? phoneNumberError,
     bool? isNameValid,
     bool? isPhoneNumberValid,
+    List<MockedCarOption>? carOptions,
+    Map<MockedCarBrand, List<String>>? carModelOptions,
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
     List<PaymentMethodModel>? paymentMethods,
@@ -56,6 +63,8 @@ class OnboardingState {
           : this.phoneNumberError,
       isNameValid: isNameValid ?? this.isNameValid,
       isPhoneNumberValid: isPhoneNumberValid ?? this.isPhoneNumberValid,
+      carOptions: carOptions ?? this.carOptions,
+      carModelOptions: carModelOptions ?? this.carModelOptions,
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
       paymentMethods: paymentMethods ?? this.paymentMethods,

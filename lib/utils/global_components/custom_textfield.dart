@@ -78,9 +78,7 @@ class CustomTextField extends StatelessWidget {
             obscureText: isPassword == true ? !(showPassword ?? false) : false,
             enableSuggestions: isPassword == false,
             autocorrect: isPassword == false,
-            keyboardType: isPassword ?? false
-                ? TextInputType.visiblePassword
-                : keyboardType,
+            keyboardType: keyboardType,
             textInputAction: textInputAction,
             autofillHints: isPassword ?? false
                 ? const [AutofillHints.password]

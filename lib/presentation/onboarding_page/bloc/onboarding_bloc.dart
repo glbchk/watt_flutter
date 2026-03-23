@@ -1,7 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
@@ -11,6 +13,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
   final UpdatePhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdatePhoneNumberUseCase();
+  final FetchMockedCarOptionsUseCase fetchMockedCarOptionsUseCase =
+      FetchMockedCarOptionsUseCase();
+  final FetchMockedCarModelOptionsUseCase fetchMockedCarModelOptionsUseCase =
+      FetchMockedCarModelOptionsUseCase();
   final AddCarUseCase updateUserCarUseCase = AddCarUseCase();
   final FetchUserCarsUseCase fetchUserCarsUseCase = FetchUserCarsUseCase();
   final UpdatePlateNumberCarsUseCase updatePlateNumberCarUseCase =
@@ -78,6 +84,39 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         );
       } catch (e) {
         print('Error: $e');
+      }
+    });
+
+    on<FetchMockedCarOptionsEvent>((event, emit) async {
+      emit(state.copyWith(isLoading: true));
+
+      try {
+        final List<MockedCarOption> carOptions =
+            await fetchMockedCarOptionsUseCase.execute();
+
+        emit(
+          state.copyWith(
+            isLoading: false,
+            carOptions: carOptions,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      }
+    });
+
+    on<FetchMockedCarModelOptionsEvent>((event, emit) async {
+      try {
+        final Map<MockedCarBrand, List<String>> carModelOptions =
+            await fetchMockedCarModelOptionsUseCase.execute();
+
+        emit(
+          state.copyWith(
+            carModelOptions: carModelOptions,
+          ),
+        );
+      } catch (e) {
+        emit(state.copyWith(errorMessage: e.toString()));
       }
     });
 

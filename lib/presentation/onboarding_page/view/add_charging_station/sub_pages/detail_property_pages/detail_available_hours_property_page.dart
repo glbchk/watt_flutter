@@ -85,49 +85,40 @@ class _DetailAvailableHoursPropertyPageState
                   ),
                 if (slots.isNotEmpty) SizedBox(height: 8.0),
                 if (slots.isNotEmpty)
-                  ...List.generate(
-                    state.availableHours?.length ?? 0,
-                    (index) {
-                      final TimeSlotModel? timeSlot = state.availableHours
-                          ?.elementAt(
-                            index,
-                          );
+                  Column(
+                    spacing: 10,
+                    children: [
+                      ...List.generate(
+                        state.availableHours?.length ?? 0,
+                        (index) {
+                          final TimeSlotModel? timeSlot = state.availableHours
+                              ?.elementAt(
+                                index,
+                              );
 
-                      return Dismissible(
-                        key: Key(timeSlot?.id ?? ''),
-
-                        direction: DismissDirection.endToStart,
-
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20.0),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-
-                        onDismissed: (direction) {
-                          context.read<ChargingStationBloc>().add(
-                            RemoveTimeSlotEvent(timeSlot?.id ?? ''),
+                          return TallCardButton(
+                            isDismissible: true,
+                            dismissableKey: timeSlot?.id,
+                            onDismissableDismissed: () {
+                              context.read<ChargingStationBloc>().add(
+                                RemoveTimeSlotEvent(timeSlot?.id ?? ''),
+                              );
+                            },
+                            padding: EdgeInsets.only(top: 2, bottom: 2),
+                            label: StringHelperMethods.formatDayRanges(
+                              timeSlot?.availableDays,
+                            ),
+                            subLabel:
+                                '${timeSlot?.startTime} - ${timeSlot?.endTime}',
+                            svgImage: KCardIcons.timeSlot,
+                            iconColor: context.theme.appColors.primary,
+                            marginDistance: marginSize,
                           );
                         },
-
-                        child: TallCardButton(
-                          padding: EdgeInsets.only(top: 2, bottom: 2),
-                          label: StringHelperMethods.formatDayRanges(
-                            timeSlot?.availableDays,
-                          ),
-                          subLabel:
-                              '${timeSlot?.startTime} - ${timeSlot?.endTime}',
-                          svgImage: KCardIcons.timeSlot,
-                          iconColor: context.theme.appColors.primary,
-                          marginDistance: marginSize,
-                        ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
+
                 if (slots.isNotEmpty) SizedBox(height: 20.0),
                 Text(
                   'Timeslot'.toUpperCase(),
@@ -161,12 +152,12 @@ class _DetailAvailableHoursPropertyPageState
                             width: 15,
                           ),
                           ...List.generate(
-                            KChargingStation.daysList.length,
+                            KMockedData.daysList.length,
                             (index) {
-                              final int dayKey = KChargingStation.daysList.keys
+                              final int dayKey = KMockedData.daysList.keys
                                   .elementAt(index);
                               final String dayLabel =
-                                  KChargingStation.daysList[dayKey]?.substring(
+                                  KMockedData.daysList[dayKey]?.substring(
                                     0,
                                     1,
                                   ) ??

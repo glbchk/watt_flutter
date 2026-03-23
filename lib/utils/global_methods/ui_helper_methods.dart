@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/choose_location_on_map_page.dart';
 import 'package:watt/utils/colors.dart';
 
@@ -176,5 +177,70 @@ class UiHelperMethods {
       controller.text = DateFormat('dd/MM/yyyy').format(picked);
       onDateSelected(picked);
     }
+  }
+
+  static Widget buildCarOptionsShimmer(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: context.theme.appColors.grey4.withValues(alpha: 0.5),
+      highlightColor: context.theme.appColors.background,
+      child: Column(
+        children: List.generate(
+          5,
+          (index) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget buildListOptionsShimmer(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(20.0),
+      child: Shimmer.fromColors(
+        baseColor: context.theme.appColors.grey4.withValues(alpha: 0.5),
+        highlightColor: context.theme.appColors.background,
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            return Container(
+              height: 60,
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(
+                    height: 1,
+                    color: context.theme.appColors.grey3,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

@@ -60,7 +60,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Add your car',
+                                'Add payment method',
                                 style: TextStyle(
                                   color: context.theme.appColors.background,
                                   fontWeight: FontWeight.bold,
@@ -68,7 +68,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                 ),
                               ),
                               Text(
-                                'Select your car',
+                                'Select your payment method',
                                 style: TextStyle(
                                   color: context.theme.appColors.background,
                                   fontWeight: FontWeight.normal,
@@ -89,6 +89,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                           child: Transform.translate(
                             offset: Offset(0, -40),
                             child: Column(
+                              spacing: 10,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (state.paymentMethods != null &&
@@ -96,6 +97,15 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                   ...state.paymentMethods!.map((paymentMethod) {
                                     if (paymentMethod is CreditCardModel) {
                                       return TallCardButton(
+                                        isDismissible: true,
+                                        dismissableKey: paymentMethod.id,
+                                        onDismissableDismissed: () {
+                                          context.read<PaymentMethodBloc>().add(
+                                            RemovePaymentMethodEvent(
+                                              paymentMethod.id,
+                                            ),
+                                          );
+                                        },
                                         label: paymentMethod.cardName ?? '',
                                         subLabel:
                                             '${paymentMethod.cardNumber}${paymentMethod.isDefaultPaymentMethod == true ? ' * Default' : ''}',
@@ -120,6 +130,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                       );
                                     } else if (paymentMethod is IbanModel) {
                                       return TallCardButton(
+                                        isDismissible: true,
                                         label: 'IBAN Method',
                                         subLabel:
                                             '${paymentMethod.ibanNumber?.substring(0, 16)}${paymentMethod.isUsedForReceivingEarnings == true ? ' * Receiver' : ''}',
@@ -158,6 +169,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                   SizedBox(height: 8.0),
                                 ],
                                 TallCardButton(
+                                  isDismissible: false,
                                   label: 'Credit Card',
                                   svgImage: KCardIcons.paymentMethod,
                                   iconColor: context.theme.appColors.primary,
@@ -181,6 +193,7 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                   },
                                 ),
                                 TallCardButton(
+                                  isDismissible: false,
                                   label: 'IBAN',
                                   svgImage: KCardIcons.paymentMethod,
                                   iconColor: context.theme.appColors.primary,

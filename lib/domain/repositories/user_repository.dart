@@ -23,6 +23,4 @@ abstract class UserRepository {
     bool isReceiver,
   );
   Future<void> deleteUser();
-
-  ///TODO Need to have methods for payment methods, cars, charging stations...
 }

@@ -5,6 +5,7 @@ import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/row_toggle.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class CreditCardFormWidget extends StatelessWidget {
   final TextEditingController controllerCardName;
@@ -50,6 +51,10 @@ class CreditCardFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String cardType = StringHelperMethods.getCardType(
+      controllerCardNumber.text,
+    );
+
     return Form(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -107,13 +112,15 @@ class CreditCardFormWidget extends StatelessWidget {
                     suffixIcon: Icon(Icons.visibility),
                     suffixIconColor: context.theme.appColors.grey1,
                     label: 'CVV',
-                    hint: '• • •',
+                    hint: cardType == 'amex' ? '• • • •' : '• • •',
                     onChanged: onChangedCvv,
                     error: errorCvv,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(3),
+                      LengthLimitingTextInputFormatter(
+                        cardType == 'amex' ? 4 : 3,
+                      ),
                     ],
                   ),
                 ),

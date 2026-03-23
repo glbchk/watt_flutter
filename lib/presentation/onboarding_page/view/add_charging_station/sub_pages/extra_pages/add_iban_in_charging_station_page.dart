@@ -66,6 +66,7 @@ class _AddIbanDetailsPageState extends State<AddIbanInChargingStationPage> {
                   SizedBox(height: 20),
                   CustomTextField(
                     controller: ibanNumberController,
+                    error: state.ibanError,
                     label: 'Iban Number',
                     hint: '000000000000',
                     inputFormatters: [
@@ -89,12 +90,25 @@ class _AddIbanDetailsPageState extends State<AddIbanInChargingStationPage> {
                           isUsedForReceivingEarnings: true,
                         );
 
-                        context.read<ChargingStationBloc>().add(
-                          AddIbanEvent(
-                            iban: paymentMethod,
-                          ),
+                        final cleanIban = ibanNumberController.text.replaceAll(
+                          ' ',
+                          '',
                         );
-                        Navigator.of(context).pop();
+
+                        if (cleanIban.length >= 15 && cleanIban.length <= 34) {
+                          context.read<ChargingStationBloc>().add(
+                            AddIbanEvent(
+                              iban: paymentMethod,
+                            ),
+                          );
+                          Navigator.of(context).pop();
+                        } else {
+                          context.read<ChargingStationBloc>().add(
+                            IbanVerificationEvent(
+                              value: ibanNumberController.text,
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

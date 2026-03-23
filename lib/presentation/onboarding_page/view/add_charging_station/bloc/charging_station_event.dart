@@ -6,6 +6,8 @@ import 'package:watt/data/models/timeslot_model.dart';
 
 abstract class ChargingStationEvent {}
 
+class FetchMockedChargingStationOptionsEvent extends ChargingStationEvent {}
+
 class SaveBrandNameChargingStationEvent extends ChargingStationEvent {
   final String brandName;
   final String brandLogo;
@@ -73,6 +75,8 @@ class UpdateBrandNamePropertyEvent extends ChargingStationEvent {
   );
 }
 
+class FetchMockedChargingEffectOptionsEvent extends ChargingStationEvent {}
+
 class SaveChargingEffectPropertyEvent extends ChargingStationEvent {
   final String value;
 
@@ -80,6 +84,8 @@ class SaveChargingEffectPropertyEvent extends ChargingStationEvent {
     this.value,
   );
 }
+
+class FetchMockedPlugOptionsEvent extends ChargingStationEvent {}
 
 class SavePlugPropertyEvent extends ChargingStationEvent {
   final String value;
@@ -109,12 +115,26 @@ class UpdateChargingStationPropertyEvent extends ChargingStationEvent {
   );
 }
 
+class IbanVerificationEvent extends ChargingStationEvent {
+  final String value;
+
+  IbanVerificationEvent({
+    required this.value,
+  });
+}
+
 class AddIbanEvent extends ChargingStationEvent {
   final IbanModel iban;
 
   AddIbanEvent({
     required this.iban,
   });
+}
+
+class RemoveIbanEvent extends ChargingStationEvent {
+  final String ibanId;
+
+  RemoveIbanEvent(this.ibanId);
 }
 
 class AvailableHoursVerificationEvent extends ChargingStationEvent {
@@ -128,18 +148,6 @@ class AvailableHoursVerificationEvent extends ChargingStationEvent {
     required this.endTime,
   });
 }
-
-// class StartTimeVerificationEvent extends ChargingStationEvent {
-//   final String value;
-//
-//   StartTimeVerificationEvent({required this.value});
-// }
-//
-// class EndTimeVerificationEvent extends ChargingStationEvent {
-//   final String value;
-//
-//   EndTimeVerificationEvent({required this.value});
-// }
 
 class AddTimeSlotEvent extends ChargingStationEvent {
   final TimeSlotModel timeSlot;
@@ -159,26 +167,8 @@ class AddOneChargingStationEvent extends ChargingStationEvent {
   AddOneChargingStationEvent(this.chargingStation);
 }
 
-// class AddChargingStationsEvent extends ChargingStationEvent {
-//   final List<ChargingStationModel> chargingStations;
-//
-//   AddChargingStationsEvent(this.chargingStations);
-// }
+class RemoveChargingStationEvent extends ChargingStationEvent {
+  final String chargingStationId;
 
-// class UpdateChargingStationEvent extends ChargingStationEvent {
-//   final String chargingStationId;
-//
-//   UpdateChargingStationEvent({
-//     required this.chargingStationId,
-//   });
-// }
-
-// class OnboardingFilledChargingStationEvent extends ChargingStationEvent {
-//   final ChargingStationModel chargingStation;
-//
-//   OnboardingFilledChargingStationEvent({
-//     required this.chargingStation,
-//   });
-// }
-
-class ResetChargingStationFormEvent extends ChargingStationEvent {}
+  RemoveChargingStationEvent(this.chargingStationId);
+}

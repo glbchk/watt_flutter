@@ -26,7 +26,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
       emit(
         state.copyWith(
-          cardNameError: validationError ?? "",
+          cardNameError: () => validationError,
         ),
       );
     });
@@ -40,7 +40,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
       emit(
         state.copyWith(
-          cardNumberError: validationError ?? "",
+          cardNumberError: () => validationError,
         ),
       );
     });
@@ -54,7 +54,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
       emit(
         state.copyWith(
-          expiryError: validationError ?? "",
+          expiryError: () => validationError,
         ),
       );
     });
@@ -68,7 +68,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
       emit(
         state.copyWith(
-          cvvError: validationError ?? "",
+          cvvError: () => validationError,
         ),
       );
     });
@@ -86,17 +86,44 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
       }
     });
 
+    on<IbanVerificationEvent>((event, emit) {
+      String? ibanError;
+
+      if (event.value.isNotEmpty && event.value.length < 15) {
+        ibanError = 'This IBAN is too short. Please check the number.';
+      }
+
+      emit(
+        state.copyWith(
+          ibanError: () => ibanError,
+        ),
+      );
+    });
+
     on<FilledIbanEvent>((event, emit) async {
       try {
         await addPaymentMethodUseCase.execute(event.iban);
         emit(
           state.copyWith(
             iban: event.iban,
+            ibanError: () => null,
           ),
         );
       } catch (e) {
         print('Error: $e');
       }
+    });
+
+    on<RemovePaymentMethodEvent>((event, emit) {
+      final List<PaymentMethodModel> updatedList = state.paymentMethods!
+          .where((method) => method.id != event.paymentMethodId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          paymentMethods: updatedList,
+        ),
+      );
     });
 
     on<FetchPaymentMethodsEvent>((event, emit) async {

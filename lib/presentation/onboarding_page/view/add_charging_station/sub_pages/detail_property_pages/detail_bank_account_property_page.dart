@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/add_iban_in_charging_station_page.dart';
@@ -52,24 +53,36 @@ class _DetailBankAccountPropertyPageState
                         ),
                       ),
                     if (bankAccounts.isNotEmpty) ...[
-                      ...bankAccounts.map((iban) {
-                        return TallCardButton(
-                          padding: EdgeInsets.only(top: 2, bottom: 2),
-                          label: 'ID: ${iban.id.substring(0, 8)}',
-                          subLabel: iban.ibanNumber?.substring(0, 18) ?? '',
-                          svgImage: KCardIcons.paymentMethod,
-                          marginDistance: marginSize,
-                          onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (_) =>
-                            //         AddCreditCardPage(),
-                            //   ),
-                            // );
-                          },
-                        );
-                      }),
+                      Column(
+                        spacing: 10,
+                        children: [
+                          ...bankAccounts.map((iban) {
+                            return TallCardButton(
+                              isDismissible: true,
+                              dismissableKey: iban.id,
+                              onDismissableDismissed: () {
+                                context.read<ChargingStationBloc>().add(
+                                  RemoveIbanEvent(iban.id),
+                                );
+                              },
+                              padding: EdgeInsets.only(top: 2, bottom: 2),
+                              label: 'ID: ${iban.id.substring(0, 8)}',
+                              subLabel: iban.ibanNumber?.substring(0, 18) ?? '',
+                              svgImage: KCardIcons.paymentMethod,
+                              marginDistance: marginSize,
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (_) =>
+                                //         AddCreditCardPage(),
+                                //   ),
+                                // );
+                              },
+                            );
+                          }),
+                        ],
+                      ),
                     ],
                   ],
                 ),
