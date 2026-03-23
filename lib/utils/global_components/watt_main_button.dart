@@ -4,45 +4,50 @@ import 'package:watt/utils/colors.dart';
 class WattMainButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
-  final bool isLoading;
+  final bool? isLoading;
   final IconData? icon;
   final Color? textColor;
-  final Color? backgroundColor;
 
   const WattMainButton({
     super.key,
     required this.label,
     this.onPressed,
-    required this.isLoading,
+    this.isLoading,
     this.icon,
-    this.backgroundColor,
     this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SizedBox(
+    return Container(
       width: double.infinity,
       height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: context.theme.appColors.primary.withAlpha(76),
+            spreadRadius: 0,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
       child: FilledButton.icon(
         label: Text(
           label,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: context.theme.appColors.onPrimary,
           ),
         ),
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: backgroundColor ?? theme.colorScheme.primary,
+          backgroundColor: context.theme.appColors.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          elevation: 8,
-          shadowColor: wattColorScheme.onSecondary.withAlpha(100),
         ),
       ),
     );

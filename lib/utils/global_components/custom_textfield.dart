@@ -1,78 +1,164 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:watt/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
+  final void Function(bool)? onFocusChange;
+  final String? label;
+  final double? spaceLabel;
   final String? hint;
-  final IconData? suffixIcon;
-  final bool isPassword;
-  final TextInputType keyboardType;
-  final String? Function(String?)? validator; // For form validation
+  final String? error;
+  final Widget? suffixIcon;
+  final Color? suffixIconColor;
+  final VoidCallback? onSuffixIconTap;
+  final Widget? prefixIcon;
+  final Color? prefixIconColor;
+  final VoidCallback? onPrefixIconTap;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
+  final VoidCallback? onTap;
+  final Function(String?)? onChanged;
+  final TextCapitalization? textCapitalization;
+  final bool? isPassword;
+  final bool? showPassword;
+  final FormFieldValidator<String>? validator;
+  final bool? autofocus;
 
   const CustomTextField({
     super.key,
     required this.controller,
-    required this.label,
+    this.focusNode,
+    this.onFocusChange,
+    this.label,
+    this.spaceLabel,
     this.hint,
+    this.error,
     this.suffixIcon,
-    this.isPassword = false,
-    this.keyboardType = TextInputType.text,
+    this.suffixIconColor,
+    this.onSuffixIconTap,
+    this.prefixIcon,
+    this.prefixIconColor,
+    this.onPrefixIconTap,
+    this.isPassword,
+    this.showPassword,
+    this.keyboardType,
+    this.textInputAction,
+    this.inputFormatters,
+    this.onTap,
+    this.onChanged,
+    this.textCapitalization,
     this.validator,
+    this.autofocus,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label.toUpperCase(),
-
-          style: TextStyle(fontWeight: FontWeight.bold, color: greyAppColor),
-        ),
-        SizedBox(height: 8.0),
-        TextFormField(
-          controller: controller,
-          obscureText: isPassword,
-          keyboardType: keyboardType,
-          validator: validator,
-          style: TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            // labelText: label,
-            hintText: hint,
-            hintStyle: TextStyle(color: hintTextColor),
-            suffixIcon: suffixIcon != null
-                ? IconButton(
-                    icon: Icon(
-                      suffixIcon,
-                      color: greyAppColor,
-                    ),
-                    onPressed: () {},
-                  )
+        ?label != null
+            ? Text(
+                label?.toUpperCase() ?? '',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: context.theme.appColors.grey1,
+                ),
+              )
+            : null,
+        SizedBox(height: spaceLabel ?? 8.0),
+        Focus(
+          onFocusChange: onFocusChange,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            autofocus: autofocus ?? true,
+            obscureText: isPassword == true ? !(showPassword ?? false) : false,
+            enableSuggestions: isPassword == false,
+            autocorrect: isPassword == false,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            autofillHints: isPassword ?? false
+                ? const [AutofillHints.password]
                 : null,
-            filled: true,
-            fillColor: wattColorScheme.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: borderTFColor),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 1,
+            inputFormatters: inputFormatters,
+            validator: validator,
+            style: TextStyle(color: context.theme.appColors.onSurface),
+            textCapitalization: textCapitalization ?? TextCapitalization.none,
+            onTapUpOutside: (event) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            onTap: onTap,
+            onChanged: (String value) => onChanged?.call(value),
+            decoration: InputDecoration(
+              errorStyle: TextStyle(
+                color: context.theme.appColors.error,
+                fontSize: 12,
               ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: theme.colorScheme.error),
+              hintText: hint,
+              hintStyle: TextStyle(color: context.theme.appColors.grey2),
+              errorText: (error == null || error!.isEmpty) ? null : error,
+              prefixIcon: prefixIcon != null
+                  ? GestureDetector(
+                      onTap: onPrefixIconTap,
+                      child: IconTheme(
+                        data: IconThemeData(
+                          color:
+                              prefixIconColor ??
+                              context.theme.appColors.primary,
+                          size: 24,
+                        ),
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Center(child: prefixIcon!),
+                        ),
+                      ),
+                    )
+                  : null,
+              suffixIcon: isPassword == true
+                  ? IconButton(
+                      icon: Icon(
+                        showPassword != true
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: onSuffixIconTap,
+                    )
+                  : suffixIcon,
+              filled: true,
+              fillColor: context.theme.appColors.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: context.theme.appColors.grey3),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: context.theme.appColors.primary,
+                  width: 1,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: context.theme.appColors.error,
+                  width: 1,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: context.theme.appColors.error,
+                  width: 2,
+                ),
+              ),
             ),
           ),
         ),

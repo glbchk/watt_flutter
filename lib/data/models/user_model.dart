@@ -1,3 +1,6 @@
+import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
@@ -7,10 +10,11 @@ class UserModel {
   final String? email;
   final bool? isEmailVerified;
   final String? phoneNumber;
+  final bool isOnboardingCompleted;
   final String? language;
-  final List<String>? paymentMethods;
-  final List<String>? cars;
-  final List<String>? chargingStations;
+  final List<CarModel>? cars;
+  final List<ChargingStationModel>? chargingStations;
+  final List<PaymentMethodModel>? paymentMethods;
 
   UserModel({
     this.isAnonymous,
@@ -19,10 +23,11 @@ class UserModel {
     this.email,
     this.isEmailVerified,
     this.phoneNumber,
+    required this.isOnboardingCompleted,
     this.language,
-    this.paymentMethods,
     this.cars,
     this.chargingStations,
+    this.paymentMethods,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -33,10 +38,30 @@ class UserModel {
       email: json['email'] ?? '',
       isEmailVerified: json['is_email_verified'] ?? false,
       phoneNumber: json['phone_number'] ?? '',
+      isOnboardingCompleted: json['is_onboarding_completed'],
       language: json['language'] ?? 'en',
-      paymentMethods: List<String>.from(json['payment_methods'] ?? []),
-      cars: List<String>.from(json['cars'] ?? []),
-      chargingStations: List<String>.from(json['charging_stations'] ?? []),
+
+      cars:
+          (json['cars'] as List<dynamic>?)
+              ?.map((item) => CarModel.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
+      chargingStations:
+          (json['charging_stations'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    ChargingStationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      paymentMethods:
+          (json['payment_methods'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    PaymentMethodModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -48,10 +73,11 @@ class UserModel {
       'email': email,
       'is_email_verified': isEmailVerified,
       'phone_number': phoneNumber,
+      'is_onboarding_completed': isOnboardingCompleted,
       'language': language,
-      'payment_methods': paymentMethods,
-      'cars': cars,
-      'charging_stations': chargingStations,
+      'cars': cars?.map((c) => c.toJson()).toList(),
+      'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
+      'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
     };
   }
 
@@ -63,10 +89,11 @@ class UserModel {
       email: entity.email,
       isEmailVerified: entity.isEmailVerified ?? false,
       phoneNumber: entity.phoneNumber ?? '',
+      isOnboardingCompleted: entity.isOnboardingCompleted,
       language: entity.language ?? '',
-      paymentMethods: entity.paymentMethods ?? [],
       cars: entity.cars ?? [],
       chargingStations: entity.chargingStations ?? [],
+      paymentMethods: entity.paymentMethods ?? [],
     );
   }
 
@@ -77,10 +104,11 @@ class UserModel {
     String? email,
     bool? isEmailVerified,
     String? phoneNumber,
+    bool? isOnboardingCompleted,
     String? language,
-    List<String>? paymentMethods,
-    List<String>? cars,
-    List<String>? chargingStations,
+    List<CarModel>? cars,
+    List<ChargingStationModel>? chargingStations,
+    List<PaymentMethodModel>? paymentMethods,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -89,10 +117,12 @@ class UserModel {
       email: email ?? this.email,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      isOnboardingCompleted:
+          isOnboardingCompleted ?? this.isOnboardingCompleted,
       language: language ?? this.language,
-      paymentMethods: paymentMethods ?? this.paymentMethods,
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
+      paymentMethods: paymentMethods ?? this.paymentMethods,
     );
   }
 }

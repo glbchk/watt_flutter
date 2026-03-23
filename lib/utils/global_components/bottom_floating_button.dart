@@ -19,24 +19,34 @@ class BottomFloatingButton extends StatelessWidget {
         right: 20.0,
         bottom: 35.0,
       ),
-      child: SizedBox(
+      child: Container(
         width: double.infinity,
         height: 60.0,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: context.theme.appColors.onSecondary.withAlpha(38),
+              spreadRadius: 0,
+              blurRadius: 15,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
         child: ElevatedButton(
           onPressed: callback,
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            backgroundColor: Colors.white,
-            elevation: 8,
-            shadowColor: wattColorScheme.onSecondary.withAlpha(100),
+            backgroundColor: context.theme.appColors.background,
           ),
           child: Text(
             label,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: wattBlackColor,
+              fontSize: 18.0,
+              color: context.theme.appColors.onSurface,
             ),
           ),
         ),

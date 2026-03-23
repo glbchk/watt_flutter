@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:watt/utils/colors.dart';
+
+class SlimCardButton extends StatelessWidget {
+  final String label;
+  final String? subLabel;
+  final VoidCallback? onPressed;
+  final String? svgImage;
+  final String? pngImage;
+  final Color? iconColor;
+  final double? marginDistance;
+  final Color? textColor;
+  final Color? backgroundColor;
+
+  const SlimCardButton({
+    super.key,
+    required this.label,
+    this.subLabel,
+    this.onPressed,
+    this.svgImage,
+    this.pngImage,
+    this.iconColor,
+    this.marginDistance,
+    this.textColor,
+    this.backgroundColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 20.0,
+        top: 2.0,
+        right: 20.0,
+        bottom: 2.0,
+      ),
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Container(
+          height: 82.0,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: context.theme.appColors.onSecondary.withAlpha(32),
+                spreadRadius: 0,
+                blurRadius: 15,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Card(
+            color: context.theme.appColors.background,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ClipOval(
+                    child: Container(
+                      height: 40.0,
+                      width: 40.0,
+                      color: backgroundColor,
+                      child: svgImage != null
+                          ? Container(
+                              margin: EdgeInsets.all(marginDistance ?? 0),
+                              child: SvgPicture.asset(
+                                svgImage ?? '',
+                                colorFilter: ColorFilter.mode(
+                                  iconColor ?? context.theme.appColors.grey2,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              margin: EdgeInsets.all(marginDistance ?? 0),
+                              child: Image.asset(pngImage ?? ''),
+                            ),
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  subLabel != ''
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              subLabel ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 13,
+                                color: context.theme.appColors.grey1,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          label,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                  Spacer(),
+                  Icon(
+                    Icons.chevron_right,
+                    color: context.theme.appColors.grey2,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,3 +1,7 @@
+import 'package:watt/data/models/car_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/payment_method_model.dart';
+
 class UserEntity {
   final bool? isAnonymous;
   final String id;
@@ -5,10 +9,11 @@ class UserEntity {
   final String? email;
   final bool? isEmailVerified;
   final String? phoneNumber;
+  final bool isOnboardingCompleted;
   final String? language;
-  final List<String>? paymentMethods;
-  final List<String>? cars;
-  final List<String>? chargingStations;
+  final List<CarModel>? cars;
+  final List<ChargingStationModel>? chargingStations;
+  final List<PaymentMethodModel>? paymentMethods;
 
   UserEntity({
     this.isAnonymous,
@@ -17,6 +22,7 @@ class UserEntity {
     this.email,
     this.isEmailVerified,
     this.phoneNumber,
+    required this.isOnboardingCompleted,
     this.language,
     this.paymentMethods,
     this.cars,

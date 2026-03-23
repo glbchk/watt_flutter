@@ -2,18 +2,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watt/app_bloc_observer.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
-import 'package:watt/utils/dark_theme.dart';
-import 'package:watt/utils/light_theme.dart';
 import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
+import 'presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
+import 'presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +24,23 @@ Future<void> main() async {
 
   await initThemeMode();
 
-  Bloc.observer = AppBlocObserver();
-
   runApp(
-    BlocProvider(
-      create: (_) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (BuildContext context) =>
+              AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => OnboardingBloc(),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => ChargingStationBloc(),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => PaymentMethodBloc(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -49,7 +62,9 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
           title: 'Watt App',
           debugShowCheckedModeBanner: false,
-          theme: isDarkMode ? lightTheme : darkTheme,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
           home: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthSuccessState) {

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:watt/utils/colors.dart';
 
 class WattTextButton extends StatelessWidget {
   final VoidCallback callback;
   final String label;
-  final bool isRegister;
+  final bool? withUnderline;
   const WattTextButton({
     super.key,
     required this.callback,
     required this.label,
-    required this.isRegister,
+    this.withUnderline = false,
   });
 
   @override
@@ -17,9 +18,12 @@ class WattTextButton extends StatelessWidget {
       onPressed: callback,
       child: Text(
         label,
+
         style: TextStyle(
-          decoration: TextDecoration.underline,
-          decorationColor: Colors.blue,
+          fontSize: 15,
+          color: context.theme.appColors.primary,
+          decoration: withUnderline == true ? TextDecoration.underline : null,
+          decorationColor: context.theme.appColors.primary,
         ),
       ),
     );
