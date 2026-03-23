@@ -13,6 +13,7 @@ import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
+import 'presentation/home_page/bloc/home_cubit.dart';
 import 'presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
 
@@ -30,6 +31,9 @@ Future<void> main() async {
         BlocProvider(
           create: (BuildContext context) =>
               AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => HomeCubit(),
         ),
         BlocProvider(
           create: (BuildContext context) => OnboardingBloc(),

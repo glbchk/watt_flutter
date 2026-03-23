@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
+import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
+import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
-
-import '../../auth_page/bloc/auth_event.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -95,7 +93,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<HomeCubit, HomeState>(
       listener: (context, state) {
         if (state is AuthUnauthenticatedState) {
           Navigator.pushReplacement(
@@ -131,7 +129,7 @@ class _HomePageState extends State<HomePage> {
             ),
             IconButton(
               onPressed: () {
-                context.read<AuthBloc>().add(LogoutRequestedEvent());
+                context.read<HomeCubit>().logout();
               },
               icon: Icon(Icons.logout),
             ),
