@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/profile_page/sub_pages/property_pages/plate_number_car_details_page.dart';
+import 'package:watt/presentation/settings_pages/cars_page/sub_pages/components/plate_number_car_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';

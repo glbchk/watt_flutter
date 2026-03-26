@@ -8,6 +8,7 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/settings_pages/bloc/settings_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
@@ -31,6 +32,9 @@ Future<void> main() async {
         BlocProvider(
           create: (BuildContext context) =>
               AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider(
+          create: (BuildContext context) => SettingsCubit(),
         ),
         BlocProvider(
           create: (BuildContext context) => HomeCubit(),

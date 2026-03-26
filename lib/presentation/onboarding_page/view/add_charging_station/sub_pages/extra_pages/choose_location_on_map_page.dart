@@ -237,7 +237,7 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                 child: Column(
                   children: [
                     SearchBarWidget(
-                      onBackPressed: () {
+                      onLeadingPressed: () {
                         searchController.clear();
                         context.read<ChargingStationBloc>().add(
                           ClearAddressPropertyEvent(),

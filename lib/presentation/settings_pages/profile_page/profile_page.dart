@@ -1,0 +1,194 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/settings_pages/bloc/settings_cubit.dart';
+import 'package:watt/presentation/settings_pages/bloc/settings_state.dart';
+import 'package:watt/presentation/settings_pages/profile_page/sub_pages/edit_data_page.dart';
+import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/row_button.dart';
+import 'package:watt/utils/global_components/watt_white_button.dart';
+
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  TextEditingController controllerName = TextEditingController();
+  TextEditingController controllerPhoneNumber = TextEditingController();
+
+  @override
+  void dispose() {
+    controllerName.dispose();
+    controllerPhoneNumber.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final state = context.read<OnboardingBloc>().state;
+    controllerName.text = state.name ?? '';
+    controllerPhoneNumber.text = state.phoneNumber ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) {
+        return DefaultAppBar(
+          resizeToAvoidBottomInset: true,
+          extendBodyBehindAppBar: false,
+          appBarBackgroundColor: context.theme.appColors.transparent,
+          scaffoldBackgroundColor: context.theme.appColors.primary,
+          leading: BackButton(
+            onPressed: () {
+              // context.read<OnboardingBloc>().add(
+              //   NameVerificationEvent(value: ''),
+              // );
+              // context.read<OnboardingBloc>().add(
+              //   PhoneNumberVerificationEvent(value: ''),
+              // );
+              Navigator.of(context).pop();
+            },
+          ),
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        gradient: wattGradient,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Profile',
+                            style: TextStyle(
+                              color: context.theme.appColors.background,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                          Text(
+                            'Here you will find your information',
+                            style: TextStyle(
+                              color: context.theme.appColors.background,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 60.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: context.theme.appColors.background,
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height / 1.3,
+                      ),
+                      child: Transform.translate(
+                        offset: Offset(0, -40),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: context.theme.appColors.background,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30.0),
+                                      topRight: Radius.circular(30.0),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        RowButton(
+                                          label: 'Name',
+                                          secondLabel: 'Plate',
+                                          // hideChevron: false,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => EditDataPage(
+                                                  type: EditDataType.editName,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        RowButton(
+                                          label: 'Email',
+                                          secondLabel: 'Plate',
+                                          // hideChevron: false,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => EditDataPage(
+                                                  type: EditDataType.editEmail,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        RowButton(
+                                          label: 'Mobile',
+                                          secondLabel: 'Plate',
+                                          // hideChevron: false,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => EditDataPage(
+                                                  type: EditDataType
+                                                      .editPhoneNumber,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        SizedBox(height: 30),
+                                        WattWhiteButton(
+                                          label: 'Change password',
+                                          onPressed: () {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

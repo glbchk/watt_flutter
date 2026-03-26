@@ -5,6 +5,8 @@ class ChargingStationModel {
   final String id;
   final String? chargingStationName;
   final String? address;
+  final double? addressLatitude;
+  final double? addressLongitude;
   final String? brandName;
   final String? brandLogo;
   final String? chargingEffect;
@@ -19,6 +21,8 @@ class ChargingStationModel {
     required this.id,
     this.chargingStationName,
     this.address,
+    this.addressLatitude,
+    this.addressLongitude,
     this.brandName,
     this.brandLogo,
     this.chargingEffect,
@@ -35,6 +39,8 @@ class ChargingStationModel {
       id: json['id'],
       chargingStationName: json['charging_station_name'],
       address: json['address'],
+      addressLatitude: json['address_latitude'],
+      addressLongitude: json['address_longitude'],
       brandName: json['brand_name'],
       brandLogo: json['brand_logo'],
       chargingEffect: json['charging_effect'],
@@ -56,6 +62,8 @@ class ChargingStationModel {
       'id': id,
       'charging_station_name': chargingStationName,
       'address': address,
+      'address_latitude': addressLatitude,
+      'address_longitude': addressLongitude,
       'brand_name': brandName,
       'brand_logo': brandLogo,
       'charging_effect': chargingEffect,
@@ -72,6 +80,8 @@ class ChargingStationModel {
     String? id,
     String? chargingStationName,
     String? address,
+    double? addressLatitude,
+    double? addressLongitude,
     String? brandName,
     String? brandLogo,
     String? chargingEffect,
@@ -86,6 +96,8 @@ class ChargingStationModel {
       id: id ?? this.id,
       chargingStationName: chargingStationName ?? this.chargingStationName,
       address: address ?? this.address,
+      addressLatitude: addressLatitude ?? this.addressLatitude,
+      addressLongitude: addressLongitude ?? this.addressLongitude,
       brandName: brandName ?? this.brandName,
       brandLogo: brandLogo ?? this.brandLogo,
       chargingEffect: chargingEffect ?? this.chargingEffect,

@@ -1,8 +1,3 @@
-// enum CarModelEnum {
-//   brand = {"Audi"},
-//   model = {"Etron"},
-// }
-
 enum MockedCarBrand {
   audi,
   bmw,

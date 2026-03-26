@@ -1,50 +1,41 @@
-import 'package:watt/data/models/charging_station_model.dart';
+import 'package:geolocator/geolocator.dart';
 
-class HomeState {
+class SettingsState {
   final bool isUserAuthenticated;
   final bool isLoading;
   final bool? isLocationEnabled;
   final String? address;
-  final double? addressLatitude;
-  final double? addressLongitude;
+  final Position? addressPosition;
   final List<String>? locationSuggestions;
   final String? errorMessage;
-  final List<ChargingStationModel>? chargingStationsOnMap;
 
-  HomeState({
+  SettingsState({
     required this.isUserAuthenticated,
     this.isLoading = false,
     this.isLocationEnabled,
     this.address,
-    this.addressLatitude,
-    this.addressLongitude,
+    this.addressPosition,
     this.locationSuggestions,
     this.errorMessage,
-    this.chargingStationsOnMap,
   });
 
-  HomeState copyWith({
+  SettingsState copyWith({
     bool? isUserAuthenticated,
     bool? isLoading,
     bool? isLocationEnabled,
     String? address,
-    double? addressLatitude,
-    double? addressLongitude,
+    Position? addressPosition,
     List<String>? locationSuggestions,
     String? errorMessage,
-    List<ChargingStationModel>? chargingStationsOnMap,
   }) {
-    return HomeState(
+    return SettingsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,
       address: address ?? this.address,
-      addressLatitude: addressLatitude ?? this.addressLatitude,
-      addressLongitude: addressLongitude ?? this.addressLongitude,
+      addressPosition: addressPosition ?? this.addressPosition,
       locationSuggestions: locationSuggestions ?? this.locationSuggestions,
       errorMessage: errorMessage,
-      chargingStationsOnMap:
-          chargingStationsOnMap ?? this.chargingStationsOnMap,
     );
   }
 }

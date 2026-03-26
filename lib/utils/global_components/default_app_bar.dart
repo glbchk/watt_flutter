@@ -8,6 +8,8 @@ class DefaultAppBar extends StatelessWidget {
   final bool resizeToAvoidBottomInset;
 
   final AppBar? appBar;
+  final Widget? drawer;
+  final Color? drawerScrimColor;
   final String? title;
   final Color? titleColor;
   final FontWeight? fontWeight;
@@ -27,6 +29,8 @@ class DefaultAppBar extends StatelessWidget {
     this.extendBodyBehindAppBar,
     required this.resizeToAvoidBottomInset,
     this.appBar,
+    this.drawer,
+    this.drawerScrimColor,
     this.title,
     this.titleColor,
     this.fontWeight,
@@ -48,6 +52,8 @@ class DefaultAppBar extends StatelessWidget {
       extendBodyBehindAppBar: extendBodyBehindAppBar ?? true,
       backgroundColor:
           scaffoldBackgroundColor ?? context.theme.appColors.background,
+      drawer: drawer,
+      drawerScrimColor: drawerScrimColor,
       appBar: showAppBar
           ? (appBar ??
                 AppBar(
