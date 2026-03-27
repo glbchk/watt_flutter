@@ -3,6 +3,8 @@ import 'package:watt/utils/colors.dart';
 
 class WattWhiteButton extends StatelessWidget {
   final String label;
+  final double? width;
+  final TextScaler? textScaler;
   final VoidCallback? onPressed;
   final bool? isLoading;
   final IconData? icon;
@@ -11,6 +13,8 @@ class WattWhiteButton extends StatelessWidget {
   const WattWhiteButton({
     super.key,
     required this.label,
+    this.width,
+    this.textScaler,
     this.onPressed,
     this.isLoading,
     this.icon,
@@ -20,7 +24,7 @@ class WattWhiteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width ?? double.infinity,
       height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -36,6 +40,7 @@ class WattWhiteButton extends StatelessWidget {
       child: FilledButton.icon(
         label: Text(
           label,
+          textScaler: textScaler,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

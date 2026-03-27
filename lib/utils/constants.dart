@@ -173,7 +173,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       id: const Uuid().v4(),
-      chargingStationName: 'Norrmalm Rapid Charge',
+      chargingStationName: 'Peter’s Amp',
       address: '122 27 St W, Saskatoon, SK S7L 0J3',
       addressLatitude: 52.13555,
       addressLongitude: -106.67163,
@@ -307,6 +307,15 @@ class KMockedData {
       everyoneCanAccess: true,
     ),
   ];
+
+  // static List<MockedMapPopupValues> cardValues = [
+  //   MockedMapPopupValues('Type', 'assets/car_logos/audi.png'),
+  //   MockedMapPopupValues('BMW', 'assets/car_logos/bmw.png'),
+  //   MockedMapPopupValues(
+  //     'Tesla',
+  //     'assets/car_logos/tesla.png',
+  //   ),
+  // ];
 }
 
 class KPaymentProvidersIcons {

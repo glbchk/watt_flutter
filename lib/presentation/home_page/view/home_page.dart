@@ -8,8 +8,8 @@ import 'package:watt/presentation/home_page/view/components/app_drawer_widget.da
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_components/map_popup_widget.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,13 +28,7 @@ class _HomePageState extends State<HomePage> {
     zoom: 14,
   );
 
-  BitmapDescriptor? customIcon;
-
-  Set<Marker>? markers;
-
   GoogleMapController? _mapController;
-
-  String address = '';
 
   Set<Marker> _markers = {};
 
@@ -51,16 +45,6 @@ class _HomePageState extends State<HomePage> {
 
     for (final location in locations) {
       markers.add(
-        // Marker(
-        //   markerId: MarkerId('my_marker_id'),
-        //   position: LatLng(52.157902, -106.6701577), // Example coordinates
-        //   icon:
-        //       customIcon ??
-        //       BitmapDescriptor.defaultMarker, // Assign the custom icon
-        //   infoWindow: InfoWindow(
-        //     title: 'Custom Title',
-        //     snippet: 'Custom Snippet',
-        //   ),
         Marker(
           markerId: MarkerId(location.id),
           position: LatLng(
@@ -71,7 +55,17 @@ class _HomePageState extends State<HomePage> {
             title: location.chargingStationName,
             snippet: location.address,
           ),
-          icon: customIcon ?? BitmapDescriptor.defaultMarker, // optional
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueAzure,
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MapPopupWidget(),
+              ),
+            );
+          },
         ),
       );
     }
@@ -79,27 +73,10 @@ class _HomePageState extends State<HomePage> {
     return markers;
   }
 
-  Future<void> _setCustomMarkerIcon() async {
-    final ImageConfiguration config = createLocalImageConfiguration(
-      context,
-      size: Size(48, 48),
-    );
-    final BitmapDescriptor descriptor = await BitmapDescriptor.asset(
-      config,
-      'assets/images/custom_pin.png',
-    );
-
-    setState(() {
-      customIcon = descriptor;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _setCustomMarkerIcon().then((_) {
-      context.read<HomeCubit>().fetchMockedChargingStations();
-    });
+    context.read<HomeCubit>().fetchMockedChargingStations();
   }
 
   @override
@@ -142,9 +119,9 @@ class _HomePageState extends State<HomePage> {
         }
       },
       builder: (context, state) {
-        // if (state.chargingStationsOnMap != null && _markers.isEmpty) {
-        //   generateMarkers(state.chargingStationsOnMap ?? []);
-        // }
+        if (state.chargingStationsOnMap != null) {
+          generateMarkers(state.chargingStationsOnMap ?? []);
+        }
 
         final suggestions = state.locationSuggestions ?? [];
 
@@ -198,7 +175,6 @@ class _HomePageState extends State<HomePage> {
                     //   GoToMyLocationEvent(),
                     // );
                   }
-                  generateMarkers(state.chargingStationsOnMap ?? []);
                 },
                 markers: _markers,
                 // markers: state.addressPosition == null ? {} : _markers,
@@ -228,59 +204,27 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        if (state.address != null)
-                          Expanded(
-                            child: WattMainButton(
-                              label: 'Save',
-                              onPressed: () {
-                                // context.read<ChargingStationBloc>().add(
-                                //   SaveAddressPropertyEvent(
-                                //     state.address ?? "",
-                                //     state.addressPosition,
-                                //   ),
-                                // );
-                                searchController.clear();
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        const SizedBox(width: 15),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: context.theme.appColors.background,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: context.theme.appColors.onSecondary
-                                    .withAlpha(
-                                      38,
-                                    ),
-                                spreadRadius: 0,
-                                blurRadius: 15,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadiusGeometry.circular(5),
-                            child: IconButton(
-                              icon: const Icon(Icons.my_location),
-                              onPressed: () {
-                                context.read<HomeCubit>().logout();
-                                // context.read<ChargingStationBloc>().add(
-                                //   GoToMyLocationEvent(),
-                                // );
-
-                                // Future.delayed(
-                                //   const Duration(milliseconds: 100),
-                                //   () {
-                                //     _mapController?.showMarkerInfoWindow(
-                                //       const MarkerId('selected_point'),
-                                //     );
-                                //   },
-                                // );
-                              },
-                            ),
+                        // if (state.address != null)
+                        Expanded(
+                          child: MapPopupWidget(
+                            chargingStationName: 'Save',
+                            timeAvailability: 'Save',
+                            chargingStationAddress: 'Save',
+                            distanceToChargingStation: 'Save',
+                            plugType: 'Save',
+                            chargingEffect: 'Save',
+                            pricePerKwh: 'Save',
+                            onPressedMoreDetails: () {},
+                            onPressedToBook: () {
+                              // context.read<ChargingStationBloc>().add(
+                              //   SaveAddressPropertyEvent(
+                              //     state.address ?? "",
+                              //     state.addressPosition,
+                              //   ),
+                              // );
+                              // searchController.clear();
+                              Navigator.pop(context);
+                            },
                           ),
                         ),
                       ],
@@ -289,6 +233,76 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
+              // Positioned(
+              //   bottom: 0,
+              //   left: 0,
+              //   right: 0,
+              //   child: SafeArea(
+              //     child: Padding(
+              //       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.end,
+              //         children: [
+              //           // if (state.address != null)
+              //           Expanded(
+              //             child: MapPopupWidget(
+              //               label: 'Save',
+              //               onPressed: () {
+              //                 // context.read<ChargingStationBloc>().add(
+              //                 //   SaveAddressPropertyEvent(
+              //                 //     state.address ?? "",
+              //                 //     state.addressPosition,
+              //                 //   ),
+              //                 // );
+              //                 // searchController.clear();
+              //                 Navigator.pop(context);
+              //               },
+              //             ),
+              //           ),
+              //           const SizedBox(width: 15),
+              //           Container(
+              //             decoration: BoxDecoration(
+              //               color: context.theme.appColors.background,
+              //               borderRadius: BorderRadius.circular(30),
+              //               boxShadow: [
+              //                 BoxShadow(
+              //                   color: context.theme.appColors.onSecondary
+              //                       .withAlpha(
+              //                         38,
+              //                       ),
+              //                   spreadRadius: 0,
+              //                   blurRadius: 15,
+              //                   offset: Offset(0, 4),
+              //                 ),
+              //               ],
+              //             ),
+              //             child: ClipRRect(
+              //               borderRadius: BorderRadiusGeometry.circular(5),
+              //               child: IconButton(
+              //                 icon: const Icon(Icons.my_location),
+              //                 onPressed: () {
+              //                   context.read<HomeCubit>().logout();
+              //                   // context.read<ChargingStationBloc>().add(
+              //                   //   GoToMyLocationEvent(),
+              //                   // );
+              //
+              //                   // Future.delayed(
+              //                   //   const Duration(milliseconds: 100),
+              //                   //   () {
+              //                   //     _mapController?.showMarkerInfoWindow(
+              //                   //       const MarkerId('selected_point'),
+              //                   //     );
+              //                   //   },
+              //                   // );
+              //                 },
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Positioned(
                 top: 0,
                 left: 0,

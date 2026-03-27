@@ -25,3 +25,9 @@ class MockedCarModel {
   final MockedCarBrand brand;
   MockedCarModel(this.model, this.brand);
 }
+
+class MockedMapPopupValues {
+  final String name;
+  final String logo;
+  MockedMapPopupValues(this.name, this.logo);
+}
