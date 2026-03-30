@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/data/data_sources/google_maps_data_source.dart';
@@ -6,6 +8,12 @@ import 'package:watt/data/repositories/google_maps_repository_impl.dart';
 abstract class GoogleMapsUseCase {
   final GoogleMapsRepositoryImpl googleMapsRepository =
       GoogleMapsRepositoryImpl();
+}
+
+class GetLocationPermissionUseCase extends GoogleMapsUseCase {
+  Future<bool> execute() {
+    return googleMapsRepository.getLocationPermission();
+  }
 }
 
 class GoToMyLocationUseCase extends GoogleMapsUseCase {
@@ -41,5 +49,19 @@ class ChooseLocationOnMapUseCase extends GoogleMapsUseCase {
 class FetchLocationSuggestionsUseCase extends GoogleMapsUseCase {
   Future<List<String>> execute(String input) {
     return googleMapsRepository.fetchSuggestions(input);
+  }
+}
+
+class GetDistanceToUseCase extends GoogleMapsUseCase {
+  Future<double?> execute(
+    Position? myLocation,
+    double targetLatitude,
+    double targetLongitude,
+  ) {
+    return googleMapsRepository.getDistanceTo(
+      myLocation: myLocation,
+      targetLatitude: targetLatitude,
+      targetLongitude: targetLongitude,
+    );
   }
 }

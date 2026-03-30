@@ -20,7 +20,7 @@ class UserRepositoryImpl implements UserRepository {
       email: user.email,
       phoneNumber: user.phoneNumber,
       isOnboardingCompleted: user.isOnboardingCompleted,
-      language: user.language,
+      // language: user.language,
       paymentMethods: user.paymentMethods,
       cars: user.cars,
       chargingStations: user.chargingStations,
@@ -111,6 +111,11 @@ class UserRepositoryImpl implements UserRepository {
       ibanId,
       isReceiver,
     );
+  }
+
+  @override
+  Future<UserModel?> fetchUserData() async {
+    return await userRemoteDataSource.fetchUserData();
   }
 
   @override

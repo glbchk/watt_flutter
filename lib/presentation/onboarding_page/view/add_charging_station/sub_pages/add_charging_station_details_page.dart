@@ -287,7 +287,7 @@ class _AddChargingStationDetailsPageState
                 if (missingProperties.isNotEmpty) {
                   final missingText = missingProperties.join("\n");
 
-                  WattAlert.show(
+                  WattAlertWidget.show(
                     context: context,
                     title: 'Missing Information',
                     message:

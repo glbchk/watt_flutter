@@ -90,7 +90,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          name ?? 'John Doe',
+                          name ?? 'Joe Doe',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -181,9 +181,8 @@ class AppDrawer extends StatelessWidget {
                         SizedBox(height: 10),
 
                         _buildMenuItem(Icons.logout, 'Sign out', () {
-                          // Close drawer before logging out
-                          onPressedLogout?.call();
                           Navigator.pop(context);
+                          onPressedLogout?.call();
                         }),
                       ],
                     ),

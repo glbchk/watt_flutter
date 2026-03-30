@@ -29,24 +29,24 @@ Future<void> main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (BuildContext context) =>
-              AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider<SettingsCubit>(
+          create: (context) =>
+              SettingsCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<HomeCubit>(
+          create: (context) => HomeCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider(
-          create: (BuildContext context) => SettingsCubit(),
+          create: (context) => OnboardingBloc(),
         ),
         BlocProvider(
-          create: (BuildContext context) => HomeCubit(),
+          create: (context) => ChargingStationBloc(),
         ),
         BlocProvider(
-          create: (BuildContext context) => OnboardingBloc(),
-        ),
-        BlocProvider(
-          create: (BuildContext context) => ChargingStationBloc(),
-        ),
-        BlocProvider(
-          create: (BuildContext context) => PaymentMethodBloc(),
+          create: (context) => PaymentMethodBloc(),
         ),
       ],
       child: const MyApp(),

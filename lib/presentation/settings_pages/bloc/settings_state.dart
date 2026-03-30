@@ -1,21 +1,17 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:watt/data/models/user_model.dart';
 
 class SettingsState {
   final bool isUserAuthenticated;
   final bool isLoading;
   final bool? isLocationEnabled;
-  final String? address;
-  final Position? addressPosition;
-  final List<String>? locationSuggestions;
+  final UserModel? userData;
   final String? errorMessage;
 
   SettingsState({
     required this.isUserAuthenticated,
     this.isLoading = false,
     this.isLocationEnabled,
-    this.address,
-    this.addressPosition,
-    this.locationSuggestions,
+    this.userData,
     this.errorMessage,
   });
 
@@ -23,18 +19,15 @@ class SettingsState {
     bool? isUserAuthenticated,
     bool? isLoading,
     bool? isLocationEnabled,
-    String? address,
-    Position? addressPosition,
-    List<String>? locationSuggestions,
+    UserModel? userData,
     String? errorMessage,
+    bool clearUserData = false,
   }) {
     return SettingsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,
-      address: address ?? this.address,
-      addressPosition: addressPosition ?? this.addressPosition,
-      locationSuggestions: locationSuggestions ?? this.locationSuggestions,
+      userData: clearUserData ? null : (userData ?? this.userData),
       errorMessage: errorMessage,
     );
   }

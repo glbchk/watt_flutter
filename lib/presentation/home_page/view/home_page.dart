@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
+import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
+import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -32,15 +36,17 @@ class _HomePageState extends State<HomePage> {
 
   Set<Marker> _markers = {};
 
-  Future<void> generateMarkers(List<ChargingStationModel> stations) async {
-    final markers = await buildMarkers(stations);
+  Future<void> generateMarkers(
+    List<ChargingStationModel> stations,
+  ) async {
+    final markers = buildMarkers(stations);
 
     setState(() {
       _markers = markers;
     });
   }
 
-  Future<Set<Marker>> buildMarkers(List<ChargingStationModel> locations) async {
+  Set<Marker> buildMarkers(List<ChargingStationModel> locations) {
     final Set<Marker> markers = {};
 
     for (final location in locations) {
@@ -51,19 +57,42 @@ class _HomePageState extends State<HomePage> {
             location.addressLatitude ?? 0.0,
             location.addressLongitude ?? 0.0,
           ),
-          infoWindow: InfoWindow(
-            title: location.chargingStationName,
-            snippet: location.address,
-          ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueAzure,
           ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MapPopupWidget(),
-              ),
+          onTap: () async {
+            await context.read<HomeCubit>().getDistanceToChargingStation(
+              location.addressLatitude ?? 0.0,
+              location.addressLongitude ?? 0.0,
+            );
+
+            if (!context.mounted) return;
+
+            final double? distanceKm = context
+                .read<HomeCubit>()
+                .state
+                .stationDistance;
+
+            if (distanceKm != null) {
+              final latLng = LatLng(
+                location.addressLatitude ?? 0.0,
+                location.addressLongitude ?? 0.0,
+              );
+
+              _mapController?.animateCamera(
+                CameraUpdate.newLatLngZoom(latLng, 15),
+              );
+            }
+            ;
+
+            MapPopupWidget.show(
+              context: context,
+              station: location,
+              onPressedMoreDetails: () {},
+              onPressedToBook: () {},
+              distanceToChargingStation: distanceKm != null
+                  ? '${distanceKm.toStringAsFixed(2)} km'
+                  : 'Unknown',
             );
           },
         ),
@@ -76,7 +105,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    context.read<HomeCubit>().getLocationPermission();
     context.read<HomeCubit>().fetchMockedChargingStations();
+    context.read<HomeCubit>().fetchUserData();
   }
 
   @override
@@ -90,6 +121,18 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
+        if (!state.isUserAuthenticated) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => AuthPage()),
+            (route) => false,
+          );
+        }
+
+        if (state.chargingStationsOnMap != null) {
+          generateMarkers(state.chargingStationsOnMap ?? []);
+        }
+
         if (state.address != null) {
           final latLng = LatLng(
             state.addressLatitude ?? 0.0,
@@ -117,13 +160,22 @@ class _HomePageState extends State<HomePage> {
                 });
           }
         }
+
+        // if (state.myLocation != null && state.stationDistance != null) {
+        //   final latLng = LatLng(
+        //     state.myLocation!.latitude,
+        //     state.myLocation!.longitude,
+        //   );
+        //
+        //   _mapController?.animateCamera(
+        //     CameraUpdate.newLatLngZoom(latLng, 15),
+        //   );
+        // }
       },
       builder: (context, state) {
-        if (state.chargingStationsOnMap != null) {
-          generateMarkers(state.chargingStationsOnMap ?? []);
-        }
-
         final suggestions = state.locationSuggestions ?? [];
+
+        final user = state.userData;
 
         return DefaultAppBar(
           showAppBar: false,
@@ -131,14 +183,28 @@ class _HomePageState extends State<HomePage> {
           extendBodyBehindAppBar: true,
           scaffoldBackgroundColor: context.theme.appColors.transparent,
           drawer: AppDrawer(
+            name: (user?.name != null && user!.name!.isNotEmpty)
+                ? user.name
+                : 'Name not found',
+            email: (user?.email != null && user!.email!.isNotEmpty)
+                ? user.email
+                : 'Email not found',
             onPressedLogout: () {
-              context.read<HomeCubit>().logout();
+              context.read<AuthBloc>().add(LogoutRequestedEvent());
             },
-            onPressedProfile: () {
-              Navigator.push(
+            onPressedProfile: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ProfilePage(),
+                ),
+              );
+            },
+            onPressedBookings: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MyBookingsPage(),
                 ),
               );
             },
@@ -194,45 +260,7 @@ class _HomePageState extends State<HomePage> {
                 // ),
               ),
 
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        // if (state.address != null)
-                        Expanded(
-                          child: MapPopupWidget(
-                            chargingStationName: 'Save',
-                            timeAvailability: 'Save',
-                            chargingStationAddress: 'Save',
-                            distanceToChargingStation: 'Save',
-                            plugType: 'Save',
-                            chargingEffect: 'Save',
-                            pricePerKwh: 'Save',
-                            onPressedMoreDetails: () {},
-                            onPressedToBook: () {
-                              // context.read<ChargingStationBloc>().add(
-                              //   SaveAddressPropertyEvent(
-                              //     state.address ?? "",
-                              //     state.addressPosition,
-                              //   ),
-                              // );
-                              // searchController.clear();
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
+              // if (state.address != null)
               // Positioned(
               //   bottom: 0,
               //   left: 0,
@@ -243,66 +271,74 @@ class _HomePageState extends State<HomePage> {
               //       child: Row(
               //         mainAxisAlignment: MainAxisAlignment.end,
               //         children: [
-              //           // if (state.address != null)
-              //           Expanded(
-              //             child: MapPopupWidget(
-              //               label: 'Save',
-              //               onPressed: () {
-              //                 // context.read<ChargingStationBloc>().add(
-              //                 //   SaveAddressPropertyEvent(
-              //                 //     state.address ?? "",
-              //                 //     state.addressPosition,
-              //                 //   ),
-              //                 // );
-              //                 // searchController.clear();
-              //                 Navigator.pop(context);
-              //               },
-              //             ),
-              //           ),
-              //           const SizedBox(width: 15),
-              //           Container(
-              //             decoration: BoxDecoration(
-              //               color: context.theme.appColors.background,
-              //               borderRadius: BorderRadius.circular(30),
-              //               boxShadow: [
-              //                 BoxShadow(
-              //                   color: context.theme.appColors.onSecondary
-              //                       .withAlpha(
-              //                         38,
-              //                       ),
-              //                   spreadRadius: 0,
-              //                   blurRadius: 15,
-              //                   offset: Offset(0, 4),
-              //                 ),
-              //               ],
-              //             ),
-              //             child: ClipRRect(
-              //               borderRadius: BorderRadiusGeometry.circular(5),
-              //               child: IconButton(
-              //                 icon: const Icon(Icons.my_location),
-              //                 onPressed: () {
-              //                   context.read<HomeCubit>().logout();
-              //                   // context.read<ChargingStationBloc>().add(
-              //                   //   GoToMyLocationEvent(),
-              //                   // );
-              //
-              //                   // Future.delayed(
-              //                   //   const Duration(milliseconds: 100),
-              //                   //   () {
-              //                   //     _mapController?.showMarkerInfoWindow(
-              //                   //       const MarkerId('selected_point'),
-              //                   //     );
-              //                   //   },
-              //                   // );
-              //                 },
-              //               ),
-              //             ),
-              //           ),
+              //         ...stations.map((station) {
+              //           return MapPopupWidget.show(context: context, station: station),
+              //           );}).toList(),
               //         ],
               //       ),
               //     ),
               //   ),
               // ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: context.theme.appColors.background,
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: context.theme.appColors.onSecondary
+                                    .withAlpha(
+                                      38,
+                                    ),
+                                spreadRadius: 0,
+                                blurRadius: 15,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadiusGeometry.circular(5),
+                            child: IconButton(
+                              icon: const Icon(Icons.my_location),
+                              onPressed: () async {
+                                await context
+                                    .read<HomeCubit>()
+                                    .goToMyLocation();
+
+                                final myLocation = context
+                                    .read<HomeCubit>()
+                                    .state
+                                    .myLocation;
+
+                                if (myLocation != null) {
+                                  final latLng = LatLng(
+                                    myLocation.latitude,
+                                    myLocation.longitude,
+                                  );
+
+                                  _mapController?.animateCamera(
+                                    CameraUpdate.newLatLngZoom(latLng, 15),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
               Positioned(
                 top: 0,
                 left: 0,

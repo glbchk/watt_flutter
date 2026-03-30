@@ -7,7 +7,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
-class MapPopupWidget extends StatelessWidget {
+class BookingCardWidget extends StatelessWidget {
   final String? chargingStationName;
   final String? timeAvailability;
   final String? chargingStationAddress;
@@ -18,7 +18,7 @@ class MapPopupWidget extends StatelessWidget {
   final VoidCallback? onPressedMoreDetails;
   final VoidCallback? onPressedToBook;
 
-  const MapPopupWidget({
+  const BookingCardWidget({
     super.key,
     this.chargingStationName,
     this.timeAvailability,
@@ -58,7 +58,7 @@ class MapPopupWidget extends StatelessWidget {
             //   currentError = state.forgotPasswordError;
             // }
 
-            return MapPopupWidget(
+            return BookingCardWidget(
               chargingStationName: station.chargingStationName,
               timeAvailability:
                   "${station.availableHours?.first.startTime}-${station.availableHours?.first.endTime}",
@@ -82,7 +82,7 @@ class MapPopupWidget extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       child: Container(
         // width: double.infinity,
-        height: 320,
+        height: 440,
         decoration: BoxDecoration(
           color: context.theme.appColors.background,
           borderRadius: BorderRadius.circular(30),
@@ -319,26 +319,29 @@ class MapPopupWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
                 children: [
-                  Expanded(
-                    child: WattWhiteButton(
-                      label: 'More details',
-                      textScaler: TextScaler.linear(0.9),
-                      onPressed: () {
-                        onPressedMoreDetails?.call();
-                      },
-                    ),
+                  WattWhiteButton(
+                    label: 'Reject',
+                    textColor: context.theme.appColors.error,
+                    textScaler: TextScaler.linear(0.9),
+                    onPressed: () {
+                      onPressedMoreDetails?.call();
+                    },
                   ),
                   SizedBox(width: 10),
-                  Expanded(
-                    child: WattMainButton(
-                      label: 'Book',
-                      onPressed: () {
-                        onPressedToBook?.call();
-                      },
-                    ),
+                  WattMainButton(
+                    label: 'Accept',
+                    onPressed: () {
+                      onPressedToBook?.call();
+                    },
+                  ),
+                  WattWhiteButton(
+                    label: 'Contact user',
+                    textScaler: TextScaler.linear(0.9),
+                    onPressed: () {
+                      onPressedMoreDetails?.call();
+                    },
                   ),
                 ],
               ),

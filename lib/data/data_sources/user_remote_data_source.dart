@@ -226,6 +226,23 @@ class UserRemoteDataSource {
     }
   }
 
+  Future<UserModel?> fetchUserData() async {
+    User? user = auth.currentUser;
+    if (user == null) return null;
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+
+    if (doc.exists && doc.data() != null) {
+      final userModel = UserModel.fromJson(doc.data()!);
+
+      print("DEBUG: Firestore Data: ${doc.data()}");
+
+      return userModel;
+    }
+
+    return null;
+  }
+
   Future<void> deleteUser() async {
     User? user = auth.currentUser;
     await firestore

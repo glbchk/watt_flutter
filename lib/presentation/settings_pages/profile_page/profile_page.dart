@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/settings_pages/bloc/settings_cubit.dart';
 import 'package:watt/presentation/settings_pages/bloc/settings_state.dart';
 import 'package:watt/presentation/settings_pages/profile_page/sub_pages/edit_data_page.dart';
@@ -17,29 +17,49 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  TextEditingController controllerName = TextEditingController();
-  TextEditingController controllerPhoneNumber = TextEditingController();
-
-  @override
-  void dispose() {
-    controllerName.dispose();
-    controllerPhoneNumber.dispose();
-    super.dispose();
-  }
-
   @override
   void initState() {
     super.initState();
 
-    final state = context.read<OnboardingBloc>().state;
-    controllerName.text = state.name ?? '';
-    controllerPhoneNumber.text = state.phoneNumber ?? '';
+    context.read<SettingsCubit>().fetchUserData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
+    return BlocConsumer<SettingsCubit, SettingsState>(
+      listener: (context, state) {
+        if (!state.isUserAuthenticated) {
+          context.read<SettingsCubit>().logout();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => AuthPage()),
+            (route) => false,
+          );
+        }
+      },
       builder: (context, state) {
+        print(state.userData?.name);
+        print(state.userData?.email);
+        print(state.userData);
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (state.userData == null) {
+          return const Scaffold(
+            body: Center(child: Text('No user data')),
+          );
+        }
+
+        final user = state.userData;
+
         return DefaultAppBar(
           resizeToAvoidBottomInset: true,
           extendBodyBehindAppBar: false,
@@ -123,7 +143,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       children: [
                                         RowButton(
                                           label: 'Name',
-                                          secondLabel: 'Plate',
+                                          secondLabel:
+                                              user?.name ?? 'No name found',
                                           // hideChevron: false,
                                           onPressed: () {
                                             Navigator.push(
@@ -138,7 +159,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ),
                                         RowButton(
                                           label: 'Email',
-                                          secondLabel: 'Plate',
+                                          secondLabel:
+                                              user?.email ?? 'No email found',
                                           // hideChevron: false,
                                           onPressed: () {
                                             Navigator.push(
@@ -153,7 +175,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ),
                                         RowButton(
                                           label: 'Mobile',
-                                          secondLabel: 'Plate',
+                                          secondLabel:
+                                              user?.phoneNumber ??
+                                              'No phone number found',
                                           // hideChevron: false,
                                           onPressed: () {
                                             Navigator.push(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_state.dart';
@@ -192,12 +194,7 @@ class OnboardingPage extends StatelessWidget {
           bottomNavigationBar: BottomFloatingButton(
             label: 'Complete later',
             callback: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddNameAndPhoneNumberPage(),
-                ),
-              );
+              context.read<AuthBloc>().add(CompleteOnboardingEvent());
             },
           ),
         );

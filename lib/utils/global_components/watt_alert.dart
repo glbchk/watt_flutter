@@ -7,7 +7,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
-class WattAlert extends StatelessWidget {
+class WattAlertWidget extends StatelessWidget {
   final String? svg;
   final String title;
   final String? message;
@@ -17,7 +17,7 @@ class WattAlert extends StatelessWidget {
   final String? buttonLabel;
   final VoidCallback? onConfirm;
 
-  const WattAlert({
+  const WattAlertWidget({
     super.key,
     this.svg,
     required this.title,
@@ -56,7 +56,7 @@ class WattAlert extends StatelessWidget {
                 currentError = state.forgotPasswordError;
               }
 
-              return WattAlert(
+              return WattAlertWidget(
                 svg: svg,
                 title: title,
                 message: message,

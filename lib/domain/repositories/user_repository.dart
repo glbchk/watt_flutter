@@ -1,6 +1,7 @@
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 abstract class UserRepository {
@@ -22,5 +23,6 @@ abstract class UserRepository {
     String ibanId,
     bool isReceiver,
   );
+  Future<UserModel?> fetchUserData();
   Future<void> deleteUser();
 }
