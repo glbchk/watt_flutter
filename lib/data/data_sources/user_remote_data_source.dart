@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -241,6 +242,59 @@ class UserRemoteDataSource {
     }
 
     return null;
+  }
+
+  Future<void> addBooking(BookingModel booking) async {
+    User? user = auth.currentUser;
+    await firestore.collection("users").doc(user?.uid).update({
+      'booking': FieldValue.arrayUnion([booking.toJson()]),
+    });
+  }
+
+  Future<void> updateBookingStage(
+    String bookingId,
+    BookingStatus status,
+  ) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> bookingsData =
+        currentUserData.data()?['bookings'] ?? [];
+    List<BookingModel> bookingsList = bookingsData
+        .map((json) => BookingModel.fromJson(json))
+        .toList();
+
+    int index = bookingsList.indexWhere(
+      (booking) => booking.bookingId == bookingId,
+    );
+
+    if (index != -1) {
+      final neededBooking = bookingsList[index];
+
+      bookingsList[index] = neededBooking.copyWith(
+        status: status,
+      );
+
+      await docRef.update({
+        'payment_methods': bookingsList
+            .map((booking) => booking.toJson())
+            .toList(),
+      });
+    }
+  }
+
+  Future<void> deleteBooking(String bookingId) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> bookingsData =
+        currentUserData.data()?['bookings'] ?? [];
+
+    bookingsData.removeWhere((booking) => booking['id'] == bookingId);
+
+    await docRef.update({'bookings': bookingsData});
   }
 
   Future<void> deleteUser() async {

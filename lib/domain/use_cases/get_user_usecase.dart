@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -99,6 +100,24 @@ class UpdateDefaultReceivingEarningsUseCase extends UserUseCase {
 class GetUserDataUseCase extends UserUseCase {
   Future<UserModel?> execute() {
     return userRepository.fetchUserData();
+  }
+}
+
+class AddBookingUseCase extends UserUseCase {
+  Future execute(BookingModel booking) {
+    return userRepository.addBooking(booking);
+  }
+}
+
+class UpdateBookingUseCase extends UserUseCase {
+  Future execute(String bookingId, BookingStatus status) {
+    return userRepository.updateBookingStage(bookingId, status);
+  }
+}
+
+class DeleteBookingUseCase extends UserUseCase {
+  Future execute(String bookingId) {
+    return userRepository.deleteBooking(bookingId);
   }
 }
 

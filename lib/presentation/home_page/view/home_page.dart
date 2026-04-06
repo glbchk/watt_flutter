@@ -8,7 +8,9 @@ import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/charging_station_expanded_details_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
+import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(52.157902, -106.6701577), // Example: Saskatoon
-    zoom: 14,
+    zoom: 13,
   );
 
   GoogleMapController? _mapController;
@@ -58,9 +60,13 @@ class _HomePageState extends State<HomePage> {
             location.addressLongitude ?? 0.0,
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueAzure,
+            location.type == ChargingStationType.private
+                ? BitmapDescriptor.hueAzure
+                : BitmapDescriptor.hueGreen,
           ),
           onTap: () async {
+            final state = context.read<HomeCubit>().state;
+
             await context.read<HomeCubit>().getDistanceToChargingStation(
               location.addressLatitude ?? 0.0,
               location.addressLongitude ?? 0.0,
@@ -83,17 +89,64 @@ class _HomePageState extends State<HomePage> {
                 CameraUpdate.newLatLngZoom(latLng, 15),
               );
             }
-            ;
 
-            MapPopupWidget.show(
-              context: context,
-              station: location,
-              onPressedMoreDetails: () {},
-              onPressedToBook: () {},
-              distanceToChargingStation: distanceKm != null
-                  ? '${distanceKm.toStringAsFixed(2)} km'
-                  : 'Unknown',
-            );
+            if (location.type == ChargingStationType.private) {
+              print(location.stationStatus?.label);
+              MapPopupWidget.show(
+                context: context,
+                station: location,
+                onPressedMoreDetails: () {
+                  context.read<HomeCubit>().bookingStage();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChargingStationExpandedDetailsPage(
+                        type: location.type ?? ChargingStationType.private,
+                        station: location,
+                      ),
+                    ),
+                  );
+                },
+                onPressedToBook: () {
+                  context.read<HomeCubit>().bookingStage();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChargingStationExpandedDetailsPage(
+                        type: location.type ?? ChargingStationType.private,
+                        station: location,
+                      ),
+                    ),
+                  );
+                },
+                distanceToChargingStation: distanceKm != null
+                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    : 'Unknown',
+                stationStatus: location.stationStatus?.label,
+              );
+            } else {
+              print(location.stationStatus?.label);
+              MapPopupWidget.show(
+                context: context,
+                station: location,
+                onPressedPublicCharger: () {
+                  context.read<HomeCubit>().publicChargerStage();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ChargingStationExpandedDetailsPage(
+                        type: location.type ?? ChargingStationType.public,
+                        station: location,
+                      ),
+                    ),
+                  );
+                },
+                distanceToChargingStation: distanceKm != null
+                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    : 'Unknown',
+                stationStatus: location.stationStatus?.label,
+              );
+            }
           },
         ),
       );
@@ -205,6 +258,30 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => MyBookingsPage(),
+                ),
+              );
+            },
+            onPressedMyChargings: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (_) => ChargingStationExpandedDetailsPage(),
+              //   ),
+              // );
+            },
+            onPressedMyCars: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MyCarsPage(
+                    // car: CarModel(
+                    //   id: '141',
+                    //   plateNumber: 'AAA111',
+                    //   brandName: KMockedData.cars[2].name,
+                    //   carModel: 'Model S',
+                    //   brandLogo: KMockedData.cars[2].logo,
+                    // ),
+                  ),
                 ),
               );
             },

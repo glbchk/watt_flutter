@@ -1,24 +1,34 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_requested_widget.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
 
-  final FetchMockedChargingStationsUseCase fetchMockedChargingStationsUseCase =
-      FetchMockedChargingStationsUseCase();
+  final FetchAddedByUsersMockedChargingStationsUseCase
+  fetchAddedByUsersMockedChargingStationsUseCase =
+      FetchAddedByUsersMockedChargingStationsUseCase();
+  final FetchPublicMockedChargingStationsUseCase
+  fetchPublicMockedChargingStationsUseCase =
+      FetchPublicMockedChargingStationsUseCase();
   final GetLocationPermissionUseCase getLocationPermissionUseCase =
       GetLocationPermissionUseCase();
   final GoToMyLocationUseCase goToMyLocationUseCase = GoToMyLocationUseCase();
   final GetDistanceToUseCase getDistanceToUseCase = GetDistanceToUseCase();
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
+  final AddBookingUseCase addBookingUseCase = AddBookingUseCase();
+  final UpdateBookingUseCase updateBookingUseCase = UpdateBookingUseCase();
+  final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
 
   HomeCubit({required this.authBloc})
     : super(HomeState(isUserAuthenticated: true, isLoading: true)) {
@@ -100,13 +110,19 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> fetchMockedChargingStations() async {
     try {
-      final chargingStations = await fetchMockedChargingStationsUseCase
-          .execute();
-      if (chargingStations.isNotEmpty) {
+      final addedByUsersChargingStations =
+          await fetchAddedByUsersMockedChargingStationsUseCase.execute();
+      final publicChargingStations =
+          await fetchPublicMockedChargingStationsUseCase.execute();
+      final List<ChargingStationModel> chargingStationsOnMap = [];
+      chargingStationsOnMap.addAll(addedByUsersChargingStations);
+      chargingStationsOnMap.addAll(publicChargingStations);
+
+      if (chargingStationsOnMap.isNotEmpty) {
         emit(
           state.copyWith(
             isLoading: false,
-            chargingStationsOnMap: chargingStations,
+            chargingStationsOnMap: chargingStationsOnMap,
           ),
         );
       } else {
@@ -204,6 +220,88 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     }
+  }
+
+  Future<void> bookingStage() async {
+    emit(
+      state.copyWith(
+        stage: ReservationStage.booking,
+      ),
+    );
+  }
+
+  void toggleSlot(String slot) {
+    final newSet = Set<String>.from(state.selectedSlots);
+
+    if (newSet.contains(slot)) {
+      newSet.remove(slot);
+    } else {
+      newSet.add(slot);
+    }
+
+    emit(state.copyWith(selectedSlots: newSet, errorTimeNotChosen: () => null));
+  }
+
+  Future<void> timeIsNotChosen() async {
+    if (state.selectedSlots.isEmpty) {
+      emit(
+        state.copyWith(
+          stage: ReservationStage.booking,
+          errorTimeNotChosen: () => "The time wasn't chosen!",
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          errorTimeNotChosen: null,
+        ),
+      );
+    }
+  }
+
+  Future<void> reservationRequestedStage(BookingModel booking) async {
+    await addBookingUseCase.execute(booking);
+
+    final List<BookingModel> bookings = [];
+    bookings.add(booking);
+
+    emit(
+      state.copyWith(
+        stage: ReservationStage.reservationRequested,
+        errorTimeNotChosen: null,
+        bookings: bookings,
+      ),
+    );
+  }
+
+  Future<void> bookedStage(String bookingId, BookingModel booking) async {
+    await updateBookingUseCase.execute(bookingId, booking.status);
+
+    final List<BookingModel> bookings = [];
+    bookings.add(booking);
+
+    emit(
+      state.copyWith(
+        stage: ReservationStage.booked,
+        bookings: bookings,
+      ),
+    );
+  }
+
+  Future<void> chargingStage() async {
+    emit(
+      state.copyWith(
+        stage: ReservationStage.charging,
+      ),
+    );
+  }
+
+  Future<void> publicChargerStage() async {
+    emit(
+      state.copyWith(
+        stage: ReservationStage.publicCharger,
+      ),
+    );
   }
 
   // Future<void> fetchUserData() async {

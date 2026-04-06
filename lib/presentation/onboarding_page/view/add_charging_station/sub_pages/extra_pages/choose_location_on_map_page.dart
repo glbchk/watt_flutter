@@ -32,8 +32,8 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
   bool showSuggestions = false;
 
   static const CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(51.5074, -0.1278), // Example: London
-    zoom: 12,
+    target: LatLng(52.157902, -106.6701577), // Example: Saskatoon
+    zoom: 13,
   );
 
   GoogleMapController? _mapController;
@@ -51,10 +51,12 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChargingStationBloc, ChargingStationState>(
       listener: (context, state) {
-        if (state.addressPosition != null && state.address != null) {
+        if (state.addressLatitude != null &&
+            state.addressLongitude != null &&
+            state.address != null) {
           final latLng = LatLng(
-            state.addressPosition?.latitude ?? 0.0,
-            state.addressPosition?.longitude ?? 0.0,
+            state.addressLatitude ?? 0.0,
+            state.addressLongitude ?? 0.0,
           );
 
           if (searchController.text != state.address) {
@@ -91,11 +93,13 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
           body: Stack(
             children: [
               GoogleMap(
-                initialCameraPosition: state.addressPosition != null
+                initialCameraPosition:
+                    state.addressLatitude != null &&
+                        state.addressLongitude != null
                     ? CameraPosition(
                         target: LatLng(
-                          state.addressPosition?.latitude ?? 0.0,
-                          state.addressPosition?.longitude ?? 0.0,
+                          state.addressLatitude ?? 0.0,
+                          state.addressLongitude ?? 0.0,
                         ),
                         zoom: 15,
                       )
@@ -125,14 +129,16 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                     );
                   }
                 },
-                markers: state.addressPosition == null
+                markers:
+                    state.addressLatitude != null &&
+                        state.addressLongitude != null
                     ? {}
                     : {
                         Marker(
                           markerId: const MarkerId('selected_point'),
                           position: LatLng(
-                            state.addressPosition?.latitude ?? 0.0,
-                            state.addressPosition?.longitude ?? 0.0,
+                            state.addressLatitude ?? 0.0,
+                            state.addressLongitude ?? 0.0,
                           ),
                           infoWindow: InfoWindow(
                             title: state.address,
@@ -162,7 +168,8 @@ class _ChooseLocationOnMapPageState extends State<ChooseLocationOnMapPage> {
                                 context.read<ChargingStationBloc>().add(
                                   SaveAddressPropertyEvent(
                                     state.address ?? "",
-                                    state.addressPosition,
+                                    state.addressLatitude,
+                                    state.addressLongitude,
                                   ),
                                 );
                                 searchController.clear();

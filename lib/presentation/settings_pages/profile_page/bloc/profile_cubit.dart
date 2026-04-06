@@ -5,17 +5,17 @@ import 'package:watt/domain/use_cases/get_auth_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
-import 'package:watt/presentation/settings_pages/bloc/settings_state.dart';
+import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_state.dart';
 
-class SettingsCubit extends Cubit<SettingsState> {
+class ProfileCubit extends Cubit<ProfileState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
 
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
 
-  SettingsCubit({required this.authBloc})
-    : super(SettingsState(isUserAuthenticated: true, isLoading: true)) {
+  ProfileCubit({required this.authBloc})
+    : super(ProfileState(isUserAuthenticated: true, isLoading: true)) {
     authSubscription = authBloc.stream.listen((authState) {
       if (authState is AuthSuccessState) {
         emit(state.copyWith(isUserAuthenticated: true));

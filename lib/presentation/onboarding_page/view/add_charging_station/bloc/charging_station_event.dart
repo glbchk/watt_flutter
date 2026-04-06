@@ -1,4 +1,3 @@
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -55,11 +54,13 @@ class FetchLocationSuggestionsEvent extends ChargingStationEvent {
 
 class SaveAddressPropertyEvent extends ChargingStationEvent {
   final String value;
-  final Position? addressPosition;
+  final double? addressLatitude;
+  final double? addressLongitude;
 
   SaveAddressPropertyEvent(
     this.value,
-    this.addressPosition,
+    this.addressLatitude,
+    this.addressLongitude,
   );
 }
 

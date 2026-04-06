@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
-import 'package:watt/presentation/settings_pages/bloc/settings_cubit.dart';
-import 'package:watt/presentation/settings_pages/bloc/settings_state.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/components/booking_card_widget.dart';
+import 'package:watt/presentation/settings_pages/bookings_page/components/past_booking_card_widget.dart';
+import 'package:watt/presentation/settings_pages/bookings_page/sub_pages/past_booking_details_page.dart';
+import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
+import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 
@@ -19,7 +21,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
   void initState() {
     super.initState();
 
-    context.read<SettingsCubit>().fetchUserData();
+    context.read<ProfileCubit>().fetchUserData();
   }
 
   @override
@@ -29,10 +31,10 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SettingsCubit, SettingsState>(
+    return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
         if (!state.isUserAuthenticated) {
-          context.read<SettingsCubit>().logout();
+          context.read<ProfileCubit>().logout();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => AuthPage()),
@@ -63,154 +65,151 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
           child: DefaultAppBar(
             resizeToAvoidBottomInset: true,
             extendBodyBehindAppBar: false,
-            appBarBackgroundColor: context.theme.appColors.transparent,
-            scaffoldBackgroundColor: context.theme.appColors.primary,
-            leading: BackButton(
-              onPressed: () {
-                // context.read<OnboardingBloc>().add(
-                //   NameVerificationEvent(value: ''),
-                // );
-                // context.read<OnboardingBloc>().add(
-                //   PhoneNumberVerificationEvent(value: ''),
-                // );
-                Navigator.of(context).pop();
-              },
-            ),
-            body: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          gradient: wattGradient,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Bookings',
-                              style: TextStyle(
-                                color: context.theme.appColors.background,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 28,
-                              ),
+            showAppBar: false,
+            // appBarBackgroundColor: context.theme.appColors.transparent,
+            // scaffoldBackgroundColor: context.theme.appColors.primary,
+            // leading: BackButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            // ),
+            body: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: 380.0,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: wattGradient,
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 60,
                             ),
-                            Text(
-                              'Here you will find your information',
-                              style: TextStyle(
-                                color: context.theme.appColors.background,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 15,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 64),
+                                Text(
+                                  'Bookings',
+                                  style: TextStyle(
+                                    color: context.theme.appColors.background,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28,
+                                  ),
+                                ),
+                                Text(
+                                  'Here you can see all bookings of your charger',
+                                  style: TextStyle(
+                                    color: context.theme.appColors.background,
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 60.0,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                      Container(
+                      leading: BackButton(
                         color: context.theme.appColors.background,
-                        constraints: BoxConstraints(
-                          minHeight: MediaQuery.of(context).size.height / 1.3,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      pinned: true,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 210,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.theme.appColors.background,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0,
+                          ),
+                          child: SizedBox(
+                            height: 64.0,
+                            child: TabBar(
+                              onTap: (index) {
+                                if (index == 0) {
+                                  print("Switching to Upcoming");
+                                } else {
+                                  print("Switching to Past");
+                                }
+                              },
+                              tabAlignment: TabAlignment.fill,
+                              labelColor: context.theme.appColors.primary,
+                              unselectedLabelColor:
+                                  context.theme.appColors.grey1,
+                              indicatorColor: const Color(0xFF007AFF),
+                              indicatorWeight: 2.0,
+                              dividerColor: context.theme.appColors.grey1,
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              labelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              unselectedLabelStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                              tabs: const [
+                                Tab(child: Text('Upcoming')),
+                                Tab(child: Text('Past')),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Transform.translate(
-                          offset: Offset(0, -40),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: TabBarView(
                             children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: context.theme.appColors.background,
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(30.0),
-                                        topRight: Radius.circular(30.0),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 10.0,
-                                            left: 20.0,
-                                            right: 20.0,
-                                          ),
-                                          child: TabBar(
-                                            labelColor: const Color(
-                                              0xFF007AFF,
-                                            ), // Active blue text
-                                            unselectedLabelColor: Colors
-                                                .grey
-                                                .shade400, // Inactive grey text
-                                            indicatorColor: const Color(
-                                              0xFF007AFF,
-                                            ), // Thick blue underline
-                                            indicatorWeight:
-                                                3.0, // Thickness of the blue line
-                                            dividerColor: Colors
-                                                .grey
-                                                .shade300, // The full-width thin grey line
-                                            indicatorSize: TabBarIndicatorSize
-                                                .tab, // Stretches indicator across the whole tab
-                                            labelStyle: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                            unselectedLabelStyle:
-                                                const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                            tabs: const [
-                                              Tab(text: 'Upcoming'),
-                                              Tab(text: 'Past'),
-                                            ],
-                                          ),
+                              ListView.builder(
+                                padding: EdgeInsets.zero,
+                                itemCount: 1,
+                                itemBuilder: (context, index) {
+                                  return BookingCardWidget();
+                                },
+                              ),
+                              ListView.builder(
+                                padding: const EdgeInsets.only(top: 20),
+                                itemCount: 5,
+                                itemBuilder: (context, index) {
+                                  return PastBookingCardWidget(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              PastBookingDetailsPage(),
                                         ),
-                                        SizedBox(
-                                          height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.7,
-                                          child: TabBarView(
-                                            children: [
-                                              ListView.builder(
-                                                padding: const EdgeInsets.only(
-                                                  top: 5,
-                                                ),
-                                                itemCount: 1,
-                                                itemBuilder: (context, index) {
-                                                  return BookingCardWidget();
-                                                },
-                                              ),
-
-                                              // Content for "Past"
-                                              const Center(
-                                                child: Text(
-                                                  'No past bookings.',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(height: 30),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                      );
+                                    },
+                                  );
+                                },
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

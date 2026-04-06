@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -14,6 +15,7 @@ class UserModel {
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
   final List<PaymentMethodModel>? paymentMethods;
+  final List<BookingModel>? bookings;
 
   UserModel({
     this.isAnonymous,
@@ -26,6 +28,7 @@ class UserModel {
     this.cars,
     this.chargingStations,
     this.paymentMethods,
+    this.bookings,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -69,6 +72,13 @@ class UserModel {
               )
               .toList() ??
           [],
+      bookings:
+          (json['bookings'] as List<dynamic>?)
+              ?.map(
+                (item) => BookingModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -84,6 +94,7 @@ class UserModel {
       'cars': cars?.map((c) => c.toJson()).toList(),
       'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
       'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
+      'bookings': bookings?.map((b) => b.toJson()).toList(),
     };
   }
 
@@ -99,6 +110,7 @@ class UserModel {
       cars: entity.cars ?? [],
       chargingStations: entity.chargingStations ?? [],
       paymentMethods: entity.paymentMethods ?? [],
+      bookings: entity.bookings ?? [],
     );
   }
 
@@ -113,6 +125,7 @@ class UserModel {
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
     List<PaymentMethodModel>? paymentMethods,
+    List<BookingModel>? bookings,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -126,6 +139,7 @@ class UserModel {
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
       paymentMethods: paymentMethods ?? this.paymentMethods,
+      bookings: bookings ?? this.bookings,
     );
   }
 }

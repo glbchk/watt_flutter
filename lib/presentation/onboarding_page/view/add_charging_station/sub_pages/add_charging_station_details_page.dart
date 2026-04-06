@@ -253,9 +253,12 @@ class _AddChargingStationDetailsPageState
               label: 'Done',
               onPressed: () {
                 final chargingStation = ChargingStationModel(
+                  type: ChargingStationType.private,
                   id: Uuid().v4(),
                   chargingStationName: state.chargingStationName,
                   address: state.address,
+                  addressLatitude: state.addressLatitude,
+                  addressLongitude: state.addressLongitude,
                   brandName: state.brandName,
                   brandLogo: state.brandLogo,
                   chargingEffect: state.chargingEffect,

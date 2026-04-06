@@ -45,8 +45,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color grey4;
   //Specific colors
   final Color success;
+  final Color successShadow;
   //Special
   final Color transparent;
+  final Color warning;
 
   AppColorsExtension({
     required this.primary,
@@ -64,7 +66,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     required this.grey3,
     required this.grey4,
     required this.success,
+    required this.successShadow,
     required this.transparent,
+    required this.warning,
   });
 
   @override
@@ -84,7 +88,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
     Color? grey3,
     Color? grey4,
     Color? success,
+    Color? successShadow,
     Color? transparent,
+    Color? warning,
   }) {
     return AppColorsExtension(
       primary: primary ?? this.primary,
@@ -102,7 +108,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       grey3: grey3 ?? this.grey3,
       grey4: grey4 ?? this.grey4,
       success: success ?? this.success,
+      successShadow: successShadow ?? this.successShadow,
       transparent: transparent ?? this.transparent,
+      warning: warning ?? this.warning,
     );
   }
 
@@ -131,7 +139,9 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
       grey3: Color.lerp(grey3, other.grey3, t)!,
       grey4: Color.lerp(grey4, other.grey4, t)!,
       success: Color.lerp(success, other.success, t)!,
+      successShadow: Color.lerp(successShadow, other.successShadow, t)!,
       transparent: Color.lerp(transparent, other.transparent, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
     );
   }
 }
@@ -195,8 +205,13 @@ class AppTheme {
     ///Usage: Color for success accent color (Green)
     success: const Color(0xFF37C750),
 
+    ///Usage: Shadow color for success button (Green)
+    successShadow: const Color(0xFF65D45B),
+
     ///Usage: Transparent color
     transparent: const Color(0x00000000),
+
+    warning: const Color(0xFFFFB800),
   );
 
   //
@@ -226,7 +241,9 @@ class AppTheme {
     grey3: const Color(0xFFDBDFE3),
     grey4: const Color(0xFFF4F6F9),
     success: const Color(0xFF37C750),
+    successShadow: const Color(0xFF65D45B),
     transparent: const Color(0x00000000),
+    warning: const Color(0xFFFFB800),
   );
 }
 

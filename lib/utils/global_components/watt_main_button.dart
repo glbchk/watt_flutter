@@ -6,8 +6,11 @@ class WattMainButton extends StatelessWidget {
   final double? width;
   final VoidCallback? onPressed;
   final bool? isLoading;
-  final IconData? icon;
+  final Icon? icon;
+  final Color? iconColor;
   final Color? textColor;
+  final Color? backgroundColor;
+  final Color? buttonShadow;
 
   const WattMainButton({
     super.key,
@@ -16,7 +19,10 @@ class WattMainButton extends StatelessWidget {
     this.onPressed,
     this.isLoading,
     this.icon,
+    this.iconColor,
     this.textColor,
+    this.backgroundColor,
+    this.buttonShadow,
   });
 
   @override
@@ -28,7 +34,8 @@ class WattMainButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: context.theme.appColors.primary.withAlpha(76),
+            color:
+                buttonShadow ?? context.theme.appColors.primary.withAlpha(76),
             spreadRadius: 0,
             blurRadius: 8,
             offset: Offset(0, 2),
@@ -36,17 +43,18 @@ class WattMainButton extends StatelessWidget {
         ],
       ),
       child: FilledButton.icon(
+        icon: icon,
         label: Text(
           label,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: context.theme.appColors.onPrimary,
+            color: textColor ?? context.theme.appColors.onPrimary,
           ),
         ),
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: context.theme.appColors.primary,
+          backgroundColor: backgroundColor ?? context.theme.appColors.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

@@ -1,7 +1,28 @@
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 
+enum ChargingStationAvailability {
+  available,
+  waiting,
+  outOfService,
+  busy
+  ;
+
+  String get label => switch (this) {
+    ChargingStationAvailability.available => 'Available',
+    ChargingStationAvailability.waiting => 'Waiting',
+    ChargingStationAvailability.outOfService => 'Out of Service',
+    ChargingStationAvailability.busy => 'Busy',
+  };
+}
+
+enum ChargingStationType {
+  public,
+  private,
+}
+
 class ChargingStationModel {
+  final ChargingStationType? type;
   final String id;
   final String? chargingStationName;
   final String? address;
@@ -16,8 +37,10 @@ class ChargingStationModel {
   final bool? onlineCharger;
   final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
+  final ChargingStationAvailability? stationStatus;
 
   ChargingStationModel({
+    this.type = ChargingStationType.private,
     required this.id,
     this.chargingStationName,
     this.address,
@@ -32,10 +55,14 @@ class ChargingStationModel {
     this.onlineCharger,
     this.availableHours,
     this.everyoneCanAccess,
+    this.stationStatus,
   });
 
   factory ChargingStationModel.fromJson(Map<String, dynamic> json) {
     return ChargingStationModel(
+      type: json['type'] == 'public'
+          ? ChargingStationType.public
+          : ChargingStationType.private,
       id: json['id'],
       chargingStationName: json['charging_station_name'],
       address: json['address'],
@@ -54,11 +81,16 @@ class ChargingStationModel {
           ?.map((m) => TimeSlotModel.fromJson(m))
           .toList(),
       everyoneCanAccess: json['everyone_can_access'],
+      stationStatus: ChargingStationAvailability.values.firstWhere(
+        (s) => s.name == json['station_status'],
+        orElse: () => ChargingStationAvailability.available,
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'type': type == ChargingStationType.public ? 'public' : 'private',
       'id': id,
       'charging_station_name': chargingStationName,
       'address': address,
@@ -73,10 +105,12 @@ class ChargingStationModel {
       'online_charger': onlineCharger,
       'available_hours': availableHours?.map((m) => m.toJson()).toList(),
       'everyone_can_access': everyoneCanAccess,
+      'station_status': stationStatus?.name,
     };
   }
 
   ChargingStationModel copyChargingStationWith({
+    ChargingStationType? type,
     String? id,
     String? chargingStationName,
     String? address,
@@ -91,8 +125,10 @@ class ChargingStationModel {
     bool? onlineCharger,
     List<TimeSlotModel>? availableHours,
     bool? everyoneCanAccess,
+    ChargingStationAvailability? stationStatus,
   }) {
     return ChargingStationModel(
+      type: type ?? this.type,
       id: id ?? this.id,
       chargingStationName: chargingStationName ?? this.chargingStationName,
       address: address ?? this.address,
@@ -107,6 +143,7 @@ class ChargingStationModel {
       onlineCharger: onlineCharger ?? this.onlineCharger,
       availableHours: availableHours ?? this.availableHours,
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
+      stationStatus: stationStatus ?? this.stationStatus,
     );
   }
 }

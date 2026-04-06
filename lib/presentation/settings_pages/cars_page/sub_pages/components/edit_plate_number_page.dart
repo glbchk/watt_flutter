@@ -4,22 +4,21 @@ import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 
-class PlateNumberCarDetailsPage extends StatefulWidget {
+class EditPlateNumberPage extends StatefulWidget {
   final String? initialPlateNumber;
   final void Function(String plateNumber)? onPressed;
 
-  const PlateNumberCarDetailsPage({
+  const EditPlateNumberPage({
     super.key,
     this.initialPlateNumber,
     this.onPressed,
   });
 
   @override
-  State<PlateNumberCarDetailsPage> createState() =>
-      _PlateNumberCarDetailsPageState();
+  State<EditPlateNumberPage> createState() => _EditPlateNumberPageState();
 }
 
-class _PlateNumberCarDetailsPageState extends State<PlateNumberCarDetailsPage> {
+class _EditPlateNumberPageState extends State<EditPlateNumberPage> {
   final controllerPlateNumber = TextEditingController();
 
   @override

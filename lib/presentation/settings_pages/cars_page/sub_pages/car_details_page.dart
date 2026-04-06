@@ -3,16 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_event.dart';
-import 'package:watt/presentation/settings_pages/cars_page/sub_pages/components/plate_number_car_details_page.dart';
+import 'package:watt/presentation/settings_pages/cars_page/bloc/my_cars_cubit.dart';
+import 'package:watt/presentation/settings_pages/cars_page/sub_pages/components/edit_plate_number_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
-class ProfileCarDetailsPage extends StatelessWidget {
+class CarDetailsPage extends StatelessWidget {
   final CarModel car;
 
-  const ProfileCarDetailsPage({
+  const CarDetailsPage({
     super.key,
     required this.car,
   });
@@ -89,9 +90,7 @@ class ProfileCarDetailsPage extends StatelessWidget {
                         textColor: context.theme.appColors.error,
                         label: 'Delete car',
                         onPressed: () {
-                          context.read<OnboardingBloc>().add(
-                            DeleteCarEvent(carId: car.id),
-                          );
+                          context.read<MyCarsCubit>().deleteCar(car.id);
                           Navigator.pop(context);
                         },
                       ),
@@ -110,7 +109,7 @@ class ProfileCarDetailsPage extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => PlateNumberCarDetailsPage(
+        builder: (_) => EditPlateNumberPage(
           initialPlateNumber: car.plateNumber,
           onPressed: (plateNumber) {
             context.read<OnboardingBloc>().add(

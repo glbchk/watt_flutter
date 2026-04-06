@@ -55,7 +55,9 @@ class ChargingStationBloc
           id: null,
           chargingStationName: "",
           address: () => null,
-          addressPosition: () => null,
+          addressLatitude: () => null,
+          addressLongitude: () => null,
+          // addressPosition: () => null,
           locationSuggestions: [],
           brandName: event.brandName,
           brandLogo: event.brandLogo,
@@ -90,7 +92,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => address,
-              addressPosition: () => position,
+              addressLatitude: () => position.latitude,
+              addressLongitude: () => position.longitude,
+              // addressPosition: () => position,
             ),
           );
         }
@@ -113,7 +117,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => null,
-              addressPosition: () => null,
+              addressLatitude: () => null,
+              addressLongitude: () => null,
+              // addressPosition: () => null,
             ),
           );
           return;
@@ -122,7 +128,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => locationResult.address,
-              addressPosition: () => locationResult.position,
+              addressLatitude: () => locationResult.position.latitude,
+              addressLongitude: () => locationResult.position.longitude,
+              // addressPosition: () => locationResult.position,
             ),
           );
         }
@@ -143,7 +151,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => null,
-              addressPosition: () => null,
+              addressLatitude: () => null,
+              addressLongitude: () => null,
+              // addressPosition: () => null,
             ),
           );
           return;
@@ -153,7 +163,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => tapResult,
-              addressPosition: () => addressPosition,
+              addressLatitude: () => addressPosition?.latitude,
+              addressLongitude: () => addressPosition?.longitude,
+              // addressPosition: () => addressPosition,
             ),
           );
         }
@@ -171,7 +183,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => null,
-              addressPosition: () => null,
+              addressLatitude: () => null,
+              addressLongitude: () => null,
+              // addressPosition: () => null,
             ),
           );
           return;
@@ -179,7 +193,9 @@ class ChargingStationBloc
           emit(
             state.copyWith(
               address: () => locationResult.address,
-              addressPosition: () => locationResult.position,
+              addressLatitude: () => locationResult.position.latitude,
+              addressLongitude: () => locationResult.position.longitude,
+              // addressPosition: () => locationResult.position,
             ),
           );
         }
@@ -207,7 +223,9 @@ class ChargingStationBloc
       emit(
         state.copyWith(
           address: () => event.value,
-          addressPosition: () => event.addressPosition,
+          addressLatitude: () => event.addressLatitude,
+          addressLongitude: () => event.addressLongitude,
+          // addressPosition: () => event.addressPosition,
         ),
       );
     });
@@ -216,7 +234,9 @@ class ChargingStationBloc
       emit(
         state.copyWith(
           address: () => null,
-          addressPosition: () => null,
+          addressLatitude: () => null,
+          addressLongitude: () => null,
+          // addressPosition: () => null,
           locationSuggestions: [],
         ),
       );

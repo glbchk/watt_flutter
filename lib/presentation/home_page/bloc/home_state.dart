@@ -1,6 +1,9 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_requested_widget.dart';
 
 class HomeState {
   final bool isUserAuthenticated;
@@ -16,6 +19,11 @@ class HomeState {
   final double? stationDistance;
   final UserModel? userData;
   final bool clearUserData;
+  final Set<String> selectedSlots;
+  final List<SlotModel>? timeSlots;
+  final String? errorTimeIsNotChosen;
+  final ReservationStage? stage;
+  final List<BookingModel>? bookings;
 
   HomeState({
     required this.isUserAuthenticated,
@@ -31,6 +39,11 @@ class HomeState {
     this.stationDistance,
     this.userData,
     this.clearUserData = false,
+    this.selectedSlots = const {},
+    this.timeSlots,
+    this.errorTimeIsNotChosen,
+    this.stage,
+    this.bookings,
   });
 
   HomeState copyWith({
@@ -47,6 +60,11 @@ class HomeState {
     double? stationDistance,
     UserModel? userData,
     bool clearUserData = false,
+    Set<String>? selectedSlots,
+    List<SlotModel>? timeSlots,
+    String? Function()? errorTimeNotChosen,
+    ReservationStage? stage,
+    List<BookingModel>? bookings,
   }) {
     return HomeState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -62,6 +80,14 @@ class HomeState {
           chargingStationsOnMap ?? this.chargingStationsOnMap,
       stationDistance: stationDistance ?? this.stationDistance,
       userData: clearUserData ? null : (userData ?? this.userData),
+      clearUserData: clearUserData,
+      selectedSlots: selectedSlots ?? this.selectedSlots,
+      timeSlots: timeSlots ?? this.timeSlots,
+      errorTimeIsNotChosen: errorTimeNotChosen != null
+          ? errorTimeNotChosen()
+          : this.errorTimeIsNotChosen,
+      stage: stage ?? this.stage,
+      bookings: bookings ?? this.bookings,
     );
   }
 }

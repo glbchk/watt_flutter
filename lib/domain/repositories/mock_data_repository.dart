@@ -7,5 +7,6 @@ abstract class MockedDataRepository {
   Future<Map<MockedCarBrand, List<String>>> getCarModelOptions();
   Future<List<String>> getChargingEffectOptions();
   Future<List<String>> getPlugOptions();
-  Future<List<ChargingStationModel>> getMockedChargingStations();
+  Future<List<ChargingStationModel>> getAddedByUsersMockedChargingStations();
+  Future<List<ChargingStationModel>> getPublicMockedChargingStations();
 }

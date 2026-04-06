@@ -33,9 +33,16 @@ class MockedDataRemoteDataSource {
     return KMockedData.plugs;
   }
 
-  Future<List<ChargingStationModel>> getMockedChargingStations() async {
+  Future<List<ChargingStationModel>>
+  getAddedByUsersMockedChargingStations() async {
     await Future.delayed(const Duration(seconds: 1));
 
-    return KMockedData.mockedChargingStations;
+    return KMockedData.mockedAddedByUsersChargingStations;
+  }
+
+  Future<List<ChargingStationModel>> getPublicMockedChargingStations() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return KMockedData.mockedPublicChargingStations;
   }
 }

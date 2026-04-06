@@ -1,3 +1,7 @@
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+import 'package:watt/data/models/slot_model.dart';
+import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/utils/constants.dart';
 
 class StringHelperMethods {
@@ -91,5 +95,82 @@ class StringHelperMethods {
       default:
         return KPaymentProvidersIcons.generic;
     }
+  }
+
+  static List<SlotModel> generate30MinuteSlots(
+    String startTime,
+    String endTime,
+  ) {
+    List<SlotModel> slots = [];
+
+    final DateFormat formatter = DateFormat('HH:mm');
+    final DateTime now = DateTime.now();
+
+    try {
+      DateTime start = formatter.parse(startTime);
+      DateTime end = formatter.parse(endTime);
+
+      DateTime currentSlot = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        start.hour,
+        start.minute,
+      );
+      DateTime endDateTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        end.hour,
+        end.minute,
+      );
+
+      if (endDateTime.isBefore(currentSlot) ||
+          endDateTime.isAtSameMomentAs(currentSlot)) {
+        endDateTime = endDateTime.add(const Duration(days: 1));
+      }
+
+      while (currentSlot.isBefore(endDateTime)) {
+        DateTime nextSlot = currentSlot.add(const Duration(minutes: 30));
+
+        if (nextSlot.isAfter(endDateTime)) break;
+
+        slots.add(
+          SlotModel(
+            timeSlot:
+                '${formatter.format(currentSlot)} - ${formatter.format(nextSlot)}',
+            isBusy: false,
+          ),
+        );
+
+        currentSlot = nextSlot;
+      }
+    } catch (e) {
+      print("Error parsing times: $e");
+    }
+
+    return slots;
+  }
+
+  static List<TimeSlotModel> convertSelectedSlotsToTimeSlots(
+    Set<String> selectedSlots,
+  ) {
+    return selectedSlots.map((slot) {
+      final parts = slot.split('-');
+
+      if (parts.length != 2) {
+        return TimeSlotModel(
+          id: Uuid().v4(),
+          startTime: null,
+          endTime: null,
+        );
+      }
+
+      return TimeSlotModel(
+        id: Uuid().v4(),
+        startTime: parts[0].trim(),
+        endTime: parts[1].trim(),
+      );
+    }).toList();
   }
 }

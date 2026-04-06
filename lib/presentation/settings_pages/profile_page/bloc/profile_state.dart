@@ -1,13 +1,13 @@
 import 'package:watt/data/models/user_model.dart';
 
-class SettingsState {
+class ProfileState {
   final bool isUserAuthenticated;
   final bool isLoading;
   final bool? isLocationEnabled;
   final UserModel? userData;
   final String? errorMessage;
 
-  SettingsState({
+  ProfileState({
     required this.isUserAuthenticated,
     this.isLoading = false,
     this.isLocationEnabled,
@@ -15,7 +15,7 @@ class SettingsState {
     this.errorMessage,
   });
 
-  SettingsState copyWith({
+  ProfileState copyWith({
     bool? isUserAuthenticated,
     bool? isLoading,
     bool? isLocationEnabled,
@@ -23,7 +23,7 @@ class SettingsState {
     String? errorMessage,
     bool clearUserData = false,
   }) {
-    return SettingsState(
+    return ProfileState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,

@@ -4,10 +4,13 @@ import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class MapPopupWidget extends StatelessWidget {
+  final ChargingStationType chargingStationType;
+  final String? stationStatus;
   final String? chargingStationName;
   final String? timeAvailability;
   final String? chargingStationAddress;
@@ -17,9 +20,12 @@ class MapPopupWidget extends StatelessWidget {
   final String? pricePerKwh;
   final VoidCallback? onPressedMoreDetails;
   final VoidCallback? onPressedToBook;
+  final VoidCallback? onPressedPublicCharger;
 
   const MapPopupWidget({
     super.key,
+    required this.chargingStationType,
+    this.stationStatus,
     this.chargingStationName,
     this.timeAvailability,
     this.chargingStationAddress,
@@ -29,11 +35,13 @@ class MapPopupWidget extends StatelessWidget {
     this.pricePerKwh,
     this.onPressedMoreDetails,
     this.onPressedToBook,
+    this.onPressedPublicCharger,
   });
 
   static Future<void> show({
     required BuildContext context,
     required ChargingStationModel station,
+    String? stationStatus,
     String? chargingStationName,
     String? timeAvailability,
     String? chargingStationAddress,
@@ -43,6 +51,7 @@ class MapPopupWidget extends StatelessWidget {
     String? pricePerKwh,
     VoidCallback? onPressedMoreDetails,
     VoidCallback? onPressedToBook,
+    VoidCallback? onPressedPublicCharger,
   }) {
     // Navigator.pop(dialogContext);
     return showModalBottomSheet(
@@ -59,6 +68,7 @@ class MapPopupWidget extends StatelessWidget {
             // }
 
             return MapPopupWidget(
+              chargingStationType: station.type ?? ChargingStationType.private,
               chargingStationName: station.chargingStationName,
               timeAvailability:
                   "${station.availableHours?.first.startTime}-${station.availableHours?.first.endTime}",
@@ -69,6 +79,8 @@ class MapPopupWidget extends StatelessWidget {
               pricePerKwh: station.pricePerKwh,
               onPressedMoreDetails: onPressedMoreDetails,
               onPressedToBook: onPressedToBook,
+              onPressedPublicCharger: onPressedPublicCharger,
+              stationStatus: stationStatus,
             );
           },
         );
@@ -157,25 +169,7 @@ class MapPopupWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     spacing: 8,
                     children: [
-                      Container(
-                        width: 75,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: context.theme.appColors.success,
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Available',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                      StatusWidget(label: stationStatus),
                       Text(
                         timeAvailability ?? '9:30-12:30',
                         style: TextStyle(fontSize: 13),
@@ -232,116 +226,193 @@ class MapPopupWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Column(
-                    spacing: 5,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: context.theme.appColors.grey4,
+              chargingStationType == ChargingStationType.private
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 15,
                         ),
-                        child: Icon(
-                          size: 30,
-                          Icons.settings_input_hdmi,
-                          color: context.theme.appColors.primary,
+                        Column(
+                          spacing: 5,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: context.theme.appColors.grey4,
+                              ),
+                              child: Icon(
+                                size: 30,
+                                Icons.settings_input_hdmi,
+                                color: context.theme.appColors.primary,
+                              ),
+                            ),
+                            Text(
+                              plugType ?? 'Type 2',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        plugType ?? 'Type 2',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                        Column(
+                          spacing: 5,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: context.theme.appColors.grey4,
+                              ),
+                              child: Icon(
+                                size: 30,
+                                Icons.bolt,
+                                color: context.theme.appColors.primary,
+                              ),
+                            ),
+                            Text(
+                              chargingEffect ?? '11 kW',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    spacing: 5,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: context.theme.appColors.grey4,
+                        Column(
+                          spacing: 5,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: context.theme.appColors.grey4,
+                              ),
+                              child: Icon(
+                                size: 30,
+                                Icons.paid,
+                                color: context.theme.appColors.primary,
+                              ),
+                            ),
+                            Text(
+                              pricePerKwh ?? '2 SEK/kWh',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Icon(
-                          size: 30,
-                          Icons.bolt,
-                          color: context.theme.appColors.primary,
+                        SizedBox(
+                          width: 20,
                         ),
-                      ),
-                      Text(
-                        chargingEffect ?? '11 kW',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: 15,
                         ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    spacing: 5,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: context.theme.appColors.grey4,
+                        Column(
+                          spacing: 5,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: context.theme.appColors.grey4,
+                              ),
+                              child: Icon(
+                                size: 30,
+                                Icons.settings_input_hdmi,
+                                color: context.theme.appColors.primary,
+                              ),
+                            ),
+                            Text(
+                              plugType ?? 'Type 2',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: Icon(
-                          size: 30,
-                          Icons.paid,
-                          color: context.theme.appColors.primary,
+                        Column(
+                          spacing: 5,
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: context.theme.appColors.grey4,
+                              ),
+                              child: Icon(
+                                size: 30,
+                                Icons.bolt,
+                                color: context.theme.appColors.primary,
+                              ),
+                            ),
+                            Text(
+                              chargingEffect ?? '11 kW',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        pricePerKwh ?? '2 SEK/kWh',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                        SizedBox(
+                          width: 20,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                ],
-              ),
+                      ],
+                    ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: WattWhiteButton(
-                      label: 'More details',
-                      textScaler: TextScaler.linear(0.9),
-                      onPressed: () {
-                        onPressedMoreDetails?.call();
-                      },
+              chargingStationType == ChargingStationType.private
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: WattWhiteButton(
+                            label: 'More details',
+                            textScaler: TextScaler.linear(0.85),
+                            onPressed: () {
+                              onPressedMoreDetails?.call();
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: WattMainButton(
+                            label: 'Book',
+                            onPressed: () {
+                              onPressedToBook?.call();
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: WattWhiteButton(
+                            label: 'Public Charger',
+                            textScaler: TextScaler.linear(0.85),
+                            noShadow: false,
+                            onPressed: () {
+                              onPressedPublicCharger?.call();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: WattMainButton(
-                      label: 'Book',
-                      onPressed: () {
-                        onPressedToBook?.call();
-                      },
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),

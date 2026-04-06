@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -24,5 +25,8 @@ abstract class UserRepository {
     bool isReceiver,
   );
   Future<UserModel?> fetchUserData();
+  Future<void> addBooking(BookingModel booking);
+  Future<void> updateBookingStage(String bookingId, BookingStatus status);
+  Future<void> deleteBooking(String bookingId);
   Future<void> deleteUser();
 }

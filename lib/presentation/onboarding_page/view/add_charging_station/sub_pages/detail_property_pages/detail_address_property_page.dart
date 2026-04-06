@@ -137,7 +137,9 @@ class _DetailAddressPropertyPageState extends State<DetailAddressPropertyPage> {
                 context.read<ChargingStationBloc>().add(
                   SaveAddressPropertyEvent(
                     state.address ?? "",
-                    state.addressPosition,
+                    state.addressLatitude,
+                    state.addressLongitude,
+                    // state.addressPosition,
                   ),
                 );
 
