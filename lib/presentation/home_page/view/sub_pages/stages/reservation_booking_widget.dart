@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
+import 'package:watt/presentation/home_page/view/components/time_slot_selector_widget.dart';
 import 'package:watt/utils/colors.dart';
-import 'package:watt/utils/global_components/line_card_widget.dart';
 
-class ReservationRequestedWidget extends StatefulWidget {
+class ReservationBookingWidget extends StatefulWidget {
   final List<TimeSlotModel>? timeSlots;
   final Set<String> selectedSlots;
 
-  const ReservationRequestedWidget({
+  const ReservationBookingWidget({
     super.key,
     this.timeSlots,
     required this.selectedSlots,
   });
 
   @override
-  State<ReservationRequestedWidget> createState() =>
-      _ReservationRequestedWidgetState();
+  State<ReservationBookingWidget> createState() =>
+      _ReservationBookingWidgetState();
 }
 
-class _ReservationRequestedWidgetState
-    extends State<ReservationRequestedWidget> {
+class _ReservationBookingWidgetState extends State<ReservationBookingWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LineCardWidget(
-          label: 'Booked Time',
-          startTime: '2020-11-09, 8:00',
-          endTime: '2020-11-09, 12:00',
-          isApproved: false,
+        TimeSlotSelectorWidget(
+          slots: widget.timeSlots,
+          selectedSlots: widget.selectedSlots,
+          onToggle: (slot) {
+            context.read<HomeCubit>().toggleSlot(slot);
+          },
         ),
         SizedBox(height: 30),
         Text(

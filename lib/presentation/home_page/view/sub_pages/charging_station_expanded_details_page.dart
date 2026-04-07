@@ -5,6 +5,9 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
+import 'package:watt/presentation/home_page/enum/reservation_stage_enum.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/booked_widget.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_widget.dart';
 import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_requested_widget.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -15,6 +18,7 @@ import 'package:watt/utils/global_methods/string_helper_methods.dart';
 class ChargingStationExpandedDetailsPage extends StatefulWidget {
   final ChargingStationType type;
   final ChargingStationModel station;
+
   const ChargingStationExpandedDetailsPage({
     super.key,
     required this.type,
@@ -39,6 +43,14 @@ class _ChargingStationExpandedDetailsPageState
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
+        String buttonLabel = '';
+
+        if (state.stage == ReservationStage.booking) {
+          buttonLabel = 'Book';
+        } else if (state.stage == ReservationStage.reservationRequested) {
+          buttonLabel = 'Start Charging';
+        }
+
         return DefaultTabController(
           length: 2,
           child: DefaultAppBar(
@@ -311,14 +323,41 @@ class _ChargingStationExpandedDetailsPageState
                                           ),
                                         ),
                                         SizedBox(height: 10),
-                                        ReservationWidget(
-                                          stage:
-                                              state.stage ??
-                                              ReservationStage.booking,
-                                          timeSlots:
-                                              widget.station.availableHours,
-                                          selectedSlots: state.selectedSlots,
-                                        ),
+
+                                        switch (state.stage) {
+                                          ReservationStage.booking =>
+                                            ReservationBookingWidget(
+                                              timeSlots:
+                                                  widget.station.availableHours,
+                                              selectedSlots:
+                                                  state.selectedSlots,
+                                            ),
+                                          // TODO: Handle this case.
+                                          null => throw UnimplementedError(),
+                                          // TODO: Handle this case.
+                                          ReservationStage
+                                              .reservationRequested =>
+                                            ReservationRequestedWidget(
+                                              timeSlots:
+                                                  widget.station.availableHours,
+                                              selectedSlots:
+                                                  state.selectedSlots,
+                                            ),
+                                          // TODO: Handle this case.
+                                          ReservationStage.booked =>
+                                            BookedWidget(
+                                              timeSlots:
+                                                  widget.station.availableHours,
+                                              selectedSlots:
+                                                  state.selectedSlots,
+                                            ),
+                                          // TODO: Handle this case.
+                                          ReservationStage.charging =>
+                                            throw UnimplementedError(),
+                                          // TODO: Handle this case.
+                                          ReservationStage.publicCharger =>
+                                            throw UnimplementedError(),
+                                        },
                                       ],
                                     ),
                                   ],
@@ -393,49 +432,77 @@ class _ChargingStationExpandedDetailsPageState
                               ),
                             ),
                             SizedBox(width: 15),
+
                             Expanded(
-                              child: WattMainButton(
-                                label: 'Book',
-                                onPressed: () {
-                                  final convertedTimeSlots =
-                                      StringHelperMethods.convertSelectedSlotsToTimeSlots(
-                                        state.selectedSlots,
-                                      );
+                              child:
+                                  state.stage == ReservationStage.booking ||
+                                      state.stage == ReservationStage.booked
+                                  ? WattMainButton(
+                                      label: buttonLabel,
+                                      onPressed: () {
+                                        final convertedTimeSlots =
+                                            StringHelperMethods.convertSelectedSlotsToTimeSlots(
+                                              state.selectedSlots,
+                                            );
 
-                                  final BookingModel booking = BookingModel(
-                                    bookingId: Uuid().v4(),
-                                    status: BookingStatus.pending,
-                                    station: widget.station,
-                                    date: DateTime.now().toString(),
-                                    selectedTimes: convertedTimeSlots,
-                                    price:
-                                        double.tryParse(
-                                          widget.station.pricePerKwh ?? '',
-                                        ) ??
-                                        0,
-                                  );
+                                        final BookingModel
+                                        booking = BookingModel(
+                                          bookingId: Uuid().v4(),
+                                          status: BookingStatus.pending,
+                                          station: widget.station,
+                                          date: DateTime.now().toString(),
+                                          selectedTimes: convertedTimeSlots,
+                                          price:
+                                              double.tryParse(
+                                                widget.station.pricePerKwh ??
+                                                    '',
+                                              ) ??
+                                              0,
+                                        );
 
-                                  if (state.selectedSlots.isNotEmpty) {
-                                    if (state.stage ==
-                                        ReservationStage.booking) {
-                                      context
-                                          .read<HomeCubit>()
-                                          .reservationRequestedStage(booking);
-                                    } else if (state.stage ==
-                                        ReservationStage.reservationRequested) {
-                                      context.read<HomeCubit>().bookedStage(
-                                        booking.bookingId,
-                                        booking,
-                                      );
-                                    } else if (state.stage ==
-                                        ReservationStage.charging) {
-                                      context.read<HomeCubit>().chargingStage();
-                                    }
-                                  } else {
-                                    context.read<HomeCubit>().timeIsNotChosen();
-                                  }
-                                },
-                              ),
+                                        if (state.selectedSlots.isNotEmpty) {
+                                          if (state.stage ==
+                                              ReservationStage.booking) {
+                                            context
+                                                .read<HomeCubit>()
+                                                .reservationRequestedStage(
+                                                  booking,
+                                                );
+                                          } else if (state.stage ==
+                                              ReservationStage.booked) {
+                                            context
+                                                .read<HomeCubit>()
+                                                .bookedStage(
+                                                  booking.bookingId,
+                                                  booking,
+                                                );
+                                          }
+                                        } else {
+                                          context
+                                              .read<HomeCubit>()
+                                              .timeIsNotChosen();
+                                        }
+                                      },
+                                    )
+                                  : WattWhiteButton(
+                                      label: 'Cancel',
+                                      textColor: context.theme.appColors.error,
+                                      onPressed: () {
+                                        state.bookings?.forEach((b) {
+                                          if (b.station?.id ==
+                                              widget.station.id) {
+                                            print(b.bookingId);
+                                            context
+                                                .read<HomeCubit>()
+                                                .cancelBooking(
+                                                  b.bookingId,
+                                                );
+                                          }
+                                        });
+
+                                        Navigator.pop(context);
+                                      },
+                                    ),
                             ),
                           ],
                         ),

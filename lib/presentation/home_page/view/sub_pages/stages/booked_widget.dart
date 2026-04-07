@@ -3,23 +3,21 @@ import 'package:watt/data/models/timeslot_model.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/line_card_widget.dart';
 
-class ReservationRequestedWidget extends StatefulWidget {
+class BookedWidget extends StatefulWidget {
   final List<TimeSlotModel>? timeSlots;
   final Set<String> selectedSlots;
 
-  const ReservationRequestedWidget({
+  const BookedWidget({
     super.key,
     this.timeSlots,
     required this.selectedSlots,
   });
 
   @override
-  State<ReservationRequestedWidget> createState() =>
-      _ReservationRequestedWidgetState();
+  State<BookedWidget> createState() => _BookedWidgetState();
 }
 
-class _ReservationRequestedWidgetState
-    extends State<ReservationRequestedWidget> {
+class _BookedWidgetState extends State<BookedWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -29,7 +27,6 @@ class _ReservationRequestedWidgetState
           label: 'Booked Time',
           startTime: '2020-11-09, 8:00',
           endTime: '2020-11-09, 12:00',
-          isApproved: false,
         ),
         SizedBox(height: 30),
         Text(

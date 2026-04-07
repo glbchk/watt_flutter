@@ -3,7 +3,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_requested_widget.dart';
+import 'package:watt/presentation/home_page/enum/reservation_stage_enum.dart';
 
 class HomeState {
   final bool isUserAuthenticated;
@@ -24,6 +24,7 @@ class HomeState {
   final String? errorTimeIsNotChosen;
   final ReservationStage? stage;
   final List<BookingModel>? bookings;
+  // final bool isBooked;
 
   HomeState({
     required this.isUserAuthenticated,
@@ -44,6 +45,7 @@ class HomeState {
     this.errorTimeIsNotChosen,
     this.stage,
     this.bookings,
+    // this.isBooked = false,
   });
 
   HomeState copyWith({
@@ -60,11 +62,12 @@ class HomeState {
     double? stationDistance,
     UserModel? userData,
     bool clearUserData = false,
-    Set<String>? selectedSlots,
+    Set<String>? Function()? selectedSlots,
     List<SlotModel>? timeSlots,
     String? Function()? errorTimeNotChosen,
-    ReservationStage? stage,
+    ReservationStage? Function()? stage,
     List<BookingModel>? bookings,
+    // bool? isBooked,
   }) {
     return HomeState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -81,13 +84,16 @@ class HomeState {
       stationDistance: stationDistance ?? this.stationDistance,
       userData: clearUserData ? null : (userData ?? this.userData),
       clearUserData: clearUserData,
-      selectedSlots: selectedSlots ?? this.selectedSlots,
+      selectedSlots:
+          (selectedSlots != null ? selectedSlots() : this.selectedSlots) ??
+          <String>{},
       timeSlots: timeSlots ?? this.timeSlots,
       errorTimeIsNotChosen: errorTimeNotChosen != null
           ? errorTimeNotChosen()
           : this.errorTimeIsNotChosen,
-      stage: stage ?? this.stage,
+      stage: stage != null ? stage() : this.stage,
       bookings: bookings ?? this.bookings,
+      // isBooked: isBooked ?? this.isBooked,
     );
   }
 }

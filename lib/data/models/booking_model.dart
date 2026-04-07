@@ -28,7 +28,7 @@ class BookingModel {
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     return BookingModel(
-      bookingId: json['id'],
+      bookingId: json['booking_id'],
       status: BookingStatus.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => BookingStatus.available,
@@ -52,7 +52,7 @@ class BookingModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': bookingId,
+      'booking_id': bookingId,
       'status': status.name,
       'station': station?.toJson(),
       'date': date,

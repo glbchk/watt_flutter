@@ -9,7 +9,7 @@ import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_requested_widget.dart';
+import 'package:watt/presentation/home_page/enum/reservation_stage_enum.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final AuthBloc authBloc;
@@ -225,7 +225,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> bookingStage() async {
     emit(
       state.copyWith(
-        stage: ReservationStage.booking,
+        stage: () => ReservationStage.booking,
+        // isBooked: false,
       ),
     );
   }
@@ -239,14 +240,20 @@ class HomeCubit extends Cubit<HomeState> {
       newSet.add(slot);
     }
 
-    emit(state.copyWith(selectedSlots: newSet, errorTimeNotChosen: () => null));
+    emit(
+      state.copyWith(
+        selectedSlots: () => newSet,
+        errorTimeNotChosen: () => null,
+      ),
+    );
   }
 
   Future<void> timeIsNotChosen() async {
     if (state.selectedSlots.isEmpty) {
       emit(
         state.copyWith(
-          stage: ReservationStage.booking,
+          stage: () => ReservationStage.booking,
+          // isBooked: false,
           errorTimeNotChosen: () => "The time wasn't chosen!",
         ),
       );
@@ -254,6 +261,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           errorTimeNotChosen: null,
+          // isBooked: false,
         ),
       );
     }
@@ -262,16 +270,38 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> reservationRequestedStage(BookingModel booking) async {
     await addBookingUseCase.execute(booking);
 
-    final List<BookingModel> bookings = [];
+    final List<BookingModel> bookings = state.bookings ?? [];
     bookings.add(booking);
 
     emit(
       state.copyWith(
-        stage: ReservationStage.reservationRequested,
-        errorTimeNotChosen: null,
+        stage: () => ReservationStage.reservationRequested,
         bookings: bookings,
+        // isBooked: true,
       ),
     );
+  }
+
+  Future<void> cancelBooking(String bookingId) async {
+    final booking = (state.bookings ?? []).firstWhere(
+      (b) => b.bookingId == bookingId,
+      orElse: () => throw Exception('Booking not found'),
+    );
+
+    final updatedBookings = (state.bookings ?? [])
+        .where((b) => b.bookingId != booking.bookingId)
+        .toList();
+
+    emit(
+      state.copyWith(
+        stage: () => ReservationStage.booking,
+        selectedSlots: () => <String>{},
+        bookings: updatedBookings,
+        // isBooked: true,
+      ),
+    );
+
+    await deleteBookingUseCase.execute(booking.bookingId);
   }
 
   Future<void> bookedStage(String bookingId, BookingModel booking) async {
@@ -282,8 +312,9 @@ class HomeCubit extends Cubit<HomeState> {
 
     emit(
       state.copyWith(
-        stage: ReservationStage.booked,
+        stage: () => ReservationStage.booked,
         bookings: bookings,
+        // isBooked: true,
       ),
     );
   }
@@ -291,7 +322,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> chargingStage() async {
     emit(
       state.copyWith(
-        stage: ReservationStage.charging,
+        stage: () => ReservationStage.charging,
+        // isBooked: true,
       ),
     );
   }
@@ -299,7 +331,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> publicChargerStage() async {
     emit(
       state.copyWith(
-        stage: ReservationStage.publicCharger,
+        stage: () => ReservationStage.publicCharger,
+        // isBooked: false,
       ),
     );
   }

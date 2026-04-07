@@ -247,7 +247,7 @@ class UserRemoteDataSource {
   Future<void> addBooking(BookingModel booking) async {
     User? user = auth.currentUser;
     await firestore.collection("users").doc(user?.uid).update({
-      'booking': FieldValue.arrayUnion([booking.toJson()]),
+      'bookings': FieldValue.arrayUnion([booking.toJson()]),
     });
   }
 
@@ -277,9 +277,7 @@ class UserRemoteDataSource {
       );
 
       await docRef.update({
-        'payment_methods': bookingsList
-            .map((booking) => booking.toJson())
-            .toList(),
+        'bookings': bookingsList.map((booking) => booking.toJson()).toList(),
       });
     }
   }
@@ -289,12 +287,27 @@ class UserRemoteDataSource {
     final docRef = firestore.collection("users").doc(user?.uid);
 
     final currentUserData = await docRef.get();
-    final List<dynamic> bookingsData =
-        currentUserData.data()?['bookings'] ?? [];
+    final List<dynamic> bookings = List.from(
+      currentUserData.data()?['bookings'] ?? [],
+    );
 
-    bookingsData.removeWhere((booking) => booking['id'] == bookingId);
+    print('Trying to delete bookingId: "$bookingId"');
+    for (final b in bookings) {
+      final map = Map<String, dynamic>.from(b);
+      print('Firestore booking_id: "${map['booking_id']}"');
+    }
 
-    await docRef.update({'bookings': bookingsData});
+    bookings.removeWhere((booking) {
+      final map = Map<String, dynamic>.from(booking);
+      print('Booking keys: ${map.keys}');
+      return map['booking_id'] == bookingId;
+    });
+
+    print('Bookings after removeWhere: $bookings');
+
+    await docRef.update({
+      'bookings': bookings,
+    });
   }
 
   Future<void> deleteUser() async {

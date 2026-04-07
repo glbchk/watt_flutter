@@ -5,12 +5,14 @@ class LineCardWidget extends StatelessWidget {
   final String? label;
   final String? startTime;
   final String? endTime;
+  final bool isApproved;
 
   const LineCardWidget({
     super.key,
     required this.label,
     this.startTime,
     this.endTime,
+    this.isApproved = true,
   });
 
   @override
@@ -97,22 +99,24 @@ class LineCardWidget extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: context.theme.appColors.grey4,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            'Your reservation request is waiting for host approval ',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.theme.appColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: isApproved == false
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(
+                                  'Your reservation request is waiting for host approval ',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: context.theme.appColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : SizedBox(height: 0),
                   ),
                 ],
               ),
