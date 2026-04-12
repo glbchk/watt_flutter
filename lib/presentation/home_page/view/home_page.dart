@@ -8,7 +8,7 @@ import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/charging_station_expanded_details_page.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
 import 'package:watt/presentation/settings_pages/my_reservations_page/my_reservations_page.dart';
@@ -97,24 +97,22 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 station: location,
                 onPressedMoreDetails: () {
-                  context.read<HomeCubit>().bookingStage();
+                  // context.read<HomeCubit>().bookingStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ChargingStationExpandedDetailsPage(
-                        type: location.type ?? ChargingStationType.private,
+                      builder: (_) => ReservationBookingPage(
                         station: location,
                       ),
                     ),
                   );
                 },
                 onPressedToBook: () {
-                  context.read<HomeCubit>().bookingStage();
+                  // context.read<HomeCubit>().bookingStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ChargingStationExpandedDetailsPage(
-                        type: location.type ?? ChargingStationType.private,
+                      builder: (_) => ReservationBookingPage(
                         station: location,
                       ),
                     ),
@@ -135,8 +133,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ChargingStationExpandedDetailsPage(
-                        type: location.type ?? ChargingStationType.public,
+                      builder: (_) => ReservationBookingPage(
                         station: location,
                       ),
                     ),

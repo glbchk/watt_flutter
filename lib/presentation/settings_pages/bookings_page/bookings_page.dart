@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
+import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/components/booking_card_widget.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/components/past_booking_card_widget.dart';
@@ -34,7 +36,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
         if (!state.isUserAuthenticated) {
-          context.read<ProfileCubit>().logout();
+          context.read<AuthBloc>().add(LogoutRequestedEvent());
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => AuthPage()),

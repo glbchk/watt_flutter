@@ -32,17 +32,6 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    print('isAnonymous: ${json['is_anonymous']}');
-    print('id: ${json['id']}');
-    print('name: ${json['name']}');
-    print('email: ${json['email']}');
-    print('isEmailVerified: ${json['is_email_verified']}');
-    print('phoneNumber: ${json['phone_number']}');
-    print('isOnboardingCompleted: ${json['is_onboarding_completed']}');
-    print('cars: ${json['cars']}');
-    print('chargingStations: ${json['charging_stations']}');
-    print('paymentMethods: ${json['payment_methods']}');
-
     return UserModel(
       isAnonymous: json['is_anonymous'] ?? false,
       id: json['id'] ?? '',

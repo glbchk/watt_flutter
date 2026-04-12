@@ -1,7 +1,7 @@
-enum ReservationStage {
-  booking,
-  reservationRequested,
-  booked,
-  charging,
-  publicCharger,
-}
+// enum ReservationStage {
+//   booking,
+//   reservationRequested,
+//   booked,
+//   charging,
+//   publicCharger,
+// }

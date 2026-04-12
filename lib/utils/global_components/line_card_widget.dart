@@ -109,7 +109,7 @@ class LineCardWidget extends StatelessWidget {
                                   'Your reservation request is waiting for host approval ',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 12,
                                     color: context.theme.appColors.primary,
                                   ),
                                 ),

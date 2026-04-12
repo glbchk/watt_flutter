@@ -3,7 +3,6 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
-import 'package:watt/presentation/home_page/enum/reservation_stage_enum.dart';
 
 class HomeState {
   final bool isUserAuthenticated;
@@ -22,8 +21,9 @@ class HomeState {
   final Set<String> selectedSlots;
   final List<SlotModel>? timeSlots;
   final String? errorTimeIsNotChosen;
-  final ReservationStage? stage;
+  // final ReservationStage? stage;
   final List<BookingModel>? bookings;
+  // final BookingModel? activeBooking;
   // final bool isBooked;
 
   HomeState({
@@ -43,9 +43,9 @@ class HomeState {
     this.selectedSlots = const {},
     this.timeSlots,
     this.errorTimeIsNotChosen,
-    this.stage,
+    // this.stage,
     this.bookings,
-    // this.isBooked = false,
+    // this.activeBooking,
   });
 
   HomeState copyWith({
@@ -65,9 +65,9 @@ class HomeState {
     Set<String>? Function()? selectedSlots,
     List<SlotModel>? timeSlots,
     String? Function()? errorTimeNotChosen,
-    ReservationStage? Function()? stage,
+    // ReservationStage? Function()? stage,
     List<BookingModel>? bookings,
-    // bool? isBooked,
+    // BookingModel? Function()? activeBooking,
   }) {
     return HomeState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -91,8 +91,11 @@ class HomeState {
       errorTimeIsNotChosen: errorTimeNotChosen != null
           ? errorTimeNotChosen()
           : this.errorTimeIsNotChosen,
-      stage: stage != null ? stage() : this.stage,
+      // stage: stage != null ? stage() : this.stage,
       bookings: bookings ?? this.bookings,
+      // activeBooking: activeBooking != null
+      //     ? activeBooking()
+      //     : this.activeBooking,
       // isBooked: isBooked ?? this.isBooked,
     );
   }

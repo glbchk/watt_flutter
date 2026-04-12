@@ -10,7 +10,7 @@ enum BookingStatus {
 }
 
 class BookingModel {
-  final String bookingId;
+  final String id;
   final BookingStatus status;
   final ChargingStationModel? station;
   final String? date;
@@ -18,7 +18,7 @@ class BookingModel {
   final double? price;
 
   BookingModel({
-    required this.bookingId,
+    required this.id,
     this.status = BookingStatus.pending,
     this.station,
     this.date,
@@ -28,7 +28,7 @@ class BookingModel {
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     return BookingModel(
-      bookingId: json['booking_id'],
+      id: json['id'],
       status: BookingStatus.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => BookingStatus.available,
@@ -52,7 +52,7 @@ class BookingModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'booking_id': bookingId,
+      'id': id,
       'status': status.name,
       'station': station?.toJson(),
       'date': date,
@@ -63,7 +63,7 @@ class BookingModel {
   }
 
   BookingModel copyWith({
-    String? bookingId,
+    String? id,
     BookingStatus? status,
     ChargingStationModel? station,
     String? date,
@@ -71,7 +71,7 @@ class BookingModel {
     double? price,
   }) {
     return BookingModel(
-      bookingId: bookingId ?? this.bookingId,
+      id: id ?? this.id,
       status: status ?? this.status,
       station: station ?? this.station,
       date: date ?? this.date,

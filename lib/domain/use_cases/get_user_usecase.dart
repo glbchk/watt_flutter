@@ -16,6 +16,12 @@ class CreateUserUseCase extends UserUseCase {
   }
 }
 
+class ReauthenticateUserUseCase extends UserUseCase {
+  Future execute(String password) {
+    return userRepository.reauthenticateUser(password);
+  }
+}
+
 class UpdateUserEmailUseCase extends UserUseCase {
   Future execute(String email) {
     return userRepository.updateUserEmail(email);

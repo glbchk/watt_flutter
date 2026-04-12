@@ -19,6 +19,22 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user?.uid).get();
   }
 
+  Future<void> reauthenticateUser(String password) async {
+    User? user = auth.currentUser;
+    final email = user?.email;
+
+    if (user == null || email == null) {
+      print('No user found to reauthenticate');
+    }
+
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email ?? '',
+      password: password,
+    );
+
+    await user?.reauthenticateWithCredential(credential);
+  }
+
   Future<void> updateUserEmail(String email) async {
     User? user = auth.currentUser;
     await user?.verifyBeforeUpdateEmail(email);
@@ -246,6 +262,7 @@ class UserRemoteDataSource {
 
   Future<void> addBooking(BookingModel booking) async {
     User? user = auth.currentUser;
+
     await firestore.collection("users").doc(user?.uid).update({
       'bookings': FieldValue.arrayUnion([booking.toJson()]),
     });
@@ -262,11 +279,11 @@ class UserRemoteDataSource {
     final List<dynamic> bookingsData =
         currentUserData.data()?['bookings'] ?? [];
     List<BookingModel> bookingsList = bookingsData
-        .map((json) => BookingModel.fromJson(json))
+        .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
         .toList();
 
     int index = bookingsList.indexWhere(
-      (booking) => booking.bookingId == bookingId,
+      (booking) => booking.id == bookingId,
     );
 
     if (index != -1) {
@@ -283,31 +300,31 @@ class UserRemoteDataSource {
   }
 
   Future<void> deleteBooking(String bookingId) async {
-    User? user = auth.currentUser;
-    final docRef = firestore.collection("users").doc(user?.uid);
+    // print('Deleting booking $bookingId');
+    try {
+      User? user = auth.currentUser;
+      final docRef = firestore.collection("users").doc(user?.uid);
 
-    final currentUserData = await docRef.get();
-    final List<dynamic> bookings = List.from(
-      currentUserData.data()?['bookings'] ?? [],
-    );
+      // final currentUserData = await docRef.get();
+      docRef.get().then(
+        (DocumentSnapshot doc) {
+          print("DEBUG: Firestore Data: $doc");
+          final data = doc.data() as Map<String, dynamic>;
+          print("DEBUG: Firestore Data: $data");
+        },
+        onError: (e) {
+          print("Error getting document: $e");
+        },
+      );
+      final List<dynamic> bookingsData = [];
+      // currentUserData.data()?['bookings'] ?? [];
 
-    print('Trying to delete bookingId: "$bookingId"');
-    for (final b in bookings) {
-      final map = Map<String, dynamic>.from(b);
-      print('Firestore booking_id: "${map['booking_id']}"');
+      bookingsData.removeWhere((booking) => booking['id'] == bookingId);
+
+      await docRef.update({'bookings': bookingsData});
+    } catch (e) {
+      print('Error deleting booking: $e');
     }
-
-    bookings.removeWhere((booking) {
-      final map = Map<String, dynamic>.from(booking);
-      print('Booking keys: ${map.keys}');
-      return map['booking_id'] == bookingId;
-    });
-
-    print('Bookings after removeWhere: $bookings');
-
-    await docRef.update({
-      'bookings': bookings,
-    });
   }
 
   Future<void> deleteUser() async {
