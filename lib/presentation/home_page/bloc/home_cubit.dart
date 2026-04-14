@@ -9,10 +9,13 @@ import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
+import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
+  final ProfileCubit profileCubit;
+  late StreamSubscription profileSubscription;
 
   final FetchAddedByUsersMockedChargingStationsUseCase
   fetchAddedByUsersMockedChargingStationsUseCase =
@@ -29,7 +32,7 @@ class HomeCubit extends Cubit<HomeState> {
   final UpdateBookingUseCase updateBookingUseCase = UpdateBookingUseCase();
   final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
 
-  HomeCubit({required this.authBloc})
+  HomeCubit({required this.authBloc, required this.profileCubit})
     : super(HomeState(isUserAuthenticated: true, isLoading: true)) {
     authSubscription = authBloc.stream.listen((authState) {
       if (authState is AuthSuccessState) {
@@ -38,32 +41,36 @@ class HomeCubit extends Cubit<HomeState> {
         emit(state.copyWith(isUserAuthenticated: false));
       }
     });
+    profileSubscription = profileCubit.stream.listen((profileState) {
+      if (profileState.userData != null) {
+        emit(state.copyWith(userData: profileState.userData));
+      }
+    });
   }
 
   @override
   Future<void> close() {
     authSubscription.cancel();
+    profileSubscription.cancel();
     return super.close();
   }
 
   Future<void> getLocationPermission() async {
     try {
       final hasPermission = await getLocationPermissionUseCase.execute();
-      if (hasPermission) {
-        emit(state.copyWith(isLocationEnabled: true, isLoading: false));
-      } else {
-        emit(
-          state.copyWith(
-            errorMessage: 'Location is not enabled',
-            isLocationEnabled: false,
-            isLoading: true,
-          ),
-        );
-      }
+
+      emit(
+        state.copyWith(
+          isLocationEnabled: hasPermission,
+          isLoading: false,
+          errorMessage: () =>
+              hasPermission ? null : 'Location permission denied',
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
-          errorMessage: e.toString(),
+          errorMessage: () => e.toString(),
           isLocationEnabled: false,
           isLoading: false,
         ),
@@ -77,7 +84,7 @@ class HomeCubit extends Cubit<HomeState> {
       if (state.isLocationEnabled != true) {
         emit(
           state.copyWith(
-            errorMessage: 'Location permission not granted',
+            errorMessage: () => 'Location permission not granted',
           ),
         );
         return;
@@ -97,13 +104,13 @@ class HomeCubit extends Cubit<HomeState> {
       } else {
         emit(
           state.copyWith(
-            errorMessage: 'Could not get location',
+            errorMessage: () => 'Could not get location',
             isLoading: true,
           ),
         );
       }
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString(), isLoading: false));
+      emit(state.copyWith(errorMessage: () => e.toString(), isLoading: false));
     }
   }
 
@@ -117,23 +124,16 @@ class HomeCubit extends Cubit<HomeState> {
       chargingStationsOnMap.addAll(addedByUsersChargingStations);
       chargingStationsOnMap.addAll(publicChargingStations);
 
-      if (chargingStationsOnMap.isNotEmpty) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            chargingStationsOnMap: chargingStationsOnMap,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            errorMessage: 'No charging stations found',
-            isLoading: true,
-          ),
-        );
-      }
+      emit(
+        state.copyWith(
+          isLoading: false,
+          chargingStationsOnMap: chargingStationsOnMap,
+          errorMessage: () =>
+              chargingStationsOnMap.isEmpty ? 'No stations found' : null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString(), isLoading: false));
+      emit(state.copyWith(errorMessage: () => e.toString(), isLoading: false));
     }
   }
 
@@ -147,7 +147,7 @@ class HomeCubit extends Cubit<HomeState> {
         if (state.isLocationEnabled != true) {
           emit(
             state.copyWith(
-              errorMessage: 'Location permission not granted',
+              errorMessage: () => 'Location permission not granted',
             ),
           );
           return;
@@ -176,13 +176,13 @@ class HomeCubit extends Cubit<HomeState> {
       } else {
         emit(
           state.copyWith(
-            errorMessage: 'Could not get location',
+            errorMessage: () => 'Could not get location',
             isLoading: true,
           ),
         );
       }
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString(), isLoading: false));
+      emit(state.copyWith(errorMessage: () => e.toString(), isLoading: false));
     }
   }
 
@@ -213,7 +213,7 @@ class HomeCubit extends Cubit<HomeState> {
       print('Error fetching user data: $e');
       emit(
         state.copyWith(
-          errorMessage: e.toString(),
+          errorMessage: () => e.toString(),
           isLoading: false,
           clearUserData: true,
         ),
@@ -292,7 +292,7 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(errorMessage: e.toString()));
+      emit(state.copyWith(errorMessage: () => e.toString()));
     }
   }
 

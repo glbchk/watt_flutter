@@ -8,6 +8,7 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
@@ -33,11 +34,18 @@ Future<void> main() async {
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
         ),
+        BlocProvider<ReservationsCubit>(
+          create: (context) =>
+              ReservationsCubit(authBloc: context.read<AuthBloc>()),
+        ),
         BlocProvider<ProfileCubit>(
           create: (context) => ProfileCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider<HomeCubit>(
-          create: (context) => HomeCubit(authBloc: context.read<AuthBloc>()),
+          create: (context) => HomeCubit(
+            authBloc: context.read<AuthBloc>(),
+            profileCubit: context.read<ProfileCubit>(),
+          ),
         ),
         BlocProvider<MyCarsCubit>(
           create: (context) => MyCarsCubit(authBloc: context.read<AuthBloc>()),

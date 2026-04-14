@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
-import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
-import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/components/booking_card_widget.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/components/past_booking_card_widget.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/sub_pages/past_booking_details_page.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_state.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 
@@ -23,7 +20,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
   void initState() {
     super.initState();
 
-    context.read<ProfileCubit>().fetchUserData();
+    context.read<ReservationsCubit>().fetchUserData();
   }
 
   @override
@@ -33,34 +30,13 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ProfileCubit, ProfileState>(
-      listener: (context, state) {
-        if (!state.isUserAuthenticated) {
-          context.read<AuthBloc>().add(LogoutRequestedEvent());
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => AuthPage()),
-            (route) => false,
-          );
-        }
-      },
+    return BlocBuilder<ReservationsCubit, ReservationsState>(
       builder: (context, state) {
         print(state.userData?.name);
         print(state.userData?.email);
         print(state.userData);
-        // if (state.isLoading) {
-        //   return const Scaffold(
-        //     body: Center(child: CircularProgressIndicator()),
-        //   );
-        // }
-        //
-        // if (state.userData == null) {
-        //   return const Scaffold(
-        //     body: Center(child: Text('No user data')),
-        //   );
-        // }
 
-        final user = state.userData;
+        final bookings = state.userData?.bookings;
 
         return DefaultTabController(
           length: 2,
@@ -185,9 +161,25 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                             children: [
                               ListView.builder(
                                 padding: EdgeInsets.zero,
-                                itemCount: 1,
+                                itemCount: bookings?.length,
                                 itemBuilder: (context, index) {
-                                  return BookingCardWidget();
+                                  final booking = bookings?[index];
+                                  final selectedTime =
+                                      bookings?[index].selectedTimes;
+                                  print(booking?.station?.chargingStationName);
+
+                                  return BookingCardWidget(
+                                    chargingStationName:
+                                        booking?.station?.chargingStationName,
+                                    dateOfBooking: booking?.date,
+                                    chargingStationTimeSlot:
+                                        "${selectedTime?.first.startTime}-${selectedTime?.first.endTime}",
+                                    chargingStationAddress:
+                                        booking?.station?.address,
+                                    onPressedReject: () {},
+                                    onPressedAccept: () {},
+                                    onPressedContactUser: () {},
+                                  );
                                 },
                               ),
                               ListView.builder(

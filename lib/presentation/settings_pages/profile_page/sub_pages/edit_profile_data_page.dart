@@ -30,21 +30,19 @@ class EditProfileDataPage extends StatefulWidget {
 
 class _EditProfileDataPageState extends State<EditProfileDataPage> {
   TextEditingController controller = TextEditingController();
-  TextEditingController reloginEmailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     controller.text = widget.value;
-    final s = context.read<ProfileCubit>().state;
-    reloginEmailController.text = s.newEmailValue ?? '';
     context.read<ProfileCubit>().fetchUserData();
   }
 
   @override
   void dispose() {
     controller.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -79,22 +77,22 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
             context: context,
             title: "Confirm Identity",
             message: "Please enter your password to change your email.",
-            emailController: reloginEmailController,
-            emailError: state.newEmailValueError,
-            onEmailChanged: (String? value) {
-              context.read<ProfileCubit>().verifyEmailUserData(value ?? '');
-            },
             passwordController: passwordController,
             passwordError: state.passwordError,
-            onPasswordChanged: (String? value) {
-              context.read<ProfileCubit>().verifyPasswordUserData(value ?? '');
-            },
+            buttonLabel: 'Confirm',
             onConfirm: () {
-              context.read<ProfileCubit>().reauthenticateUser(
-                passwordController.text,
-                ProfileDataType.editEmail,
-                reloginEmailController.text,
-              );
+              if (state.passwordError != null) {
+                context.read<ProfileCubit>().verifyPasswordUserData(
+                  passwordController.text,
+                );
+              } else {
+                context.read<ProfileCubit>().reauthenticateUser(
+                  passwordController.text,
+                  ProfileDataType.editEmail,
+                  controller.text,
+                );
+                Navigator.pop(context);
+              }
             },
           );
         }
@@ -130,6 +128,8 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
             ),
           ),
           onPressed: () {
+            FocusScope.of(context).unfocus();
+
             widget.onPressed(controller.text);
           },
         );

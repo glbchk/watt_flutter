@@ -9,11 +9,7 @@ import 'package:watt/utils/global_components/watt_main_button.dart';
 class LoginAlertWidget extends StatelessWidget {
   final String title;
   final String? message;
-  final TextEditingController? emailController;
   final TextEditingController? passwordController;
-  final Function(String?)? onEmailChanged;
-  final Function(String?)? onPasswordChanged;
-  final String? emailError;
   final String? passwordError;
   final String? buttonLabel;
   final VoidCallback? onConfirm;
@@ -22,11 +18,7 @@ class LoginAlertWidget extends StatelessWidget {
     super.key,
     required this.title,
     this.message,
-    this.emailController,
     this.passwordController,
-    this.onEmailChanged,
-    this.onPasswordChanged,
-    this.emailError,
     this.passwordError,
     this.buttonLabel,
     this.onConfirm,
@@ -36,11 +28,7 @@ class LoginAlertWidget extends StatelessWidget {
     required BuildContext context,
     required String title,
     String? message,
-    TextEditingController? emailController,
     TextEditingController? passwordController,
-    Function(String?)? onEmailChanged,
-    Function(String?)? onPasswordChanged,
-    String? emailError,
     String? passwordError,
     String? buttonLabel,
     VoidCallback? onConfirm,
@@ -53,11 +41,7 @@ class LoginAlertWidget extends StatelessWidget {
             return LoginAlertWidget(
               title: title,
               message: message,
-              emailController: emailController,
               passwordController: passwordController,
-              onEmailChanged: onEmailChanged,
-              onPasswordChanged: onPasswordChanged,
-              emailError: state.newEmailValueError,
               passwordError: state.passwordError,
               buttonLabel: buttonLabel,
               onConfirm: onConfirm,
@@ -97,21 +81,11 @@ class LoginAlertWidget extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           CustomTextField(
-            label: 'Email',
-            controller: emailController,
-            autofocus: true,
-            hint: 'Start typing here',
-            onChanged: onEmailChanged,
-            error: emailError,
-          ),
-          const SizedBox(height: 30),
-          CustomTextField(
             label: 'Password',
             controller: passwordController,
             autofocus: true,
             isPassword: true,
             hint: 'Start typing here',
-            onChanged: onPasswordChanged,
             error: passwordError,
           ),
           const SizedBox(height: 20),

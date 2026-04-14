@@ -57,7 +57,7 @@ class HomeState {
     double? addressLatitude,
     double? addressLongitude,
     List<String>? locationSuggestions,
-    String? errorMessage,
+    String? Function()? errorMessage,
     List<ChargingStationModel>? chargingStationsOnMap,
     double? stationDistance,
     UserModel? userData,
@@ -78,7 +78,7 @@ class HomeState {
       addressLatitude: addressLatitude ?? this.addressLatitude,
       addressLongitude: addressLongitude ?? this.addressLongitude,
       locationSuggestions: locationSuggestions ?? this.locationSuggestions,
-      errorMessage: errorMessage,
+      errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
       chargingStationsOnMap:
           chargingStationsOnMap ?? this.chargingStationsOnMap,
       stationDistance: stationDistance ?? this.stationDistance,

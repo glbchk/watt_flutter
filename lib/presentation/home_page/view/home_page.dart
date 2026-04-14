@@ -11,7 +11,7 @@ import 'package:watt/presentation/home_page/view/components/app_drawer_widget.da
 import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
-import 'package:watt/presentation/settings_pages/my_reservations_page/my_reservations_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -153,12 +153,19 @@ class _HomePageState extends State<HomePage> {
     return markers;
   }
 
+  Future<void> _initHome() async {
+    await Future.wait([
+      context.read<HomeCubit>().getLocationPermission(),
+      context.read<HomeCubit>().fetchMockedChargingStations(),
+      context.read<HomeCubit>().fetchUserData(),
+    ]);
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<HomeCubit>().getLocationPermission();
-    context.read<HomeCubit>().fetchMockedChargingStations();
-    context.read<HomeCubit>().fetchUserData();
+
+    _initHome();
   }
 
   @override
@@ -228,6 +235,12 @@ class _HomePageState extends State<HomePage> {
 
         final user = state.userData;
 
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
         return DefaultAppBar(
           showAppBar: false,
           resizeToAvoidBottomInset: false,
@@ -243,16 +256,16 @@ class _HomePageState extends State<HomePage> {
             onPressedLogout: () {
               context.read<AuthBloc>().add(LogoutRequestedEvent());
             },
-            onPressedProfile: () async {
-              await Navigator.push(
+            onPressedProfile: () {
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ProfilePage(),
                 ),
               );
             },
-            onPressedBookings: () async {
-              await Navigator.push(
+            onPressedBookings: () {
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => MyBookingsPage(),

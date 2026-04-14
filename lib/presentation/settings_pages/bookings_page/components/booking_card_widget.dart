@@ -5,20 +5,20 @@ import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class BookingCardWidget extends StatelessWidget {
-  final String? customerName;
+  final String? chargingStationName;
   final String? dateOfBooking;
   final String? chargingStationTimeSlot;
-  final String? chargingStationName;
+  final String? chargingStationAddress;
   final VoidCallback? onPressedReject;
   final VoidCallback? onPressedAccept;
   final VoidCallback? onPressedContactUser;
 
   const BookingCardWidget({
     super.key,
-    this.customerName,
+    this.chargingStationName,
     this.dateOfBooking,
     this.chargingStationTimeSlot,
-    this.chargingStationName,
+    this.chargingStationAddress,
     this.onPressedReject,
     this.onPressedAccept,
     this.onPressedContactUser,
@@ -61,7 +61,7 @@ class BookingCardWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        customerName ?? 'Charging Station Here',
+                        chargingStationName ?? 'Charging Station Here',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -114,7 +114,7 @@ class BookingCardWidget extends StatelessWidget {
                     color: context.theme.appColors.grey3,
                   ),
                   Text(
-                    chargingStationName ?? "John's Amp",
+                    chargingStationAddress ?? "John's Amp",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

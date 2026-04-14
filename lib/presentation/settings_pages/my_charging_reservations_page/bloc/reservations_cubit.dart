@@ -5,10 +5,10 @@ import 'package:watt/domain/use_cases/get_auth_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_state.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/presentation/settings_pages/profile_page/enum/profile_data_type_enum.dart';
 
-class ProfileCubit extends Cubit<ProfileState> {
+class ReservationsCubit extends Cubit<ReservationsState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
 
@@ -22,8 +22,8 @@ class ProfileCubit extends Cubit<ProfileState> {
       UpdatePhoneNumberUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
 
-  ProfileCubit({required this.authBloc})
-    : super(ProfileState(isUserAuthenticated: true, isLoading: true)) {
+  ReservationsCubit({required this.authBloc})
+    : super(ReservationsState(isUserAuthenticated: true, isLoading: true)) {
     authSubscription = authBloc.stream.listen((authState) {
       if (authState is AuthSuccessState) {
         emit(state.copyWith(isUserAuthenticated: true));

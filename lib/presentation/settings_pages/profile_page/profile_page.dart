@@ -35,11 +35,11 @@ class _ProfilePageState extends State<ProfilePage> {
         print(state.userData?.name);
         print(state.userData?.email);
         print(state.userData);
-        if (state.isLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+        // if (state.isLoading) {
+        //   return const Scaffold(
+        //     body: Center(child: CircularProgressIndicator()),
+        //   );
+        // }
 
         if (state.userData == null) {
           return const Scaffold(
@@ -56,12 +56,6 @@ class _ProfilePageState extends State<ProfilePage> {
           scaffoldBackgroundColor: context.theme.appColors.primary,
           leading: BackButton(
             onPressed: () {
-              // context.read<OnboardingBloc>().add(
-              //   NameVerificationEvent(value: ''),
-              // );
-              // context.read<OnboardingBloc>().add(
-              //   PhoneNumberVerificationEvent(value: ''),
-              // );
               Navigator.of(context).pop();
             },
           ),
@@ -173,13 +167,18 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     .read<ProfileCubit>()
                                                     .editEmailUserData(email);
 
-                                                final state = context
+                                                final latestState = context
                                                     .read<ProfileCubit>()
                                                     .state;
 
-                                                if (state.errorMessage ==
+                                                if (latestState.errorMessage ==
                                                     null) {
-                                                  Navigator.of(context).pop();
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).unfocus();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
                                                 }
                                               },
                                               error: state.emailError,
