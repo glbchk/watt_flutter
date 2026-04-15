@@ -9,6 +9,7 @@ import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
@@ -34,6 +35,13 @@ Future<void> main() async {
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
         ),
+        BlocProvider<MyChargingStationsCubit>(
+          create: (context) =>
+              MyChargingStationsCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<MyCarsCubit>(
+          create: (context) => MyCarsCubit(authBloc: context.read<AuthBloc>()),
+        ),
         BlocProvider<ReservationsCubit>(
           create: (context) =>
               ReservationsCubit(authBloc: context.read<AuthBloc>()),
@@ -47,9 +55,7 @@ Future<void> main() async {
             profileCubit: context.read<ProfileCubit>(),
           ),
         ),
-        BlocProvider<MyCarsCubit>(
-          create: (context) => MyCarsCubit(authBloc: context.read<AuthBloc>()),
-        ),
+
         BlocProvider(
           create: (context) => OnboardingBloc(),
         ),

@@ -12,6 +12,7 @@ import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_bo
 import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/my_charging_stations_page.dart';
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -293,6 +294,14 @@ class _HomePageState extends State<HomePage> {
                     //   brandLogo: KMockedData.cars[2].logo,
                     // ),
                   ),
+                ),
+              );
+            },
+            onPressedYourCharger: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MyChargingStationsPage(),
                 ),
               );
             },

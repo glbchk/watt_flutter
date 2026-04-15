@@ -2,32 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/presentation/settings_pages/cars_page/bloc/my_cars_cubit.dart';
-import 'package:watt/presentation/settings_pages/cars_page/bloc/my_cars_state.dart';
-import 'package:watt/presentation/settings_pages/cars_page/sub_pages/add_new_car_page.dart';
-import 'package:watt/presentation/settings_pages/cars_page/sub_pages/car_details_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/add_new_charger_station_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/charging_station_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/empty_tall_card_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
-class MyCarsPage extends StatefulWidget {
-  const MyCarsPage({super.key});
+class MyChargingStationsPage extends StatefulWidget {
+  const MyChargingStationsPage({super.key});
 
   @override
-  State<MyCarsPage> createState() => _MyCarsPageState();
+  State<MyChargingStationsPage> createState() => _MyChargingStationsPageState();
 }
 
-class _MyCarsPageState extends State<MyCarsPage> {
+class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<MyCarsCubit>().fetchUserCarsData();
+    // context.read<MyCarsCubit>().fetchUserCarsData();
     context.read<MyCarsCubit>().fetchUserData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MyCarsCubit, MyCarsState>(
+    return BlocBuilder<MyChargingStationsCubit, MyChargingStationsState>(
       builder: (context, state) {
         final double marginSize = 10.0;
 
@@ -55,7 +56,7 @@ class _MyCarsPageState extends State<MyCarsPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'My cars',
+                                'My charger stations',
                                 style: TextStyle(
                                   color: context.theme.appColors.background,
                                   fontWeight: FontWeight.bold,
@@ -63,7 +64,7 @@ class _MyCarsPageState extends State<MyCarsPage> {
                                 ),
                               ),
                               Text(
-                                'Here you can list all your cars',
+                                'Here you can list your chargers and earn money',
                                 style: TextStyle(
                                   color: context.theme.appColors.background,
                                   fontWeight: FontWeight.normal,
@@ -89,31 +90,35 @@ class _MyCarsPageState extends State<MyCarsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (state.userCars != null &&
-                                    state.userCars!.isNotEmpty) ...[
+                                if (state.userChargingStations != null &&
+                                    state.userChargingStations!.isNotEmpty) ...[
                                   Column(
                                     spacing: 10,
                                     children: [
-                                      ...state.userCars!.map((car) {
+                                      ...state.userChargingStations!.map((
+                                        chargingStation,
+                                      ) {
                                         return TallCardButton(
                                           isDismissible: true,
-                                          dismissableKey: car.id,
+                                          dismissableKey: chargingStation.id,
                                           onDismissableDismissed: () {
                                             context
                                                 .read<MyCarsCubit>()
-                                                .deleteCar(car.id);
+                                                .deleteCar(chargingStation.id);
                                           },
-                                          label: car.carModel ?? '',
-                                          subLabel: car.plateNumber,
-                                          pngImage: car.brandLogo,
+                                          label:
+                                              chargingStation
+                                                  .chargingStationName ??
+                                              '',
+                                          // subLabel: car.brandName,
+                                          pngImage: chargingStation.brandLogo,
                                           marginDistance: marginSize,
                                           onPressed: () {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (_) => CarDetailsPage(
-                                                  car: car,
-                                                ),
+                                                builder: (_) =>
+                                                    ChargingStationDetailsPage(),
                                               ),
                                             );
                                           },
@@ -123,8 +128,8 @@ class _MyCarsPageState extends State<MyCarsPage> {
                                   ),
                                 ] else ...[
                                   EmptyTallCardButton(
-                                    label: 'No cars added',
-                                    subLabel: 'Please add your cars below',
+                                    label: 'No charger stations added',
+                                    subLabel: 'Please add your charger below',
                                     marginDistance: marginSize,
                                   ),
                                 ],
@@ -142,12 +147,12 @@ class _MyCarsPageState extends State<MyCarsPage> {
                 right: 20,
                 bottom: 34,
                 child: WattWhiteButton(
-                  label: 'Add car',
+                  label: 'Add charger station',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => AddNewCarPage(),
+                        builder: (_) => AddNewChargingStationPage(),
                       ),
                     );
                   },
