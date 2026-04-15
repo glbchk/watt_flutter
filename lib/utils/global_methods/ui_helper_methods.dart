@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/choose_location_on_map_page.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class UiHelperMethods {
   static OverlayEntry? removeOverlay(OverlayEntry? overlayEntry) {
@@ -241,6 +242,104 @@ class UiHelperMethods {
           },
         ),
       ),
+    );
+  }
+
+  static Future<dynamic> showContactOptions(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 8,
+              right: 8,
+              // bottom: 34,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: context.theme.appColors.background,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 15, bottom: 25),
+                        child: Column(
+                          spacing: 5,
+                          children: [
+                            Text(
+                              "Phone number",
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              "046-56-5678904",
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        minTileHeight: 56,
+                        title: Center(
+                          child: Text(
+                            "Call",
+                            style: TextStyle(
+                              color: context.theme.appColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        minTileHeight: 56,
+                        title: Center(
+                          child: Text(
+                            "Send SMS",
+                            style: TextStyle(
+                              color: context.theme.appColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        minTileHeight: 56,
+                        title: Center(
+                          child: Text(
+                            "Send email",
+                            style: TextStyle(
+                              color: context.theme.appColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                WattWhiteButton(
+                  label: 'Cancel',
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

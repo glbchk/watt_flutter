@@ -13,6 +13,11 @@ class GoogleMapsRepositoryImpl implements GoogleMapsRepository {
   }
 
   @override
+  Future<bool> getLocationPermission() async {
+    return await googleMapsRemoteDataSource.getLocationPermission();
+  }
+
+  @override
   Future<Position?> goToMyLocation() async {
     return await googleMapsRemoteDataSource.goToMyLocation();
   }
@@ -38,5 +43,18 @@ class GoogleMapsRepositoryImpl implements GoogleMapsRepository {
   @override
   Future<LocationResult?> chooseLocationOnMap() async {
     return await googleMapsRemoteDataSource.chooseLocationOnMap();
+  }
+
+  @override
+  Future<double?> getDistanceTo({
+    required Position? myLocation,
+    required double targetLatitude,
+    required double targetLongitude,
+  }) async {
+    return await googleMapsRemoteDataSource.getDistanceTo(
+      myLocation: myLocation,
+      targetLatitude: targetLatitude,
+      targetLongitude: targetLongitude,
+    );
   }
 }

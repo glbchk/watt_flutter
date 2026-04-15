@@ -42,7 +42,9 @@ class _AuthPageState extends State<AuthPage> {
         if (state is AuthSuccessState) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => HomePage()),
+            MaterialPageRoute(
+              builder: (_) => HomePage(),
+            ),
             (route) => false,
           );
         }
@@ -55,7 +57,9 @@ class _AuthPageState extends State<AuthPage> {
         if (state is SignInAnonymouslyState) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (_) => HomePage()),
+            MaterialPageRoute(
+              builder: (_) => HomePage(),
+            ),
             (route) => false,
           );
         }
@@ -151,7 +155,7 @@ class _AuthPageState extends State<AuthPage> {
                     );
                   },
                   forgotPasswordCallback: () {
-                    WattAlert.show(
+                    WattAlertWidget.show(
                       context: context,
                       title: 'Forgot your password?',
                       message:
@@ -179,7 +183,7 @@ class _AuthPageState extends State<AuthPage> {
                           bloc.add(SendPasswordResetEmailEvent(email: email));
                         }
 
-                        WattAlert.show(
+                        WattAlertWidget.show(
                           context: context,
                           svg: 'assets/icons/ic_success.svg',
                           title: 'Password reset successfully',

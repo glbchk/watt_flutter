@@ -1,3 +1,4 @@
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/utils/constants.dart';
 
@@ -30,5 +31,18 @@ class MockedDataRemoteDataSource {
     await Future.delayed(const Duration(seconds: 1));
 
     return KMockedData.plugs;
+  }
+
+  Future<List<ChargingStationModel>>
+  getAddedByUsersMockedChargingStations() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return KMockedData.mockedAddedByUsersChargingStations;
+  }
+
+  Future<List<ChargingStationModel>> getPublicMockedChargingStations() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return KMockedData.mockedPublicChargingStations;
   }
 }

@@ -90,3 +90,5 @@ class SendPasswordResetEmailEvent extends AuthEvent {
     required this.email,
   });
 }
+
+class CompleteOnboardingEvent extends AuthEvent {}

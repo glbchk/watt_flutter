@@ -147,6 +147,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<LogoutRequestedEvent>((event, emit) async {
+      print("LogoutRequestedEvent");
       try {
         await logoutUserUseCase.execute();
         emit(AuthUnauthenticatedState(isRegisterMode: false));
@@ -242,6 +243,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await sendPasswordResetEmailUseCase.execute(event.email);
         emit(AuthUnauthenticatedState(isRegisterMode: false));
+      } catch (e) {
+        emit(AuthErrorState(e.toString()));
+      }
+    });
+
+    on<CompleteOnboardingEvent>((event, emit) {
+      try {
+        emit(AuthSuccessState());
       } catch (e) {
         emit(AuthErrorState(e.toString()));
       }

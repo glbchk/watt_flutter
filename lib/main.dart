@@ -8,13 +8,18 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
+import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
+import 'presentation/home_page/bloc/home_cubit.dart';
 import 'presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
+import 'presentation/settings_pages/cars_page/bloc/my_cars_cubit.dart';
+import 'presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,18 +32,38 @@ Future<void> main() async {
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider<MyChargingStationsCubit>(
+          create: (context) =>
+              MyChargingStationsCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<MyCarsCubit>(
+          create: (context) => MyCarsCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<ReservationsCubit>(
+          create: (context) =>
+              ReservationsCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<ProfileCubit>(
+          create: (context) => ProfileCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<HomeCubit>(
+          create: (context) => HomeCubit(
+            authBloc: context.read<AuthBloc>(),
+            profileCubit: context.read<ProfileCubit>(),
+          ),
+        ),
+
         BlocProvider(
-          create: (BuildContext context) =>
-              AuthBloc()..add(IsUserLoggedInAuthEvent()),
+          create: (context) => OnboardingBloc(),
         ),
         BlocProvider(
-          create: (BuildContext context) => OnboardingBloc(),
+          create: (context) => ChargingStationBloc(),
         ),
         BlocProvider(
-          create: (BuildContext context) => ChargingStationBloc(),
-        ),
-        BlocProvider(
-          create: (BuildContext context) => PaymentMethodBloc(),
+          create: (context) => PaymentMethodBloc(),
         ),
       ],
       child: const MyApp(),

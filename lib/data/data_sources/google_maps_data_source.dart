@@ -56,10 +56,10 @@ class GoogleMapsRemoteDataSource {
     }
   }
 
-  Future<Position?> goToMyLocation() async {
+  Future<bool> getLocationPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return null;
+      return false;
     }
 
     LocationPermission permission = await Geolocator.checkPermission();
@@ -67,15 +67,19 @@ class GoogleMapsRemoteDataSource {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return null;
+        return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       await Geolocator.openAppSettings();
-      return null;
+      return false;
     }
 
+    return true;
+  }
+
+  Future<Position?> goToMyLocation() async {
     const LocationSettings locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
     );
@@ -199,5 +203,22 @@ class GoogleMapsRemoteDataSource {
     );
 
     return LocationResult(resultPosition, formattedAddress);
+  }
+
+  Future<double?> getDistanceTo({
+    required Position? myLocation,
+    required double targetLatitude,
+    required double targetLongitude,
+  }) async {
+    if (myLocation == null) return null;
+
+    final distanceInMeters = Geolocator.distanceBetween(
+      myLocation.latitude,
+      myLocation.longitude,
+      targetLatitude,
+      targetLongitude,
+    );
+
+    return distanceInMeters / 1000;
   }
 }

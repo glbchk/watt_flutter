@@ -1,4 +1,3 @@
-import 'package:geolocator/geolocator.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -11,7 +10,9 @@ class ChargingStationState {
   final String? id;
   final String? chargingStationName;
   final String? address;
-  final Position? addressPosition;
+  final double? addressLatitude;
+  final double? addressLongitude;
+  // final Position? addressPosition;
   final List<String>? locationSuggestions;
   final String? brandName;
   final String? brandLogo;
@@ -40,7 +41,9 @@ class ChargingStationState {
     this.id,
     this.chargingStationName,
     this.address,
-    this.addressPosition,
+    this.addressLatitude,
+    this.addressLongitude,
+    // this.addressPosition,
     this.locationSuggestions,
     this.brandName,
     this.brandLogo,
@@ -68,7 +71,8 @@ class ChargingStationState {
     String? id,
     String? chargingStationName,
     String? Function()? address,
-    Position? Function()? addressPosition,
+    double? Function()? addressLatitude,
+    double? Function()? addressLongitude,
     List<String>? locationSuggestions,
     String? brandName,
     String? brandLogo,
@@ -95,9 +99,15 @@ class ChargingStationState {
       id: id ?? this.id,
       chargingStationName: chargingStationName ?? this.chargingStationName,
       address: address != null ? address() : this.address,
-      addressPosition: addressPosition != null
-          ? addressPosition()
-          : this.addressPosition,
+      addressLatitude: addressLatitude != null
+          ? addressLatitude()
+          : this.addressLatitude,
+      addressLongitude: addressLongitude != null
+          ? addressLongitude()
+          : this.addressLongitude,
+      // addressPosition: addressPosition != null
+      //     ? addressPosition()
+      //     : this.addressPosition,
       locationSuggestions: locationSuggestions ?? this.locationSuggestions,
       brandName: brandName ?? this.brandName,
       brandLogo: brandLogo ?? this.brandLogo,

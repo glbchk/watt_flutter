@@ -1,3 +1,4 @@
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/repositories/mocked_data_repository_impl.dart';
 import 'package:watt/domain/repositories/mock_data_repository.dart';
@@ -33,5 +34,17 @@ class FetchMockedChargingEffectOptionsUseCase extends MockedDataUseCase {
 class FetchMockedPlugOptionsUseCase extends MockedDataUseCase {
   Future<List<String>> execute() {
     return mockedDataRepository.getPlugOptions();
+  }
+}
+
+class FetchAddedByUsersMockedChargingStationsUseCase extends MockedDataUseCase {
+  Future<List<ChargingStationModel>> execute() {
+    return mockedDataRepository.getAddedByUsersMockedChargingStations();
+  }
+}
+
+class FetchPublicMockedChargingStationsUseCase extends MockedDataUseCase {
+  Future<List<ChargingStationModel>> execute() {
+    return mockedDataRepository.getPublicMockedChargingStations();
   }
 }

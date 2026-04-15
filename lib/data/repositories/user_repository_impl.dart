@@ -1,5 +1,6 @@
 import 'package:watt/data/data_sources/auth_remote_data_source.dart';
 import 'package:watt/data/data_sources/user_remote_data_source.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -20,7 +21,7 @@ class UserRepositoryImpl implements UserRepository {
       email: user.email,
       phoneNumber: user.phoneNumber,
       isOnboardingCompleted: user.isOnboardingCompleted,
-      language: user.language,
+      // language: user.language,
       paymentMethods: user.paymentMethods,
       cars: user.cars,
       chargingStations: user.chargingStations,
@@ -32,6 +33,11 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> getCurrentUser() async {
     await userRemoteDataSource.getCurrentUser();
+  }
+
+  @override
+  Future<void> reauthenticateUser(String password) async {
+    await userRemoteDataSource.reauthenticateUser(password);
   }
 
   @override
@@ -111,6 +117,29 @@ class UserRepositoryImpl implements UserRepository {
       ibanId,
       isReceiver,
     );
+  }
+
+  @override
+  Future<UserModel?> fetchUserData() async {
+    return await userRemoteDataSource.fetchUserData();
+  }
+
+  @override
+  Future<void> addBooking(BookingModel booking) async {
+    return await userRemoteDataSource.addBooking(booking);
+  }
+
+  @override
+  Future<void> updateBookingStage(
+    String bookingId,
+    BookingStatus status,
+  ) async {
+    return await userRemoteDataSource.updateBookingStage(bookingId, status);
+  }
+
+  @override
+  Future<void> deleteBooking(String bookingId) async {
+    return await userRemoteDataSource.deleteBooking(bookingId);
   }
 
   @override

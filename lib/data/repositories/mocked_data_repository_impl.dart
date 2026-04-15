@@ -1,4 +1,5 @@
 import 'package:watt/data/data_sources/mocked_data_remote_data_source.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/domain/repositories/mock_data_repository.dart';
 
@@ -48,6 +49,28 @@ class MockedDataRepositoryImpl implements MockedDataRepository {
       return await mockDataRemoteDataSource.getPlugOptions();
     } catch (e) {
       throw Exception("Failed to fetch mocked plugs: $e");
+    }
+  }
+
+  @override
+  Future<List<ChargingStationModel>>
+  getAddedByUsersMockedChargingStations() async {
+    try {
+      return await mockDataRemoteDataSource
+          .getAddedByUsersMockedChargingStations();
+    } catch (e) {
+      throw Exception(
+        "Failed to fetch added by users mocked charging stations: $e",
+      );
+    }
+  }
+
+  @override
+  Future<List<ChargingStationModel>> getPublicMockedChargingStations() async {
+    try {
+      return await mockDataRemoteDataSource.getPublicMockedChargingStations();
+    } catch (e) {
+      throw Exception("Failed to fetch public mocked charging stations: $e");
     }
   }
 }

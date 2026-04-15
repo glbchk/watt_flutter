@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -16,6 +17,22 @@ class UserRemoteDataSource {
   Future<void> getCurrentUser() async {
     User? user = auth.currentUser;
     await firestore.collection("users").doc(user?.uid).get();
+  }
+
+  Future<void> reauthenticateUser(String password) async {
+    User? user = auth.currentUser;
+    final email = user?.email;
+
+    if (user == null || email == null) {
+      print('No user found to reauthenticate');
+    }
+
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email ?? '',
+      password: password,
+    );
+
+    await user?.reauthenticateWithCredential(credential);
   }
 
   Future<void> updateUserEmail(String email) async {
@@ -223,6 +240,90 @@ class UserRemoteDataSource {
               .toList(),
         });
       }
+    }
+  }
+
+  Future<UserModel?> fetchUserData() async {
+    User? user = auth.currentUser;
+    if (user == null) return null;
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+
+    if (doc.exists && doc.data() != null) {
+      final userModel = UserModel.fromJson(doc.data()!);
+
+      print("DEBUG: Firestore Data: ${doc.data()}");
+
+      return userModel;
+    }
+
+    return null;
+  }
+
+  Future<void> addBooking(BookingModel booking) async {
+    User? user = auth.currentUser;
+
+    await firestore.collection("users").doc(user?.uid).update({
+      'bookings': FieldValue.arrayUnion([booking.toJson()]),
+    });
+  }
+
+  Future<void> updateBookingStage(
+    String bookingId,
+    BookingStatus status,
+  ) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> bookingsData =
+        currentUserData.data()?['bookings'] ?? [];
+    List<BookingModel> bookingsList = bookingsData
+        .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+    int index = bookingsList.indexWhere(
+      (booking) => booking.id == bookingId,
+    );
+
+    if (index != -1) {
+      final neededBooking = bookingsList[index];
+
+      bookingsList[index] = neededBooking.copyWith(
+        status: status,
+      );
+
+      await docRef.update({
+        'bookings': bookingsList.map((booking) => booking.toJson()).toList(),
+      });
+    }
+  }
+
+  Future<void> deleteBooking(String bookingId) async {
+    // print('Deleting booking $bookingId');
+    try {
+      User? user = auth.currentUser;
+      final docRef = firestore.collection("users").doc(user?.uid);
+
+      // final currentUserData = await docRef.get();
+      docRef.get().then(
+        (DocumentSnapshot doc) {
+          print("DEBUG: Firestore Data: $doc");
+          final data = doc.data() as Map<String, dynamic>;
+          print("DEBUG: Firestore Data: $data");
+        },
+        onError: (e) {
+          print("Error getting document: $e");
+        },
+      );
+      final List<dynamic> bookingsData = [];
+      // currentUserData.data()?['bookings'] ?? [];
+
+      bookingsData.removeWhere((booking) => booking['id'] == bookingId);
+
+      await docRef.update({'bookings': bookingsData});
+    } catch (e) {
+      print('Error deleting booking: $e');
     }
   }
 

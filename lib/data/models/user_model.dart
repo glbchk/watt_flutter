@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -11,10 +12,10 @@ class UserModel {
   final bool? isEmailVerified;
   final String? phoneNumber;
   final bool isOnboardingCompleted;
-  final String? language;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
   final List<PaymentMethodModel>? paymentMethods;
+  final List<BookingModel>? bookings;
 
   UserModel({
     this.isAnonymous,
@@ -24,23 +25,21 @@ class UserModel {
     this.isEmailVerified,
     this.phoneNumber,
     required this.isOnboardingCompleted,
-    this.language,
     this.cars,
     this.chargingStations,
     this.paymentMethods,
+    this.bookings,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      isAnonymous: json['is_anonymous'] ?? '',
+      isAnonymous: json['is_anonymous'] ?? false,
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       isEmailVerified: json['is_email_verified'] ?? false,
       phoneNumber: json['phone_number'] ?? '',
       isOnboardingCompleted: json['is_onboarding_completed'],
-      language: json['language'] ?? 'en',
-
       cars:
           (json['cars'] as List<dynamic>?)
               ?.map((item) => CarModel.fromJson(item as Map<String, dynamic>))
@@ -62,6 +61,13 @@ class UserModel {
               )
               .toList() ??
           [],
+      bookings:
+          (json['bookings'] as List<dynamic>?)
+              ?.map(
+                (item) => BookingModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -74,10 +80,10 @@ class UserModel {
       'is_email_verified': isEmailVerified,
       'phone_number': phoneNumber,
       'is_onboarding_completed': isOnboardingCompleted,
-      'language': language,
       'cars': cars?.map((c) => c.toJson()).toList(),
       'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
       'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
+      'bookings': bookings?.map((b) => b.toJson()).toList(),
     };
   }
 
@@ -90,10 +96,10 @@ class UserModel {
       isEmailVerified: entity.isEmailVerified ?? false,
       phoneNumber: entity.phoneNumber ?? '',
       isOnboardingCompleted: entity.isOnboardingCompleted,
-      language: entity.language ?? '',
       cars: entity.cars ?? [],
       chargingStations: entity.chargingStations ?? [],
       paymentMethods: entity.paymentMethods ?? [],
+      bookings: entity.bookings ?? [],
     );
   }
 
@@ -105,10 +111,10 @@ class UserModel {
     bool? isEmailVerified,
     String? phoneNumber,
     bool? isOnboardingCompleted,
-    String? language,
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
     List<PaymentMethodModel>? paymentMethods,
+    List<BookingModel>? bookings,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -119,10 +125,10 @@ class UserModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       isOnboardingCompleted:
           isOnboardingCompleted ?? this.isOnboardingCompleted,
-      language: language ?? this.language,
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
       paymentMethods: paymentMethods ?? this.paymentMethods,
+      bookings: bookings ?? this.bookings,
     );
   }
 }

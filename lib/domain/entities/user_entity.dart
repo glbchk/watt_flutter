@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -14,6 +15,7 @@ class UserEntity {
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
   final List<PaymentMethodModel>? paymentMethods;
+  final List<BookingModel>? bookings;
 
   UserEntity({
     this.isAnonymous,
@@ -27,5 +29,6 @@ class UserEntity {
     this.paymentMethods,
     this.cars,
     this.chargingStations,
+    this.bookings,
   });
 }

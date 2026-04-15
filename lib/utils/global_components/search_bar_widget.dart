@@ -3,7 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:watt/utils/colors.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  final VoidCallback onBackPressed;
+  final VoidCallback onLeadingPressed;
+  final Widget? leadingIcon;
   final BuildContext context;
   final FocusNode? focusNode;
   final void Function(bool)? onFocusChange;
@@ -15,7 +16,8 @@ class SearchBarWidget extends StatelessWidget {
 
   const SearchBarWidget({
     super.key,
-    required this.onBackPressed,
+    required this.onLeadingPressed,
+    this.leadingIcon,
     required this.context,
     this.focusNode,
     required this.onFocusChange,
@@ -46,8 +48,8 @@ class SearchBarWidget extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(5),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new),
-              onPressed: onBackPressed,
+              icon: leadingIcon ?? Icon(Icons.arrow_back_ios_new),
+              onPressed: onLeadingPressed,
             ),
           ),
         ),
@@ -90,10 +92,18 @@ class SearchBarWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: onIconPressed,
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: controller,
+                  builder: (context, value, _) {
+                    return AnimatedOpacity(
+                      opacity: value.text.isNotEmpty ? 1 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: onIconPressed,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
