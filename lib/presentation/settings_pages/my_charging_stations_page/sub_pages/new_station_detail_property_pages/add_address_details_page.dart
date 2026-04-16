@@ -1,11 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/extra_pages/choose_location_on_map_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/extra_pages/select_address_on_map.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/inline_button.dart';
@@ -31,11 +31,12 @@ class _AddStationAddressDetailsPageState
     extends State<AddStationAddressDetailsPage> {
   TextEditingController controllerAddress = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  Timer? _debounce;
 
   @override
   void initState() {
-    final s = context.read<ChargingStationBloc>().state;
-    controllerAddress.text = s.address ?? "";
+    final s = context.read<MyChargingStationsCubit>().state;
+    controllerAddress.text = s.chargingStation?.address ?? "";
     _focusNode.addListener(() {
       setState(() {});
     });
@@ -44,6 +45,7 @@ class _AddStationAddressDetailsPageState
 
   @override
   void dispose() {
+    _debounce?.cancel();
     controllerAddress.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -53,15 +55,16 @@ class _AddStationAddressDetailsPageState
   Widget build(BuildContext context) {
     return BlocConsumer<MyChargingStationsCubit, MyChargingStationsState>(
       listener: (context, state) {
-        // if (controllerAddress.text != state.address) {
-        //   controllerAddress.text = state.address ?? "";
-        //   controllerAddress.selection = TextSelection.fromPosition(
-        //     TextPosition(offset: state.address?.length ?? 0),
-        //   );
-        // }
+        if (!_focusNode.hasFocus &&
+            controllerAddress.text != state.chargingStation?.address) {
+          controllerAddress.text = state.chargingStation?.address ?? "";
+          controllerAddress.selection = TextSelection.fromPosition(
+            TextPosition(offset: state.chargingStation?.address?.length ?? 0),
+          );
+        }
       },
       builder: (context, state) {
-        // final suggestions = state.locationSuggestions ?? [];
+        final suggestions = state.locationSuggestions ?? [];
 
         return Stack(
           children: [
@@ -85,15 +88,19 @@ class _AddStationAddressDetailsPageState
                       suffixIconColor: context.theme.appColors.grey1,
                       onSuffixIconTap: () {
                         controllerAddress.clear();
-                        context.read<ChargingStationBloc>().add(
-                          ClearAddressPropertyEvent(),
-                        );
+                        context.read<MyChargingStationsCubit>().clearAddress();
 
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (value) {
-                        context.read<ChargingStationBloc>().add(
-                          FetchLocationSuggestionsEvent(value ?? ''),
+                        _debounce?.cancel();
+                        _debounce = Timer(
+                          const Duration(milliseconds: 500),
+                          () {
+                            context
+                                .read<MyChargingStationsCubit>()
+                                .fetchLocationSuggestions(value ?? '');
+                          },
                         );
                       },
                     ),
@@ -109,7 +116,7 @@ class _AddStationAddressDetailsPageState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ChooseLocationOnMapPage(
+                            builder: (_) => const SelectAddressOnMapPage(
                               autoDetectMyLocation: true,
                             ),
                           ),
@@ -124,7 +131,7 @@ class _AddStationAddressDetailsPageState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ChooseLocationOnMapPage(
+                            builder: (_) => const SelectAddressOnMapPage(
                               autoDetectMyLocation: false,
                               findOnMapLocation: true,
                             ),
@@ -136,89 +143,86 @@ class _AddStationAddressDetailsPageState
                 ),
               ),
               onPressed: () {
-                // context.read<ChargingStationBloc>().add(
-                //   SaveAddressPropertyEvent(
-                //     state.address ?? "",
-                //     state.addressLatitude,
-                //     state.addressLongitude,
-                //     // state.addressPosition,
-                //   ),
-                // );
+                context.read<MyChargingStationsCubit>().saveAddress(
+                  state.chargingStation?.address ?? "",
+                  state.chargingStation?.addressLatitude,
+                  state.chargingStation?.addressLongitude,
+                );
 
                 Navigator.pop(context);
               },
             ),
-            // if (_focusNode.hasFocus && suggestions.isNotEmpty)
-            //   Positioned(
-            //     top: 222,
-            //     left: 20,
-            //     right: 20,
-            //     child: Material(
-            //       elevation: 4,
-            //       clipBehavior: Clip.antiAlias,
-            //       borderRadius: BorderRadius.circular(10),
-            //       color: context.theme.appColors.surface,
-            //       child: Container(
-            //         constraints: const BoxConstraints(
-            //           maxHeight: 400,
-            //         ),
-            //         decoration: BoxDecoration(
-            //           color: context.theme.appColors.background,
-            //         ),
-            //         child: ListView.builder(
-            //           shrinkWrap: true,
-            //           padding: EdgeInsets.zero,
-            //           itemCount: suggestions.length + 1,
-            //           itemBuilder: (context, index) {
-            //             if (index == suggestions.length) {
-            //               return ListTile(
-            //                 minTileHeight: 60,
-            //                 leading: ClipOval(
-            //                   child: Container(
-            //                     color: context.theme.appColors.grey4,
-            //                     width: 40,
-            //                     height: 40,
-            //                     child: Icon(
-            //                       size: 24,
-            //                       Icons.my_location,
-            //                       color: context.theme.appColors.primary,
-            //                     ),
-            //                   ),
-            //                 ),
-            //                 title: const Text(
-            //                   "Use my current location",
-            //                 ),
-            //                 onTap: () {
-            //                   Navigator.push(
-            //                     context,
-            //                     MaterialPageRoute(
-            //                       builder: (_) => const ChooseLocationOnMapPage(
-            //                         autoDetectMyLocation: true,
-            //                       ),
-            //                     ),
-            //                   );
-            //
-            //                   _focusNode.unfocus();
-            //                 },
-            //               );
-            //             }
-            //             final suggestion = suggestions[index];
-            //
-            //             return ListTile(
-            //               leading: const Icon(
-            //                 Icons.location_on_outlined,
-            //               ),
-            //               title: Text(suggestion),
-            //               onTap: () {
-            //                 controllerAddress.text = suggestion;
-            //                 _focusNode.unfocus();
-            //               },
-            //             );
-            //           },
-            //         ),
-            //       ),
-            //     ),
-            //   ),
+            if (_focusNode.hasFocus && suggestions.isNotEmpty)
+              Positioned(
+                top: 222,
+                left: 20,
+                right: 20,
+                child: Material(
+                  elevation: 4,
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(10),
+                  color: context.theme.appColors.surface,
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 400,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.theme.appColors.background,
+                    ),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: suggestions.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == suggestions.length) {
+                          return ListTile(
+                            minTileHeight: 60,
+                            leading: ClipOval(
+                              child: Container(
+                                color: context.theme.appColors.grey4,
+                                width: 40,
+                                height: 40,
+                                child: Icon(
+                                  size: 24,
+                                  Icons.my_location,
+                                  color: context.theme.appColors.primary,
+                                ),
+                              ),
+                            ),
+                            title: const Text(
+                              "Use my current location",
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SelectAddressOnMapPage(
+                                    autoDetectMyLocation: true,
+                                  ),
+                                ),
+                              );
+
+                              _focusNode.unfocus();
+                            },
+                          );
+                        }
+                        final suggestion = suggestions[index];
+
+                        return ListTile(
+                          leading: const Icon(
+                            Icons.location_on_outlined,
+                          ),
+                          title: Text(suggestion),
+                          onTap: () {
+                            controllerAddress.text = suggestion;
+                            _focusNode.unfocus();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
           ],
         );
       },

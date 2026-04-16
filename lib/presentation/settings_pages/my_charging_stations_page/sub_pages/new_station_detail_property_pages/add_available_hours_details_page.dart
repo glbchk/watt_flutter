@@ -3,11 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/timeslot_model.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/small_textfield.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
@@ -44,13 +43,15 @@ class _AddStationAvailableHoursDetailsPageState
     super.initState();
 
     startFocus.addListener(() {
-      if (!startFocus.hasFocus)
+      if (!startFocus.hasFocus) {
         TextfieldHelperMethods.completeTimeFormatting(controllerStartTime);
+      }
     });
 
     endFocus.addListener(() {
-      if (!endFocus.hasFocus)
+      if (!endFocus.hasFocus) {
         TextfieldHelperMethods.completeTimeFormatting(controllerEndTime);
+      }
     });
   }
 
@@ -63,9 +64,9 @@ class _AddStationAvailableHoursDetailsPageState
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChargingStationBloc, ChargingStationState>(
+    return BlocBuilder<MyChargingStationsCubit, MyChargingStationsState>(
       builder: (context, state) {
-        final slots = state.availableHours ?? [];
+        final slots = state.chargingStation?.availableHours ?? [];
 
         return DetailsWidget(
           title: 'Available hours',
@@ -89,9 +90,11 @@ class _AddStationAvailableHoursDetailsPageState
                     spacing: 10,
                     children: [
                       ...List.generate(
-                        state.availableHours?.length ?? 0,
+                        state.chargingStation?.availableHours?.length ?? 0,
                         (index) {
-                          final TimeSlotModel? timeSlot = state.availableHours
+                          final TimeSlotModel? timeSlot = state
+                              .chargingStation
+                              ?.availableHours
                               ?.elementAt(
                                 index,
                               );
@@ -100,9 +103,9 @@ class _AddStationAvailableHoursDetailsPageState
                             isDismissible: true,
                             dismissableKey: timeSlot?.id,
                             onDismissableDismissed: () {
-                              context.read<ChargingStationBloc>().add(
-                                RemoveTimeSlotEvent(timeSlot?.id ?? ''),
-                              );
+                              context
+                                  .read<MyChargingStationsCubit>()
+                                  .removeTimeSlot(timeSlot?.id ?? '');
                             },
                             padding: EdgeInsets.only(top: 2, bottom: 2),
                             label: StringHelperMethods.formatDayRanges(
@@ -362,16 +365,16 @@ class _AddStationAvailableHoursDetailsPageState
                     if ((timeSlot.availableDays?.isEmpty ?? true) ||
                         (timeSlot.startTime?.isEmpty ?? true) ||
                         (timeSlot.endTime?.isEmpty ?? true)) {
-                      context.read<ChargingStationBloc>().add(
-                        AvailableHoursVerificationEvent(
-                          availableDays: _chosenDays,
-                          startTime: controllerStartTime.text,
-                          endTime: controllerEndTime.text,
-                        ),
-                      );
+                      context
+                          .read<MyChargingStationsCubit>()
+                          .verifyAvailableHours(
+                            _chosenDays,
+                            controllerStartTime.text,
+                            controllerEndTime.text,
+                          );
                     } else {
-                      context.read<ChargingStationBloc>().add(
-                        AddTimeSlotEvent(timeSlot),
+                      context.read<MyChargingStationsCubit>().addTimeSlot(
+                        timeSlot,
                       );
 
                       setState(() {
@@ -382,13 +385,13 @@ class _AddStationAvailableHoursDetailsPageState
 
                       FocusScope.of(context).unfocus();
 
-                      context.read<ChargingStationBloc>().add(
-                        AvailableHoursVerificationEvent(
-                          availableDays: [1],
-                          startTime: 'valid',
-                          endTime: 'valid',
-                        ),
-                      );
+                      context
+                          .read<MyChargingStationsCubit>()
+                          .verifyAvailableHours(
+                            [1],
+                            'valid',
+                            'valid',
+                          );
                     }
                   },
                 ),
@@ -396,7 +399,7 @@ class _AddStationAvailableHoursDetailsPageState
             ),
           ),
           onPressed: () {
-            Navigator.pop(context, state.availableHours);
+            Navigator.pop(context, state.chargingStation?.availableHours);
           },
         );
       },

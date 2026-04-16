@@ -5,13 +5,14 @@ import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/sub_pages/detail_property_pages/detail_available_hours_property_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_address_details_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_available_hours_details_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_brand_details_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_charging_effect_details_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_plug_details_page.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_price_details_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_station_name_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -169,33 +170,14 @@ class _ChargingStationDetailsPageState
                                 ? '${station?.pricePerKwh ?? ''} SEK'
                                 : null,
                             onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (_) => DetailPricePropertyPage(
-                              //       savedPrice: state.pricePerKwh ?? '',
-                              //     ),
-                              //   ),
-                              // );
-                            },
-                          ),
-                          RowButton(
-                            label: 'Bank account',
-                            secondLabel: station?.bankAccount != null
-                                ? station?.bankAccount?.ibanNumber?.substring(
-                                        0,
-                                        18,
-                                      ) ??
-                                      ''
-                                : null,
-                            onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (_) =>
-                              //         DetailBankAccountPropertyPage(),
-                              //   ),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddStationPriceDetailsPage(
+                                    savedPrice: station?.pricePerKwh ?? '',
+                                  ),
+                                ),
+                              );
                             },
                           ),
                           RowToggle(
@@ -219,7 +201,7 @@ class _ChargingStationDetailsPageState
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) =>
-                                      DetailAvailableHoursPropertyPage(),
+                                      AddStationAvailableHoursDetailsPage(),
                                 ),
                               );
                             },

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
+import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
@@ -119,10 +118,8 @@ class _AddStationPriceDetailsPageState
         ),
       ),
       onPressed: () {
-        context.read<ChargingStationBloc>().add(
-          SavePricePropertyEvent(
-            controllerPrice.text,
-          ),
+        context.read<MyChargingStationsCubit>().savePrice(
+          controllerPrice.text,
         );
 
         Navigator.pop(context);
