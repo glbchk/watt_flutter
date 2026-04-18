@@ -70,6 +70,12 @@ class AddChargingStationsUseCase extends UserUseCase {
   }
 }
 
+class DeleteChargingStationsUseCase extends UserUseCase {
+  Future execute(String stationId) {
+    return userRepository.deleteChargingStation(stationId);
+  }
+}
+
 class FetchUserChargingStationsUseCase extends UserUseCase {
   Future execute() {
     return userRepository.fetchChargingStations();

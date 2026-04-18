@@ -54,7 +54,7 @@ class DetailsWidget extends StatelessWidget {
                   child: WattMainButton(
                     label: 'Save',
                     onPressed: () {
-                      onPressed();
+                      onPressed.call();
                     },
                   ),
                 ),

@@ -83,6 +83,11 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<void> deleteChargingStation(String stationId) async {
+    return await userRemoteDataSource.deleteChargingStation(stationId);
+  }
+
+  @override
   Future<List<ChargingStationModel>> fetchChargingStations() async {
     return await userRemoteDataSource.fetchChargingStations();
   }

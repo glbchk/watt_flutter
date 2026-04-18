@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class SelectAddressOnMapPage extends StatefulWidget {
   final bool autoDetectMyLocation;
@@ -63,7 +62,8 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
 
           if (!_focusNode.hasFocus &&
               searchController.text != state.chargingStation?.address) {
-            searchController.text = state.chargingStation?.address ?? "";
+            searchController.text =
+                state.chargingStation?.address ?? searchController.text;
             searchController.selection = TextSelection.fromPosition(
               TextPosition(offset: searchController.text.length),
             );
@@ -92,7 +92,34 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
           resizeToAvoidBottomInset: false,
           extendBodyBehindAppBar: true,
           scaffoldBackgroundColor: context.theme.appColors.transparent,
+          leading: BackButton(
+            onPressed: () async {
+              if (state.chargingStation?.addressLatitude == null &&
+                  state.chargingStation?.addressLongitude == null) {
+                final positionFromAddress =
+                    await GoogleMapsHelperMethods.convertAddressToPosition(
+                      state.chargingStation?.address ?? '',
+                    );
+                if (context.mounted) {
+                  if (positionFromAddress != null) {
+                    context.read<MyChargingStationsCubit>().saveAddress(
+                      state.chargingStation?.address ?? searchController.text,
+                      positionFromAddress.latitude,
+                      positionFromAddress.longitude,
+                    );
+                  }
+                }
+              } else {
+                context.read<MyChargingStationsCubit>().saveAddress(
+                  state.chargingStation?.address ?? searchController.text,
+                  state.chargingStation?.addressLatitude,
+                  state.chargingStation?.addressLongitude,
+                );
+              }
 
+              Navigator.pop(context, state.chargingStation?.address);
+            },
+          ),
           body: Stack(
             children: [
               GoogleMap(
@@ -166,15 +193,19 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
                             child: WattMainButton(
                               label: 'Save',
                               onPressed: () {
-                                context.read<ChargingStationBloc>().add(
-                                  SaveAddressPropertyEvent(
-                                    state.chargingStation?.address ?? "",
-                                    state.chargingStation?.addressLatitude,
-                                    state.chargingStation?.addressLongitude,
-                                  ),
+                                context
+                                    .read<MyChargingStationsCubit>()
+                                    .saveAddress(
+                                      state.chargingStation?.address ??
+                                          searchController.text,
+                                      state.chargingStation?.addressLatitude,
+                                      state.chargingStation?.addressLongitude,
+                                    );
+
+                                Navigator.pop(
+                                  context,
+                                  state.chargingStation?.address,
                                 );
-                                searchController.clear();
-                                Navigator.pop(context);
                               },
                             ),
                           ),

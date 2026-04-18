@@ -1,10 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/charging_station_model.dart';
-import 'package:watt/data/models/payment_method_model.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
-import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_event.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/new_station_detail_property_pages/add_address_details_page.dart';
@@ -32,26 +30,20 @@ class ChargingStationDetailsPage extends StatefulWidget {
 
 class _ChargingStationDetailsPageState
     extends State<ChargingStationDetailsPage> {
-  IbanModel paymentMethod = IbanModel(
-    id: '',
-    isUsedForReceivingEarnings: false,
-  );
+  // IbanModel paymentMethod = IbanModel(
+  //   id: '',
+  //   isUsedForReceivingEarnings: false,
+  // );
 
   bool isOnlineChargerOn = false;
   bool isEveryoneCanAccess = false;
 
   @override
   void initState() {
-    final state = context.read<ChargingStationBloc>().state;
-    final paymentMethods = state.bankAccounts;
-    if (paymentMethods != null) {
-      for (final method in paymentMethods) {
-        paymentMethod = method;
-      }
-    }
+    final state = context.read<MyChargingStationsCubit>().state;
 
-    isOnlineChargerOn = state.onlineCharger ?? false;
-    isEveryoneCanAccess = state.everyoneCanAccess ?? false;
+    isOnlineChargerOn = state.chargingStation?.onlineCharger ?? false;
+    isEveryoneCanAccess = state.chargingStation?.everyoneCanAccess ?? false;
 
     // context.read<ChargingStationBloc>().add(
     //   ResetChargingStationFormEvent(),
@@ -107,7 +99,12 @@ class _ChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Address',
-                            secondLabel: station?.address ?? '',
+                            secondLabel: station?.address != null
+                                ? station!.address!.substring(
+                                    0,
+                                    min(station.address?.length ?? 0, 32),
+                                  )
+                                : '',
                             onPressed: () {
                               //TODO: NEED TO BE FIXED
                               Navigator.push(
@@ -166,7 +163,7 @@ class _ChargingStationDetailsPageState
                           ),
                           RowButton(
                             label: 'Price per kWh',
-                            secondLabel: station?.pricePerKwh != ""
+                            secondLabel: station?.pricePerKwh != null
                                 ? '${station?.pricePerKwh ?? ''} SEK'
                                 : null,
                             onPressed: () {
@@ -233,28 +230,17 @@ class _ChargingStationDetailsPageState
               bottom: 40.0,
             ),
             child: WattMainButton(
-              label: 'Done',
+              label: 'Save',
               onPressed: () {
-                final chargingStation = ChargingStationModel(
-                  type: ChargingStationType.private,
-                  id: Uuid().v4(),
-                  chargingStationName: station?.chargingStationName,
-                  address: station?.address,
-                  addressLatitude: station?.addressLatitude,
-                  addressLongitude: station?.addressLongitude,
-                  brandName: station?.brandName,
-                  brandLogo: station?.brandLogo,
-                  chargingEffect: station?.chargingEffect,
-                  plug: station?.plug,
-                  pricePerKwh: station?.pricePerKwh,
-                  bankAccount: paymentMethod,
+                final updatedStation = station?.copyChargingStationWith(
                   onlineCharger: isOnlineChargerOn,
-                  availableHours: station?.availableHours,
                   everyoneCanAccess: isEveryoneCanAccess,
+                  stationStatus: ChargingStationAvailability.available,
                 );
 
-                final Map<String, dynamic> stationMap = chargingStation
-                    .toJson();
+                if (updatedStation == null) return;
+
+                final Map<String, dynamic> stationMap = updatedStation.toJson();
 
                 final entries = stationMap.entries.toList();
                 final iterator = entries.iterator;
@@ -266,6 +252,9 @@ class _ChargingStationDetailsPageState
                   final value = iterator.current.value;
 
                   if (value == null || value.toString().isEmpty) {
+                    if (key == 'bank_account' || key == 'bankAccount') {
+                      continue;
+                    }
                     missingProperties.add(key);
                   }
                 }
@@ -284,15 +273,14 @@ class _ChargingStationDetailsPageState
                     },
                   );
                 } else {
-                  context.read<ChargingStationBloc>().add(
-                    AddOneChargingStationEvent(chargingStation),
-                  );
-                  // context.read<ChargingStationBloc>().add(
-                  //   ResetChargingStationFormEvent(),
-                  // );
-                  Navigator.pop(context);
+                  context
+                      .read<MyChargingStationsCubit>()
+                      .saveNewChargingStation(updatedStation);
+
+                  Navigator.of(context)
+                    ..pop()
+                    ..pop();
                 }
-                ;
               },
             ),
           ),

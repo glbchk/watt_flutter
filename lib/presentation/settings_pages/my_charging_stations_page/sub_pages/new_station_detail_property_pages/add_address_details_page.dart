@@ -35,8 +35,13 @@ class _AddStationAddressDetailsPageState
 
   @override
   void initState() {
-    final s = context.read<MyChargingStationsCubit>().state;
-    controllerAddress.text = s.chargingStation?.address ?? "";
+    controllerAddress.text =
+        context
+            .read<MyChargingStationsCubit>()
+            .state
+            .chargingStation
+            ?.address ??
+        "";
     _focusNode.addListener(() {
       setState(() {});
     });
@@ -55,9 +60,10 @@ class _AddStationAddressDetailsPageState
   Widget build(BuildContext context) {
     return BlocConsumer<MyChargingStationsCubit, MyChargingStationsState>(
       listener: (context, state) {
-        if (!_focusNode.hasFocus &&
-            controllerAddress.text != state.chargingStation?.address) {
-          controllerAddress.text = state.chargingStation?.address ?? "";
+        final newAddress = state.chargingStation?.address ?? "";
+
+        if (!_focusNode.hasFocus && controllerAddress.text != newAddress) {
+          controllerAddress.text = newAddress;
           controllerAddress.selection = TextSelection.fromPosition(
             TextPosition(offset: state.chargingStation?.address?.length ?? 0),
           );
@@ -87,10 +93,9 @@ class _AddStationAddressDetailsPageState
                       suffixIcon: Icon(Icons.close),
                       suffixIconColor: context.theme.appColors.grey1,
                       onSuffixIconTap: () {
+                        FocusScope.of(context).unfocus();
                         controllerAddress.clear();
                         context.read<MyChargingStationsCubit>().clearAddress();
-
-                        FocusScope.of(context).unfocus();
                       },
                       onChanged: (value) {
                         _debounce?.cancel();
@@ -116,7 +121,7 @@ class _AddStationAddressDetailsPageState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const SelectAddressOnMapPage(
+                            builder: (_) => SelectAddressOnMapPage(
                               autoDetectMyLocation: true,
                             ),
                           ),
@@ -126,17 +131,23 @@ class _AddStationAddressDetailsPageState
                     InlineButton(
                       label: 'Choose location on map',
                       icon: Icons.location_on_outlined,
-                      onPressed: () {
+                      onPressed: () async {
                         FocusScope.of(context).unfocus();
-                        Navigator.push(
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const SelectAddressOnMapPage(
+                            builder: (_) => SelectAddressOnMapPage(
                               autoDetectMyLocation: false,
                               findOnMapLocation: true,
                             ),
                           ),
                         );
+
+                        if (result != null) {
+                          setState(() {
+                            controllerAddress.text = result;
+                          });
+                        }
                       },
                     ),
                   ],
@@ -144,7 +155,7 @@ class _AddStationAddressDetailsPageState
               ),
               onPressed: () {
                 context.read<MyChargingStationsCubit>().saveAddress(
-                  state.chargingStation?.address ?? "",
+                  state.chargingStation?.address ?? controllerAddress.text,
                   state.chargingStation?.addressLatitude,
                   state.chargingStation?.addressLongitude,
                 );

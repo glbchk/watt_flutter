@@ -36,10 +36,12 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
   final HandleMapTapUseCase handleMapTapUseCase = HandleMapTapUseCase();
   final ChooseLocationOnMapUseCase chooseLocationOnMapUseCase =
       ChooseLocationOnMapUseCase();
-  // final AddCarUseCase updateUserCarUseCase = AddCarUseCase();
-  // final FetchUserCarsUseCase fetchUserCarsUseCase = FetchUserCarsUseCase();
-  // final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
-  // final FetchUserCarsUseCase getUserCarsUseCase = FetchUserCarsUseCase();
+  final AddChargingStationsUseCase addChargingStationsUseCase =
+      AddChargingStationsUseCase();
+  final DeleteChargingStationsUseCase deleteChargingStationUseCase =
+      DeleteChargingStationsUseCase();
+  final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
+      FetchUserChargingStationsUseCase();
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
 
   MyChargingStationsCubit({required this.authBloc})
@@ -115,33 +117,12 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
     }
   }
 
-  Future<void> saveBrandAndLogoChargingStation(
-    String brandName,
-    String brandLogo,
-  ) async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      final ChargingStationModel chargingStationInitiated =
-          ChargingStationModel(
-            id: Uuid().v4(),
-            brandName: brandName,
-            brandLogo: brandLogo,
-          );
-
-      emit(
-        state.copyWith(
-          chargingStation: chargingStationInitiated,
-          isLoading: false,
-        ),
-      );
-    } catch (e) {
-      print('Error initializing charging station: $e');
-      emit(
-        state.copyWith(
-          isLoading: false,
-        ),
-      );
-    }
+  void initializeChargingStation() {
+    emit(
+      state.copyWith(
+        chargingStation: ChargingStationModel(id: Uuid().v4()),
+      ),
+    );
   }
 
   void saveChargingStationName(
@@ -270,13 +251,17 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
     String address,
     double? addressLatitude,
     double? addressLongitude,
-  ) {
+  ) async {
+    final position = await GoogleMapsHelperMethods.convertAddressToPosition(
+      address,
+    );
     emit(
       state.copyWith(
+        locationSuggestions: [],
         chargingStation: state.chargingStation?.copyChargingStationWith(
           address: address,
-          addressLatitude: addressLatitude,
-          addressLongitude: addressLongitude,
+          addressLatitude: addressLatitude ?? position?.latitude,
+          addressLongitude: addressLongitude ?? position?.longitude,
         ),
       ),
     );
@@ -441,6 +426,74 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
         ),
       ),
     );
+  }
+
+  Future<void> saveNewChargingStation(
+    ChargingStationModel chargingStation,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final List<ChargingStationModel> chargingStationsUpdated = [
+        ...?state.userChargingStations,
+        chargingStation,
+      ];
+      await addChargingStationsUseCase.execute(chargingStationsUpdated);
+
+      emit(
+        state.copyWith(
+          chargingStations: chargingStationsUpdated,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      print('Error adding charging station: $e');
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> fetchChargingStations() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final List<ChargingStationModel> chargingStations =
+          await fetchUserChargingStationsUseCase.execute();
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          userChargingStations: chargingStations,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching charging stations: $e');
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> deleteChargingStation(String stationId) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final updatedChargingStationsList = (state.userChargingStations ?? [])
+          .where((station) => station.id != stationId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          userChargingStations: updatedChargingStationsList,
+          isLoading: false,
+        ),
+      );
+
+      await deleteChargingStationUseCase.execute(stationId);
+    } catch (e) {
+      print('Error removing charging station: $e');
+      emit(
+        state.copyWith(
+          errorMessage: e.toString(),
+          isLoading: false,
+        ),
+      );
+    }
   }
 
   Future<void> fetchUserData() async {
