@@ -14,7 +14,7 @@ class UserModel {
   final bool isOnboardingCompleted;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
-  final List<PaymentMethodModel>? paymentMethods;
+  final List<CreditCardModel>? paymentMethods;
   final List<BookingModel>? bookings;
 
   UserModel({
@@ -57,7 +57,7 @@ class UserModel {
           (json['payment_methods'] as List<dynamic>?)
               ?.map(
                 (item) =>
-                    PaymentMethodModel.fromJson(item as Map<String, dynamic>),
+                    CreditCardModel.fromJson(item as Map<String, dynamic>),
               )
               .toList() ??
           [],
@@ -113,7 +113,7 @@ class UserModel {
     bool? isOnboardingCompleted,
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
-    List<PaymentMethodModel>? paymentMethods,
+    List<CreditCardModel>? paymentMethods,
     List<BookingModel>? bookings,
   }) {
     return UserModel(

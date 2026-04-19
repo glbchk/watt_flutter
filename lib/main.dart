@@ -10,6 +10,7 @@ import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
+import 'package:watt/presentation/settings_pages/my_payment_methods_page/bloc/my_payment_methods_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
@@ -34,6 +35,10 @@ Future<void> main() async {
       providers: [
         BlocProvider<AuthBloc>(
           create: (context) => AuthBloc()..add(IsUserLoggedInAuthEvent()),
+        ),
+        BlocProvider<MyPaymentMethodsCubit>(
+          create: (context) =>
+              MyPaymentMethodsCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider<MyChargingStationsCubit>(
           create: (context) =>

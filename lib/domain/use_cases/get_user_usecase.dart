@@ -70,7 +70,7 @@ class AddChargingStationsUseCase extends UserUseCase {
   }
 }
 
-class DeleteChargingStationsUseCase extends UserUseCase {
+class DeleteChargingStationUseCase extends UserUseCase {
   Future execute(String stationId) {
     return userRepository.deleteChargingStation(stationId);
   }
@@ -83,8 +83,8 @@ class FetchUserChargingStationsUseCase extends UserUseCase {
 }
 
 class AddPaymentMethodUseCase extends UserUseCase {
-  Future execute(PaymentMethodModel paymentMethod) {
-    return userRepository.addPaymentMethod(paymentMethod);
+  Future execute(CreditCardModel creditCard) {
+    return userRepository.addPaymentMethod(creditCard);
   }
 }
 
@@ -97,6 +97,12 @@ class FetchPaymentMethodsUseCase extends UserUseCase {
 class UpdateDefaultCreditCardUseCase extends UserUseCase {
   Future execute(String creditCardId, bool isDefault) {
     return userRepository.updateDefaultCreditCard(creditCardId, isDefault);
+  }
+}
+
+class RemovePaymentMethodUseCase extends UserUseCase {
+  Future execute(String creditCardId) {
+    return userRepository.removePaymentMethod(creditCardId);
   }
 }
 

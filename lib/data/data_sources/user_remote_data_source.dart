@@ -156,14 +156,14 @@ class UserRemoteDataSource {
         .toList();
   }
 
-  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod) async {
+  Future<void> addPaymentMethod(CreditCardModel paymentMethod) async {
     User? user = auth.currentUser;
     await firestore.collection("users").doc(user?.uid).update({
       'payment_methods': FieldValue.arrayUnion([paymentMethod.toJson()]),
     });
   }
 
-  Future<List<PaymentMethodModel>> fetchPaymentMethods() async {
+  Future<List<CreditCardModel>> fetchPaymentMethods() async {
     User? user = auth.currentUser;
 
     final doc = await firestore.collection("users").doc(user?.uid).get();
@@ -172,7 +172,7 @@ class UserRemoteDataSource {
 
     return paymentMethodsJson
         .map(
-          (paymentMethod) => PaymentMethodModel.fromJson(
+          (paymentMethod) => CreditCardModel.fromJson(
             paymentMethod as Map<String, dynamic>,
           ),
         )
@@ -189,8 +189,8 @@ class UserRemoteDataSource {
     final currentUserData = await docRef.get();
     List<dynamic> paymentMethodsData =
         currentUserData.data()?['payment_methods'] ?? [];
-    List<PaymentMethodModel> paymentMethodsList = paymentMethodsData
-        .map((json) => PaymentMethodModel.fromJson(json))
+    List<CreditCardModel> paymentMethodsList = paymentMethodsData
+        .map((json) => CreditCardModel.fromJson(json))
         .toList();
 
     int index = paymentMethodsList.indexWhere(
@@ -198,20 +198,31 @@ class UserRemoteDataSource {
     );
 
     if (index != -1) {
-      if (paymentMethodsList[index] is CreditCardModel) {
-        final oldCard = paymentMethodsList[index] as CreditCardModel;
+      final oldCard = paymentMethodsList[index];
 
-        paymentMethodsList[index] = oldCard.copyCreditCardWith(
-          isDefaultPaymentMethod: isDefault,
-        );
+      paymentMethodsList[index] = oldCard.copyCreditCardWith(
+        isDefaultPaymentMethod: isDefault,
+      );
 
-        await docRef.update({
-          'payment_methods': paymentMethodsList
-              .map((method) => method.toJson())
-              .toList(),
-        });
-      }
+      await docRef.update({
+        'payment_methods': paymentMethodsList
+            .map((method) => method.toJson())
+            .toList(),
+      });
     }
+  }
+
+  Future<void> removePaymentMethod(String creditCardId) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> paymentMethodsData =
+        currentUserData.data()?['payment_methods'] ?? [];
+
+    paymentMethodsData.removeWhere((station) => station['id'] == creditCardId);
+
+    await docRef.update({'payment_methods': paymentMethodsData});
   }
 
   Future<void> updateDefaultReceivingEarnings(
@@ -223,9 +234,9 @@ class UserRemoteDataSource {
 
     final currentUserData = await docRef.get();
     List<dynamic> paymentMethodsData =
-        currentUserData.data()?['payment_methods'] ?? [];
-    List<PaymentMethodModel> paymentMethodsList = paymentMethodsData
-        .map((json) => PaymentMethodModel.fromJson(json))
+        currentUserData.data()?['bank_accounts'] ?? [];
+    List<IbanModel> paymentMethodsList = paymentMethodsData
+        .map((json) => IbanModel.fromJson(json))
         .toList();
 
     int index = paymentMethodsList.indexWhere(
@@ -233,19 +244,17 @@ class UserRemoteDataSource {
     );
 
     if (index != -1) {
-      if (paymentMethodsList[index] is IbanModel) {
-        final oldCard = paymentMethodsList[index] as IbanModel;
+      final oldAccount = paymentMethodsList[index];
 
-        paymentMethodsList[index] = oldCard.copyIbanWith(
-          isUsedForReceivingEarnings: isReceiver,
-        );
+      paymentMethodsList[index] = oldAccount.copyIbanWith(
+        isUsedForReceivingEarnings: isReceiver,
+      );
 
-        await docRef.update({
-          'payment_methods': paymentMethodsList
-              .map((method) => method.toJson())
-              .toList(),
-        });
-      }
+      await docRef.update({
+        'payment_methods': paymentMethodsList
+            .map((method) => method.toJson())
+            .toList(),
+      });
     }
   }
 

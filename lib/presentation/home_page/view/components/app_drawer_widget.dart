@@ -155,7 +155,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         _buildMenuItem(
                           Icons.credit_card_outlined,
-                          'Payment method',
+                          'Payment methods',
                           () {
                             onPressedPaymentMethod?.call();
                           },

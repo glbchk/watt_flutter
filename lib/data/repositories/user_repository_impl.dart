@@ -93,12 +93,12 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod) async {
-    return await userRemoteDataSource.addPaymentMethod(paymentMethod);
+  Future<void> addPaymentMethod(CreditCardModel creditCard) async {
+    return await userRemoteDataSource.addPaymentMethod(creditCard);
   }
 
   @override
-  Future<List<PaymentMethodModel>> fetchPaymentMethods() async {
+  Future<List<CreditCardModel>> fetchPaymentMethods() async {
     return await userRemoteDataSource.fetchPaymentMethods();
   }
 
@@ -111,6 +111,11 @@ class UserRepositoryImpl implements UserRepository {
       creditCardId,
       isDefault,
     );
+  }
+
+  @override
+  Future<void> removePaymentMethod(String creditCardId) async {
+    return await userRemoteDataSource.removePaymentMethod(creditCardId);
   }
 
   @override

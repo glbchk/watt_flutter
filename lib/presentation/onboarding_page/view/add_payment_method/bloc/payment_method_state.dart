@@ -7,9 +7,9 @@ class PaymentMethodState {
   final CreditCardModel? creditCard;
   final IbanModel? iban;
 
-  final List<PaymentMethodModel>? paymentMethods;
+  final List<CreditCardModel>? paymentMethods;
 
-  final PaymentMethodType? paymentType;
+  // final PaymentMethodType? paymentType;
   final String? cardNameError;
   final String? cardNumberError;
   final String? expiryError;
@@ -22,7 +22,7 @@ class PaymentMethodState {
     this.creditCard,
     this.iban,
     this.paymentMethods,
-    this.paymentType = PaymentMethodType.creditCard,
+    // this.paymentType = PaymentMethodType.creditCard,
     this.cardNameError,
     this.cardNumberError,
     this.expiryError,
@@ -35,8 +35,8 @@ class PaymentMethodState {
     String? errorMessage,
     CreditCardModel? creditCard,
     IbanModel? iban,
-    List<PaymentMethodModel>? paymentMethods,
-    PaymentMethodType? paymentType,
+    List<CreditCardModel>? paymentMethods,
+    // PaymentMethodType? paymentType,
     String? Function()? cardNameError,
     String? Function()? cardNumberError,
     String? Function()? expiryError,
@@ -49,7 +49,7 @@ class PaymentMethodState {
       creditCard: creditCard ?? this.creditCard,
       iban: iban ?? this.iban,
       paymentMethods: paymentMethods ?? this.paymentMethods,
-      paymentType: paymentType ?? this.paymentType,
+      // paymentType: paymentType ?? this.paymentType,
       cardNameError: cardNameError != null
           ? cardNameError()
           : this.cardNameError,
