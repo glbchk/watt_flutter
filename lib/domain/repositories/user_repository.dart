@@ -19,9 +19,10 @@ abstract class UserRepository {
   Future<void> addChargingStations(List<ChargingStationModel> chargingStations);
   Future<void> deleteChargingStation(String stationId);
   Future<List<ChargingStationModel>> fetchChargingStations();
-  Future<void> addPaymentMethod(PaymentMethodModel paymentMethod);
-  Future<List<PaymentMethodModel>> fetchPaymentMethods();
+  Future<void> addPaymentMethod(CreditCardModel creditCard);
+  Future<List<CreditCardModel>> fetchPaymentMethods();
   Future<void> updateDefaultCreditCard(String creditCardId, bool isDefault);
+  Future<void> removePaymentMethod(String creditCardId);
   Future<void> updateDefaultReceivingEarnings(
     String ibanId,
     bool isReceiver,

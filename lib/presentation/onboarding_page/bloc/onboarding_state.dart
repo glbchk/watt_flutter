@@ -17,7 +17,7 @@ class OnboardingState {
   final Map<MockedCarBrand, List<String>>? carModelOptions;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
-  final List<PaymentMethodModel>? paymentMethods;
+  final List<CreditCardModel>? paymentMethods;
 
   OnboardingState({
     this.isLoading = false,
@@ -48,7 +48,7 @@ class OnboardingState {
     Map<MockedCarBrand, List<String>>? carModelOptions,
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
-    List<PaymentMethodModel>? paymentMethods,
+    List<CreditCardModel>? paymentMethods,
   }) {
     return OnboardingState(
       isLoading: isLoading ?? this.isLoading,

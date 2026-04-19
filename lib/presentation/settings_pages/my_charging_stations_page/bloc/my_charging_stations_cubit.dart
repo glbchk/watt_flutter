@@ -38,8 +38,8 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
       ChooseLocationOnMapUseCase();
   final AddChargingStationsUseCase addChargingStationsUseCase =
       AddChargingStationsUseCase();
-  final DeleteChargingStationsUseCase deleteChargingStationUseCase =
-      DeleteChargingStationsUseCase();
+  final DeleteChargingStationUseCase deleteChargingStationUseCase =
+      DeleteChargingStationUseCase();
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();

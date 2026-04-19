@@ -14,7 +14,7 @@ class UserEntity {
   final String? language;
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
-  final List<PaymentMethodModel>? paymentMethods;
+  final List<CreditCardModel>? paymentMethods;
   final List<BookingModel>? bookings;
 
   UserEntity({

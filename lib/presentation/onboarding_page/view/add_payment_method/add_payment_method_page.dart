@@ -95,62 +95,60 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                 if (state.paymentMethods != null &&
                                     state.paymentMethods!.isNotEmpty) ...[
                                   ...state.paymentMethods!.map((paymentMethod) {
-                                    if (paymentMethod is CreditCardModel) {
-                                      return TallCardButton(
-                                        isDismissible: true,
-                                        dismissableKey: paymentMethod.id,
-                                        onDismissableDismissed: () {
-                                          context.read<PaymentMethodBloc>().add(
-                                            RemovePaymentMethodEvent(
-                                              paymentMethod.id,
-                                            ),
-                                          );
-                                        },
-                                        label: paymentMethod.cardName ?? '',
-                                        subLabel:
-                                            '${paymentMethod.cardNumber}${paymentMethod.isDefaultPaymentMethod == true ? ' * Default' : ''}',
-                                        svgImage:
-                                            (paymentMethod.networkLogo !=
-                                                    null &&
-                                                paymentMethod
-                                                    .networkLogo!
-                                                    .isNotEmpty)
-                                            ? paymentMethod.networkLogo
-                                            : null,
-                                        marginDistance: marginSize,
-                                        onPressed: () {
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder: (_) =>
-                                          //         AddCreditCardPage(),
-                                          //   ),
-                                          // );
-                                        },
-                                      );
-                                    } else if (paymentMethod is IbanModel) {
-                                      return TallCardButton(
-                                        isDismissible: true,
-                                        label: 'IBAN Method',
-                                        subLabel:
-                                            '${paymentMethod.ibanNumber?.substring(0, 16)}${paymentMethod.isUsedForReceivingEarnings == true ? ' * Receiver' : ''}',
-                                        svgImage: KCardIcons.paymentMethod,
-                                        marginDistance: marginSize,
-                                        onPressed: () {
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder: (_) =>
-                                          //         AddIbanDetailsPage(),
-                                          //   ),
-                                          // );
-                                        },
-                                      );
-                                    } else {
-                                      return SizedBox(
-                                        height: 1,
-                                      );
-                                    }
+                                    return TallCardButton(
+                                      isDismissible: true,
+                                      dismissableKey: paymentMethod.id,
+                                      onDismissableDismissed: () {
+                                        context.read<PaymentMethodBloc>().add(
+                                          RemovePaymentMethodEvent(
+                                            paymentMethod.id,
+                                          ),
+                                        );
+                                      },
+                                      label: paymentMethod.cardName ?? '',
+                                      subLabel:
+                                          '${paymentMethod.cardNumber}${paymentMethod.isDefaultPaymentMethod == true ? ' * Default' : ''}',
+                                      svgImage:
+                                          (paymentMethod.networkLogo != null &&
+                                              paymentMethod
+                                                  .networkLogo!
+                                                  .isNotEmpty)
+                                          ? paymentMethod.networkLogo
+                                          : null,
+                                      marginDistance: marginSize,
+                                      onPressed: () {
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (_) =>
+                                        //         AddCreditCardPage(),
+                                        //   ),
+                                        // );
+                                      },
+                                    );
+                                    // } else if (paymentMethod is IbanModel) {
+                                    // return TallCardButton(
+                                    //   isDismissible: true,
+                                    //   label: 'IBAN Method',
+                                    //   subLabel:
+                                    //       '${paymentMethod.ibanNumber?.substring(0, 16)}${paymentMethod.isUsedForReceivingEarnings == true ? ' * Receiver' : ''}',
+                                    //   svgImage: KCardIcons.paymentMethod,
+                                    //   marginDistance: marginSize,
+                                    //   onPressed: () {
+                                    //     // Navigator.push(
+                                    //     //   context,
+                                    //     //   MaterialPageRoute(
+                                    //     //     builder: (_) =>
+                                    //     //         AddIbanDetailsPage(),
+                                    //     //   ),
+                                    //     // );
+                                    //   },
+                                    // );
+                                    // } else {
+                                    //   return SizedBox(
+                                    //     height: 1,
+                                    //   );
+                                    // }
                                   }),
                                   const SizedBox(height: 30.0),
                                   Padding(

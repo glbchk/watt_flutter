@@ -1,28 +1,29 @@
-enum PaymentMethodType {
-  creditCard,
-  iban,
-}
+// enum PaymentMethodType {
+//   creditCard,
+//   iban,
+// }
+//
+// abstract class PaymentMethodModel {
+//   final String id;
+//   final PaymentMethodType type;
+//
+//   PaymentMethodModel({required this.id, required this.type});
+//
+//   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
+//     final type = PaymentMethodType.values.byName(json['type']);
+//     switch (type) {
+//       case PaymentMethodType.creditCard:
+//         return CreditCardModel.fromJson(json);
+//       case PaymentMethodType.iban:
+//         return IbanModel.fromJson(json);
+//     }
+//   }
+//
+//   Map<String, dynamic> toJson();
+// }
 
-abstract class PaymentMethodModel {
+class CreditCardModel {
   final String id;
-  final PaymentMethodType type;
-
-  PaymentMethodModel({required this.id, required this.type});
-
-  factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
-    final type = PaymentMethodType.values.byName(json['type']);
-    switch (type) {
-      case PaymentMethodType.creditCard:
-        return CreditCardModel.fromJson(json);
-      case PaymentMethodType.iban:
-        return IbanModel.fromJson(json);
-    }
-  }
-
-  Map<String, dynamic> toJson();
-}
-
-class CreditCardModel extends PaymentMethodModel {
   final String? cardName;
   final String? networkLogo;
   final String? cardNumber;
@@ -31,14 +32,14 @@ class CreditCardModel extends PaymentMethodModel {
   final bool isDefaultPaymentMethod;
 
   CreditCardModel({
-    required super.id,
+    required this.id,
     this.cardName,
     this.networkLogo,
     this.cardNumber,
     this.expiry,
     this.cvv,
     required this.isDefaultPaymentMethod,
-  }) : super(type: PaymentMethodType.creditCard);
+  });
 
   factory CreditCardModel.fromJson(Map<String, dynamic> json) {
     return CreditCardModel(
@@ -52,11 +53,9 @@ class CreditCardModel extends PaymentMethodModel {
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'type': type.name,
       'card_name': cardName,
       'network_logo': networkLogo,
       'card_number': cardNumber,
@@ -88,15 +87,16 @@ class CreditCardModel extends PaymentMethodModel {
   }
 }
 
-class IbanModel extends PaymentMethodModel {
+class IbanModel {
+  final String id;
   final String? ibanNumber;
   final bool isUsedForReceivingEarnings;
 
   IbanModel({
-    required super.id,
+    required this.id,
     this.ibanNumber,
     required this.isUsedForReceivingEarnings,
-  }) : super(type: PaymentMethodType.iban);
+  });
 
   factory IbanModel.fromJson(Map<String, dynamic> json) {
     return IbanModel(
@@ -107,11 +107,9 @@ class IbanModel extends PaymentMethodModel {
     );
   }
 
-  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'type': type.name,
       'iban': ibanNumber,
       'is_used_for_receiving_earnings': isUsedForReceivingEarnings,
     };
@@ -119,12 +117,12 @@ class IbanModel extends PaymentMethodModel {
 
   IbanModel copyIbanWith({
     String? id,
-    String? iban,
+    String? ibanNumber,
     bool? isUsedForReceivingEarnings,
   }) {
     return IbanModel(
       id: id ?? this.id,
-      ibanNumber: iban ?? this.ibanNumber,
+      ibanNumber: ibanNumber ?? this.ibanNumber,
       isUsedForReceivingEarnings:
           isUsedForReceivingEarnings ?? this.isUsedForReceivingEarnings,
     );

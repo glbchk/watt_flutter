@@ -238,7 +238,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(state.copyWith(isLoading: true));
 
       try {
-        final List<PaymentMethodModel> paymentMethods =
+        final List<CreditCardModel> paymentMethods =
             await fetchPaymentMethodsUseCase.execute();
 
         emit(

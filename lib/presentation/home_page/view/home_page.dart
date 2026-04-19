@@ -13,6 +13,7 @@ import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dar
 import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/my_charging_stations_page.dart';
+import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
 import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -302,6 +303,14 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => MyChargingStationsPage(),
+                ),
+              );
+            },
+            onPressedPaymentMethod: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MyPaymentMethodsPage(),
                 ),
               );
             },

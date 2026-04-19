@@ -102,7 +102,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
 
     on<FilledIbanEvent>((event, emit) async {
       try {
-        await addPaymentMethodUseCase.execute(event.iban);
+        // await addPaymentMethodUseCase.execute(event.iban);
         emit(
           state.copyWith(
             iban: event.iban,
@@ -115,7 +115,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
     });
 
     on<RemovePaymentMethodEvent>((event, emit) {
-      final List<PaymentMethodModel> updatedList = state.paymentMethods!
+      final List<CreditCardModel> updatedList = state.paymentMethods!
           .where((method) => method.id != event.paymentMethodId)
           .toList();
 
@@ -130,7 +130,7 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
       emit(state.copyWith(isLoading: true));
 
       try {
-        final List<PaymentMethodModel> paymentMethods =
+        final List<CreditCardModel> paymentMethods =
             await fetchPaymentMethodsUseCase.execute();
 
         emit(
@@ -151,17 +151,13 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
           event.isDefault,
         );
 
-        final List<PaymentMethodModel> updatedPaymentMethodsList =
+        final List<CreditCardModel> updatedPaymentMethodsList =
             (state.paymentMethods ?? []).map((paymentMethod) {
-              if (paymentMethod is CreditCardModel) {
-                return paymentMethod.id == event.creditCardId
-                    ? paymentMethod.copyCreditCardWith(
-                        isDefaultPaymentMethod: event.isDefault,
-                      )
-                    : paymentMethod;
-              }
-
-              return paymentMethod;
+              return paymentMethod.id == event.creditCardId
+                  ? paymentMethod.copyCreditCardWith(
+                      isDefaultPaymentMethod: event.isDefault,
+                    )
+                  : paymentMethod;
             }).toList();
 
         emit(
@@ -174,34 +170,30 @@ class PaymentMethodBloc extends Bloc<PaymentMethodEvent, PaymentMethodState> {
       }
     });
 
-    on<UpdateDefaultReceivingEarningsEvent>((event, emit) async {
-      try {
-        await updateDefaultReceivingEarningsUseCase.execute(
-          event.ibanId,
-          event.isReceiver,
-        );
-
-        final List<PaymentMethodModel> updatedPaymentMethodsList =
-            (state.paymentMethods ?? []).map((paymentMethod) {
-              if (paymentMethod is IbanModel) {
-                return paymentMethod.id == event.ibanId
-                    ? paymentMethod.copyIbanWith(
-                        isUsedForReceivingEarnings: event.isReceiver,
-                      )
-                    : paymentMethod;
-              }
-
-              return paymentMethod;
-            }).toList();
-
-        emit(
-          state.copyWith(
-            paymentMethods: updatedPaymentMethodsList,
-          ),
-        );
-      } catch (e) {
-        print('Error: $e');
-      }
-    });
+    // on<UpdateDefaultReceivingEarningsEvent>((event, emit) async {
+    //   try {
+    //     await updateDefaultReceivingEarningsUseCase.execute(
+    //       event.ibanId,
+    //       event.isReceiver,
+    //     );
+    //
+    //     final List<IbanModel> updatedPaymentMethodsList =
+    //         (state.paymentMethods ?? []).map((paymentMethod) {
+    //           return paymentMethod.id == event.ibanId
+    //               ? paymentMethod.copyIbanWith(
+    //                   isUsedForReceivingEarnings: event.isReceiver,
+    //                 )
+    //               : paymentMethod;
+    //         }).toList();
+    //
+    //     emit(
+    //       state.copyWith(
+    //         paymentMethods: updatedPaymentMethodsList,
+    //       ),
+    //     );
+    //   } catch (e) {
+    //     print('Error: $e');
+    //   }
+    // });
   }
 }
