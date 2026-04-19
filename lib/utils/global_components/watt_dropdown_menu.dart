@@ -5,6 +5,7 @@ class WattDropdownMenu extends StatelessWidget {
   final String label;
   final String? dropdownValue;
   final String? hintText;
+  final String? error;
   final List<String>? listItems;
 
   final void Function(String?)? onChanged;
@@ -15,6 +16,7 @@ class WattDropdownMenu extends StatelessWidget {
     required this.label,
     this.dropdownValue,
     this.hintText,
+    this.error,
     this.listItems,
     this.onChanged,
     this.icon,
@@ -42,7 +44,9 @@ class WattDropdownMenu extends StatelessWidget {
             color: const Color(0xFFF5F5F5),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: context.theme.appColors.grey3,
+              color: (error != null && error!.isNotEmpty)
+                  ? context.theme.appColors.error
+                  : context.theme.appColors.grey3,
               width: 1,
             ),
           ),
@@ -78,6 +82,16 @@ class WattDropdownMenu extends StatelessWidget {
             ),
           ),
         ),
+        if (error != null && error!.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            error!,
+            style: TextStyle(
+              color: context.theme.appColors.error,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ],
     );
   }

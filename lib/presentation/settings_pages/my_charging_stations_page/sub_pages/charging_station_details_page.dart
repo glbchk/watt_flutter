@@ -110,9 +110,8 @@ class _ChargingStationDetailsPageState
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => AddStationAddressDetailsPage(
-                                    address: station?.address ?? '',
-                                  ),
+                                  builder: (_) =>
+                                      AddStationAddressDetailsPage(),
                                 ),
                               );
                             },

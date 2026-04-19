@@ -85,6 +85,48 @@ class MyCarsCubit extends Cubit<MyCarsState> {
     }
   }
 
+  void verifyModelSelection(String selectedModel) {
+    if (selectedModel.isEmpty) {
+      emit(
+        state.copyWith(
+          modelError: () => "Model should be selected",
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          modelError: () => null,
+        ),
+      );
+    }
+  }
+
+  void verifyPlateNumber(String plateNumber) {
+    final noSpace = plateNumber.replaceAll(RegExp(r'\s+'), '');
+    if (plateNumber.isEmpty || noSpace.length != 6) {
+      emit(
+        state.copyWith(
+          plateNumberError: () => "Plate number must be 6 characters",
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          plateNumberError: () => null,
+        ),
+      );
+    }
+  }
+
+  void clearErrors() {
+    emit(
+      state.copyWith(
+        modelError: () => null,
+        plateNumberError: () => null,
+      ),
+    );
+  }
+
   Future<void> saveNewCar(CarModel car) async {
     emit(state.copyWith(isLoading: true));
     try {
@@ -95,6 +137,8 @@ class MyCarsCubit extends Cubit<MyCarsState> {
       emit(
         state.copyWith(
           userCars: updateCarsList,
+          modelError: () => null,
+          plateNumberError: () => null,
           isLoading: false,
         ),
       );

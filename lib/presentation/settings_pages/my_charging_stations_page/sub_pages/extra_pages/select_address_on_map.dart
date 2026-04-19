@@ -9,7 +9,6 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
-import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class SelectAddressOnMapPage extends StatefulWidget {
   final bool autoDetectMyLocation;
@@ -38,8 +37,6 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
 
   GoogleMapController? _mapController;
 
-  String address = '';
-
   @override
   void dispose() {
     _debounce?.cancel();
@@ -60,12 +57,12 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
             state.chargingStation?.addressLongitude ?? 0.0,
           );
 
-          if (!_focusNode.hasFocus &&
-              searchController.text != state.chargingStation?.address) {
-            searchController.text =
-                state.chargingStation?.address ?? searchController.text;
+          final newAddress = state.chargingStation?.address ?? "";
+
+          if (searchController.text != newAddress) {
+            searchController.text = newAddress;
             searchController.selection = TextSelection.fromPosition(
-              TextPosition(offset: searchController.text.length),
+              TextPosition(offset: newAddress.length),
             );
           }
 
@@ -93,31 +90,18 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
           extendBodyBehindAppBar: true,
           scaffoldBackgroundColor: context.theme.appColors.transparent,
           leading: BackButton(
-            onPressed: () async {
-              if (state.chargingStation?.addressLatitude == null &&
-                  state.chargingStation?.addressLongitude == null) {
-                final positionFromAddress =
-                    await GoogleMapsHelperMethods.convertAddressToPosition(
-                      state.chargingStation?.address ?? '',
-                    );
-                if (context.mounted) {
-                  if (positionFromAddress != null) {
-                    context.read<MyChargingStationsCubit>().saveAddress(
-                      state.chargingStation?.address ?? searchController.text,
-                      positionFromAddress.latitude,
-                      positionFromAddress.longitude,
-                    );
-                  }
-                }
-              } else {
+            onPressed: () {
+              if (searchController.text.isNotEmpty) {
+                final newAddress = searchController.text;
+
                 context.read<MyChargingStationsCubit>().saveAddress(
-                  state.chargingStation?.address ?? searchController.text,
+                  state.chargingStation?.address ?? newAddress,
                   state.chargingStation?.addressLatitude,
                   state.chargingStation?.addressLongitude,
                 );
               }
 
-              Navigator.pop(context, state.chargingStation?.address);
+              Navigator.pop(context);
             },
           ),
           body: Stack(
@@ -193,19 +177,18 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
                             child: WattMainButton(
                               label: 'Save',
                               onPressed: () {
-                                context
-                                    .read<MyChargingStationsCubit>()
-                                    .saveAddress(
-                                      state.chargingStation?.address ??
-                                          searchController.text,
-                                      state.chargingStation?.addressLatitude,
-                                      state.chargingStation?.addressLongitude,
-                                    );
+                                if (searchController.text.isNotEmpty) {
+                                  context
+                                      .read<MyChargingStationsCubit>()
+                                      .saveAddress(
+                                        state.chargingStation?.address ??
+                                            searchController.text,
+                                        state.chargingStation?.addressLatitude,
+                                        state.chargingStation?.addressLongitude,
+                                      );
+                                }
 
-                                Navigator.pop(
-                                  context,
-                                  state.chargingStation?.address,
-                                );
+                                Navigator.pop(context);
                               },
                             ),
                           ),
@@ -277,8 +260,14 @@ class _SelectAddressOnMapPageState extends State<SelectAddressOnMapPage> {
                   children: [
                     SearchBarWidget(
                       onLeadingPressed: () {
-                        searchController.clear();
-                        context.read<MyChargingStationsCubit>().clearAddress();
+                        if (searchController.text.isNotEmpty) {
+                          context.read<MyChargingStationsCubit>().saveAddress(
+                            state.chargingStation?.address ??
+                                searchController.text,
+                            state.chargingStation?.addressLatitude,
+                            state.chargingStation?.addressLongitude,
+                          );
+                        }
                         Navigator.of(context).pop();
                       },
                       context: context,

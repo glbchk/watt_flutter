@@ -11,13 +11,11 @@ import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/inline_button.dart';
 
 class AddStationAddressDetailsPage extends StatefulWidget {
-  final String address;
   final VoidCallback? onPressedCurrentLocation;
   final VoidCallback? onPressedChooseOnMap;
 
   const AddStationAddressDetailsPage({
     super.key,
-    required this.address,
     this.onPressedCurrentLocation,
     this.onPressedChooseOnMap,
   });
@@ -131,9 +129,17 @@ class _AddStationAddressDetailsPageState
                     InlineButton(
                       label: 'Choose location on map',
                       icon: Icons.location_on_outlined,
-                      onPressed: () async {
+                      onPressed: () {
                         FocusScope.of(context).unfocus();
-                        final result = await Navigator.push(
+                        if (controllerAddress.text.isNotEmpty) {
+                          context.read<MyChargingStationsCubit>().saveAddress(
+                            state.chargingStation?.address ??
+                                controllerAddress.text,
+                            state.chargingStation?.addressLatitude,
+                            state.chargingStation?.addressLongitude,
+                          );
+                        }
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => SelectAddressOnMapPage(
@@ -142,12 +148,6 @@ class _AddStationAddressDetailsPageState
                             ),
                           ),
                         );
-
-                        if (result != null) {
-                          setState(() {
-                            controllerAddress.text = result;
-                          });
-                        }
                       },
                     ),
                   ],

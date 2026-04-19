@@ -10,6 +10,8 @@ class MyCarsState {
   final UserModel? userData;
   final List<MockedCarOption>? carOptions;
   final Map<MockedCarBrand, List<String>>? carModelOptions;
+  final String? plateNumberError;
+  final String? modelError;
 
   MyCarsState({
     required this.isUserAuthenticated,
@@ -19,6 +21,8 @@ class MyCarsState {
     this.userData,
     this.carOptions,
     this.carModelOptions,
+    this.plateNumberError,
+    this.modelError,
   });
 
   MyCarsState copyWith({
@@ -30,6 +34,8 @@ class MyCarsState {
     bool clearUserData = false,
     List<MockedCarOption>? carOptions,
     Map<MockedCarBrand, List<String>>? carModelOptions,
+    String? Function()? plateNumberError,
+    String? Function()? modelError,
   }) {
     return MyCarsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -39,6 +45,10 @@ class MyCarsState {
       userData: clearUserData ? null : (userData ?? this.userData),
       carOptions: carOptions ?? this.carOptions,
       carModelOptions: carModelOptions ?? this.carModelOptions,
+      plateNumberError: plateNumberError != null
+          ? plateNumberError()
+          : this.plateNumberError,
+      modelError: modelError != null ? modelError() : this.modelError,
     );
   }
 }
