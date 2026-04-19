@@ -50,11 +50,9 @@ class _AddStationChargingEffectDetailsPageState
                   },
                 ),
           onPressed: () {
-            // context.read<ChargingStationBloc>().add(
-            //   SaveChargingEffectPropertyEvent(
-            //     selectedChargingEffect ?? '',
-            //   ),
-            // );
+            context.read<MyChargingStationsCubit>().saveChargingEffect(
+              selectedChargingEffect ?? '',
+            );
 
             Navigator.pop(context);
           },

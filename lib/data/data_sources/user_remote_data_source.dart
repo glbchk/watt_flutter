@@ -127,12 +127,18 @@ class UserRemoteDataSource {
     }
   }
 
-  // Future<void> addChargingStation(ChargingStationModel chargingStation) async {
-  //   User? user = auth.currentUser;
-  //   await firestore.collection("users").doc(user?.uid).update({
-  //     'charging_stations': FieldValue.arrayUnion([chargingStation.toJson()]),
-  //   });
-  // }
+  Future<void> deleteChargingStation(String stationId) async {
+    User? user = auth.currentUser;
+    final docRef = firestore.collection("users").doc(user?.uid);
+
+    final currentUserData = await docRef.get();
+    final List<dynamic> chargingStationsData =
+        currentUserData.data()?['charging_stations'] ?? [];
+
+    chargingStationsData.removeWhere((station) => station['id'] == stationId);
+
+    await docRef.update({'charging_stations': chargingStationsData});
+  }
 
   Future<List<ChargingStationModel>> fetchChargingStations() async {
     User? user = auth.currentUser;

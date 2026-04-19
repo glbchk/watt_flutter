@@ -1,14 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:watt/data/data_sources/google_maps_data_source.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
+import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
   final AuthBloc authBloc;
@@ -22,10 +29,19 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
       FetchMockedChargingEffectOptionsUseCase();
   final FetchMockedPlugOptionsUseCase fetchMockedPlugOptionsUseCase =
       FetchMockedPlugOptionsUseCase();
-  final AddCarUseCase updateUserCarUseCase = AddCarUseCase();
-  final FetchUserCarsUseCase fetchUserCarsUseCase = FetchUserCarsUseCase();
-  final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
-  final FetchUserCarsUseCase getUserCarsUseCase = FetchUserCarsUseCase();
+  final FetchLocationSuggestionsUseCase fetchLocationSuggestionsUseCase =
+      FetchLocationSuggestionsUseCase();
+  final GoToMyLocationUseCase goToMyLocationUseCase = GoToMyLocationUseCase();
+  final SearchLocationUseCase searchLocationUseCase = SearchLocationUseCase();
+  final HandleMapTapUseCase handleMapTapUseCase = HandleMapTapUseCase();
+  final ChooseLocationOnMapUseCase chooseLocationOnMapUseCase =
+      ChooseLocationOnMapUseCase();
+  final AddChargingStationsUseCase addChargingStationsUseCase =
+      AddChargingStationsUseCase();
+  final DeleteChargingStationsUseCase deleteChargingStationUseCase =
+      DeleteChargingStationsUseCase();
+  final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
+      FetchUserChargingStationsUseCase();
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
 
   MyChargingStationsCubit({required this.authBloc})
@@ -101,81 +117,181 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
     }
   }
 
-  Future<void> saveBrandAndLogoChargingStation(
-    String brandName,
-    String brandLogo,
-  ) async {
-    emit(state.copyWith(isLoading: true));
+  void initializeChargingStation() {
+    emit(
+      state.copyWith(
+        chargingStation: ChargingStationModel(id: Uuid().v4()),
+      ),
+    );
+  }
+
+  void saveChargingStationName(
+    String stationName,
+  ) {
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          chargingStationName: stationName,
+        ),
+      ),
+    );
+  }
+
+  Future<void> fetchLocationSuggestions(String location) async {
     try {
-      final ChargingStationModel chargingStationInitiated =
-          ChargingStationModel(
-            id: Uuid().v4(),
-            brandName: brandName,
-            brandLogo: brandLogo,
+      final List<String> suggestions = await fetchLocationSuggestionsUseCase
+          .execute(location);
+
+      emit(
+        state.copyWith(
+          locationSuggestions: suggestions,
+        ),
+      );
+    } catch (e) {
+      print("Error fetching suggestion locations: $e");
+    }
+  }
+
+  Future<void> goToMyLocation() async {
+    try {
+      final Position? position = await goToMyLocationUseCase.execute();
+
+      if (position != null) {
+        final String address =
+            await GoogleMapsHelperMethods.convertPositionToAddress(position);
+        print("Position: $position");
+        print("Position: $address");
+        emit(
+          state.copyWith(
+            chargingStation: state.chargingStation?.copyChargingStationWith(
+              address: address,
+              addressLatitude: position.latitude,
+              addressLongitude: position.longitude,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  Future<void> searchMyLocation(
+    String address,
+    GoogleMapController? mapController,
+  ) async {
+    try {
+      final LocationResult? locationResult = await searchLocationUseCase
+          .execute(
+            address,
+            mapController,
           );
 
-      emit(
-        state.copyWith(
-          chargingStation: chargingStationInitiated,
-          isLoading: false,
-        ),
-      );
-    } catch (e) {
-      print('Error initializing charging station: $e');
-      emit(
-        state.copyWith(
-          isLoading: false,
-        ),
-      );
-    }
-  }
-
-  Future<void> saveChargingStationName(
-    String stationName,
-  ) async {
-    emit(state.copyWith(isLoading: true));
-    try {
+      print("Position: ${locationResult?.position}");
       emit(
         state.copyWith(
           chargingStation: state.chargingStation?.copyChargingStationWith(
-            chargingStationName: stationName,
+            address: locationResult?.address,
+            addressLatitude: locationResult?.position.latitude,
+            addressLongitude: locationResult?.position.longitude,
           ),
-          isLoading: false,
         ),
       );
     } catch (e) {
-      print('Error initializing charging station: $e');
-      emit(
-        state.copyWith(
-          isLoading: false,
-        ),
-      );
+      print("Not possible to find address: $e");
     }
   }
 
-  Future<void> saveChargingStationBrand(
+  Future<void> handleMapTap(LatLng tappedPoint) async {
+    try {
+      print('mapController result: ${tappedPoint}');
+
+      final String? tapResult = await handleMapTapUseCase.execute(
+        tappedPoint,
+      );
+
+      final Position? addressPosition =
+          await GoogleMapsHelperMethods.convertAddressToPosition(
+            tapResult ?? '',
+          );
+      emit(
+        state.copyWith(
+          chargingStation: state.chargingStation?.copyChargingStationWith(
+            address: tapResult,
+            addressLatitude: addressPosition?.latitude,
+            addressLongitude: addressPosition?.longitude,
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Not possible to find address: $e");
+    }
+  }
+
+  Future<void> chooseLocationOnMap() async {
+    try {
+      final LocationResult? locationResult = await chooseLocationOnMapUseCase
+          .execute();
+
+      emit(
+        state.copyWith(
+          chargingStation: state.chargingStation?.copyChargingStationWith(
+            address: locationResult?.address,
+            addressLatitude: locationResult?.position.latitude,
+            addressLongitude: locationResult?.position.longitude,
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Not possible to find address: $e");
+    }
+  }
+
+  void saveAddress(
+    String address,
+    double? addressLatitude,
+    double? addressLongitude,
+  ) async {
+    final position = await GoogleMapsHelperMethods.convertAddressToPosition(
+      address,
+    );
+    emit(
+      state.copyWith(
+        locationSuggestions: [],
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          address: address,
+          addressLatitude: addressLatitude ?? position?.latitude,
+          addressLongitude: addressLongitude ?? position?.longitude,
+        ),
+      ),
+    );
+  }
+
+  void clearAddress() {
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          address: '',
+          addressLatitude: null,
+          addressLongitude: null,
+        ),
+        locationSuggestions: [],
+      ),
+    );
+  }
+
+  void saveChargingStationBrand(
     String brandName,
     String brandLogo,
-  ) async {
-    emit(state.copyWith(isLoading: true));
-    try {
-      emit(
-        state.copyWith(
-          chargingStation: state.chargingStation?.copyChargingStationWith(
-            brandName: brandName,
-            brandLogo: brandLogo,
-          ),
-          isLoading: false,
+  ) {
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          brandName: brandName,
+          brandLogo: brandLogo,
         ),
-      );
-    } catch (e) {
-      print('Error initializing charging station: $e');
-      emit(
-        state.copyWith(
-          isLoading: false,
-        ),
-      );
-    }
+      ),
+    );
   }
 
   void saveChargingEffect(String chargingEffect) {
@@ -198,162 +314,187 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
     );
   }
 
-  // Future<void> saveNewCar(ChargingStationModel chargingStation) async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     await updateUserCarUseCase.execute(chargingStation);
-  //
-  //     final List<ChargingStationModel> updateCarsList = [...?state.userCars, chargingStation];
-  //
-  //     emit(
-  //       state.copyWith(
-  //         userCars: updateCarsList,
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error adding car: $e');
-  //     emit(
-  //       state.copyWith(
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> deleteCar(String carId) async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     final updatedCarsList = (state.userCars ?? [])
-  //         .where((car) => car.id != carId)
-  //         .toList();
-  //
-  //     emit(
-  //       state.copyWith(
-  //         userCars: updatedCarsList,
-  //         isLoading: false,
-  //       ),
-  //     );
-  //
-  //     await deleteCarUseCase.execute(
-  //       carId,
-  //     );
-  //   } catch (e) {
-  //     print('Error deleting car: $e');
-  //     emit(
-  //       state.copyWith(
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   }
-  // }
+  void savePrice(String price) {
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          pricePerKwh: price,
+        ),
+      ),
+    );
+  }
 
-  // Future<void> fetchMockedCarModelsData() async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     final Map<MockedCarBrand, List<String>> carModelOptions =
-  //     await fetchMockedCarModelOptionsUseCase.execute();
-  //
-  //     emit(
-  //       state.copyWith(
-  //         carModelOptions: carModelOptions,
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     emit(
-  //       state.copyWith(
-  //         errorMessage: e.toString(),
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> saveNewCar(CarModel car) async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     await updateUserCarUseCase.execute(car);
-  //
-  //     final List<CarModel> updateCarsList = [...?state.userCars, car];
-  //
-  //     emit(
-  //       state.copyWith(
-  //         userCars: updateCarsList,
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error adding car: $e');
-  //     emit(
-  //       state.copyWith(
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> deleteCar(String carId) async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     final updatedCarsList = (state.userCars ?? [])
-  //         .where((car) => car.id != carId)
-  //         .toList();
-  //
-  //     emit(
-  //       state.copyWith(
-  //         userCars: updatedCarsList,
-  //         isLoading: false,
-  //       ),
-  //     );
-  //
-  //     await deleteCarUseCase.execute(
-  //       carId,
-  //     );
-  //   } catch (e) {
-  //     print('Error deleting car: $e');
-  //     emit(
-  //       state.copyWith(
-  //         isLoading: false,
-  //       ),
-  //     );
-  //   }
-  // }
-  //
-  // Future<void> fetchUserCarsData() async {
-  //   emit(state.copyWith(isLoading: true));
-  //   try {
-  //     final cars = await getUserCarsUseCase.execute();
-  //     if (cars != null) {
-  //       print('User cars fetched successfully: $cars');
-  //       emit(
-  //         state.copyWith(
-  //           userCars: cars,
-  //           isLoading: false,
-  //           isUserAuthenticated: true,
-  //         ),
-  //       );
-  //     } else {
-  //       print('User cars is null');
-  //       emit(
-  //         state.copyWith(
-  //           isLoading: false,
-  //           isUserAuthenticated: false,
-  //           clearUserData: true,
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching user cars: $e');
-  //     emit(
-  //       state.copyWith(
-  //         errorMessage: e.toString(),
-  //         isLoading: false,
-  //         clearUserData: true,
-  //       ),
-  //     );
-  //   }
-  // }
+  void verifyIban(String value) {
+    String? ibanError;
+
+    if (value.isEmpty) {
+      ibanError = 'Please enter an IBAN number.';
+    } else if (value.length < 15) {
+      ibanError = 'This IBAN is too short. Please check the number.';
+    } else if (value.length > 34) {
+      ibanError = 'This IBAN is too long. Please check the number.';
+    }
+
+    emit(
+      state.copyWith(
+        ibanError: () => ibanError,
+      ),
+    );
+  }
+
+  void saveIban(IbanModel iban) {
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          bankAccount: iban,
+        ),
+      ),
+    );
+  }
+
+  void removeIban() {
+    final IbanModel clearIban = IbanModel(
+      id: '',
+      isUsedForReceivingEarnings: false,
+    );
+
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          bankAccount: clearIban,
+        ),
+      ),
+    );
+  }
+
+  void verifyAvailableHours(
+    List<int> availableDays,
+    String startTime,
+    String endTime,
+  ) {
+    String? daysError;
+    String? startError;
+    String? endError;
+
+    if (availableDays.isEmpty) {
+      daysError = 'At least one day should be added.';
+    }
+
+    if (startTime.isEmpty) {
+      startError = 'Start time should be selected.';
+    }
+
+    if (endTime.isEmpty) {
+      endError = 'End time should be selected.';
+    }
+
+    emit(
+      state.copyWith(
+        availableDaysError: () => daysError,
+        startTimeError: () => startError,
+        endTimeError: () => endError,
+      ),
+    );
+  }
+
+  void addTimeSlot(TimeSlotModel timeSlot) {
+    final List<TimeSlotModel> updatedTimeSlots = [
+      ...?state.chargingStation?.availableHours,
+      timeSlot,
+    ];
+
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          availableHours: updatedTimeSlots,
+        ),
+      ),
+    );
+  }
+
+  void removeTimeSlot(String timeSlotId) {
+    final List<TimeSlotModel>? updatedList = state
+        .chargingStation
+        ?.availableHours!
+        .where((slot) => slot.id != timeSlotId)
+        .toList();
+
+    emit(
+      state.copyWith(
+        chargingStation: state.chargingStation?.copyChargingStationWith(
+          availableHours: updatedList,
+        ),
+      ),
+    );
+  }
+
+  Future<void> saveNewChargingStation(
+    ChargingStationModel chargingStation,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final List<ChargingStationModel> chargingStationsUpdated = [
+        ...?state.userChargingStations,
+        chargingStation,
+      ];
+      await addChargingStationsUseCase.execute(chargingStationsUpdated);
+
+      emit(
+        state.copyWith(
+          chargingStations: chargingStationsUpdated,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      print('Error adding charging station: $e');
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> fetchChargingStations() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final List<ChargingStationModel> chargingStations =
+          await fetchUserChargingStationsUseCase.execute();
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          userChargingStations: chargingStations,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching charging stations: $e');
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> deleteChargingStation(String stationId) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final updatedChargingStationsList = (state.userChargingStations ?? [])
+          .where((station) => station.id != stationId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          userChargingStations: updatedChargingStationsList,
+          isLoading: false,
+        ),
+      );
+
+      await deleteChargingStationUseCase.execute(stationId);
+    } catch (e) {
+      print('Error removing charging station: $e');
+      emit(
+        state.copyWith(
+          errorMessage: e.toString(),
+          isLoading: false,
+        ),
+      );
+    }
+  }
 
   Future<void> fetchUserData() async {
     emit(state.copyWith(isLoading: true));

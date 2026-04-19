@@ -53,6 +53,7 @@ class _AddStationBrandDetailsPageState
                       pngImage: station?.logo,
                       isSelected: tempSelectedBrand == station?.name,
                       onSelected: (newBrand) {
+                        brandLogo = station?.logo;
                         setState(() {
                           tempSelectedBrand = newBrand;
                         });

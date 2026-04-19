@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
-import 'package:watt/presentation/settings_pages/cars_page/bloc/my_cars_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/add_new_charger_station_page.dart';
-import 'package:watt/presentation/settings_pages/my_charging_stations_page/sub_pages/charging_station_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/empty_tall_card_button.dart';
@@ -22,8 +20,8 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
   @override
   void initState() {
     super.initState();
-    // context.read<MyCarsCubit>().fetchUserCarsData();
-    context.read<MyCarsCubit>().fetchUserData();
+    context.read<MyChargingStationsCubit>().fetchChargingStations();
+    // context.read<MyChargingStationsCubit>().fetchUserData();
   }
 
   @override
@@ -103,24 +101,25 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
                                           dismissableKey: chargingStation.id,
                                           onDismissableDismissed: () {
                                             context
-                                                .read<MyCarsCubit>()
-                                                .deleteCar(chargingStation.id);
+                                                .read<MyChargingStationsCubit>()
+                                                .deleteChargingStation(
+                                                  chargingStation.id,
+                                                );
                                           },
                                           label:
                                               chargingStation
                                                   .chargingStationName ??
                                               '',
-                                          // subLabel: car.brandName,
                                           pngImage: chargingStation.brandLogo,
                                           marginDistance: marginSize,
                                           onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    ChargingStationDetailsPage(),
-                                              ),
-                                            );
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (_) =>
+                                            //         ChargingStationDetailsPage(),
+                                            //   ),
+                                            // );
                                           },
                                         );
                                       }),
@@ -154,7 +153,13 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
                       MaterialPageRoute(
                         builder: (_) => AddNewChargingStationPage(),
                       ),
-                    );
+                    ).then((_) async {
+                      if (context.mounted) {
+                        await context
+                            .read<MyChargingStationsCubit>()
+                            .fetchChargingStations();
+                      }
+                    });
                   },
                 ),
               ),

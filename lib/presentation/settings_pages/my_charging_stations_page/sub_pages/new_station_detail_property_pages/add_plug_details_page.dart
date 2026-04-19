@@ -48,11 +48,9 @@ class _AddStationPlugDetailsPageState extends State<AddStationPlugDetailsPage> {
                   },
                 ),
           onPressed: () {
-            // context.read<ChargingStationBloc>().add(
-            //   SavePlugPropertyEvent(
-            //     selectedPlug ?? '',
-            //   ),
-            // );
+            context.read<MyChargingStationsCubit>().savePlug(
+              selectedPlug ?? '',
+            );
 
             Navigator.pop(context);
           },

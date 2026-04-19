@@ -17,6 +17,7 @@ abstract class UserRepository {
   Future<void> updatePlateNumber(String carId, String plateNumber);
   Future<void> deleteCar(String carId);
   Future<void> addChargingStations(List<ChargingStationModel> chargingStations);
+  Future<void> deleteChargingStation(String stationId);
   Future<List<ChargingStationModel>> fetchChargingStations();
   Future<void> addPaymentMethod(PaymentMethodModel paymentMethod);
   Future<List<PaymentMethodModel>> fetchPaymentMethods();

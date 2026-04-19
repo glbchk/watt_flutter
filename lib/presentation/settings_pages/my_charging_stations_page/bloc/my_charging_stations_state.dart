@@ -8,14 +8,18 @@ class MyChargingStationsState {
   final String? errorMessage;
   final List<ChargingStationModel>? userChargingStations;
   final UserModel? userData;
-  // final List<MockedCarOption>? carOptions;
-  // final Map<MockedCarBrand, List<String>>? carModelOptions;
 
   final List<MockedChargingStationOption>? chargingStationOptions;
   final List<String>? chargingEffectOptions;
   final List<String>? plugOptions;
   final ChargingStationModel? chargingStation;
   final List<ChargingStationModel>? chargingStations;
+  final List<String>? locationSuggestions;
+
+  final String? ibanError;
+  final String? startTimeError;
+  final String? endTimeError;
+  final String? availableDaysError;
 
   MyChargingStationsState({
     required this.isUserAuthenticated,
@@ -28,8 +32,11 @@ class MyChargingStationsState {
     this.plugOptions,
     this.chargingStation,
     this.chargingStations,
-    // this.carOptions,
-    // this.carModelOptions,
+    this.locationSuggestions,
+    this.ibanError,
+    this.startTimeError,
+    this.endTimeError,
+    this.availableDaysError,
   });
 
   MyChargingStationsState copyWith({
@@ -44,8 +51,11 @@ class MyChargingStationsState {
     List<String>? plugOptions,
     ChargingStationModel? chargingStation,
     List<ChargingStationModel>? chargingStations,
-    // List<MockedCarOption>? carOptions,
-    // Map<MockedCarBrand, List<String>>? carModelOptions,
+    List<String>? locationSuggestions,
+    String? Function()? ibanError,
+    String? Function()? startTimeError,
+    String? Function()? endTimeError,
+    String? Function()? availableDaysError,
   }) {
     return MyChargingStationsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -60,8 +70,15 @@ class MyChargingStationsState {
       plugOptions: plugOptions ?? this.plugOptions,
       chargingStation: chargingStation ?? this.chargingStation,
       chargingStations: chargingStations ?? this.chargingStations,
-      // carOptions: carOptions ?? this.carOptions,
-      // carModelOptions: carModelOptions ?? this.carModelOptions,
+      locationSuggestions: locationSuggestions ?? this.locationSuggestions,
+      ibanError: ibanError != null ? ibanError() : this.ibanError,
+      startTimeError: startTimeError != null
+          ? startTimeError()
+          : this.startTimeError,
+      endTimeError: endTimeError != null ? endTimeError() : this.endTimeError,
+      availableDaysError: availableDaysError != null
+          ? availableDaysError()
+          : this.availableDaysError,
     );
   }
 }

@@ -10,8 +10,11 @@ class SelectCarModelWidget extends StatelessWidget {
   final String? selectedValue;
   final List<String> listItems;
   final ValueChanged<String?>? onDropdownChanged;
+  final Function(String?)? onTextfieldChanged;
+  final String? errorModel;
   final String? errorPlateNumber;
   final String? saveLabel;
+
   final VoidCallback? onSavePressed;
 
   const SelectCarModelWidget({
@@ -20,6 +23,8 @@ class SelectCarModelWidget extends StatelessWidget {
     this.selectedValue,
     required this.listItems,
     this.onDropdownChanged,
+    this.onTextfieldChanged,
+    this.errorModel,
     this.errorPlateNumber,
     this.saveLabel,
     this.onSavePressed,
@@ -57,6 +62,7 @@ class SelectCarModelWidget extends StatelessWidget {
                     hintText: "Select a car model",
                     dropdownValue: selectedValue,
                     listItems: listItems,
+                    error: errorModel,
                     onChanged: onDropdownChanged,
                   ),
 
@@ -66,6 +72,7 @@ class SelectCarModelWidget extends StatelessWidget {
                     label: 'Plate Number',
                     hint: 'Start typing here...',
                     error: errorPlateNumber,
+                    onChanged: onTextfieldChanged,
                     keyboardType: TextInputType.text,
                     textCapitalization: TextCapitalization.characters,
                     inputFormatters: [

@@ -27,7 +27,6 @@ class AddNewCarDetailsPage extends StatefulWidget {
 
 class _AddNewCarDetailsPageState extends State<AddNewCarDetailsPage> {
   TextEditingController plateController = TextEditingController();
-  // var items = ['One', 'Two', 'Three', 'Four'];
   String? _dropdownValue;
 
   @override
@@ -65,25 +64,54 @@ class _AddNewCarDetailsPageState extends State<AddNewCarDetailsPage> {
           titleColor: context.theme.appColors.onPrimary,
           scaffoldBackgroundColor: context.theme.appColors.primary,
           appBarBackgroundColor: context.theme.appColors.transparent,
+          leading: BackButton(
+            onPressed: () {
+              context.read<MyCarsCubit>().clearErrors();
+
+              Navigator.pop(context);
+            },
+          ),
           body: SelectCarModelWidget(
             controllerPlateNumber: plateController,
+            errorModel: state.modelError,
+            errorPlateNumber: state.plateNumberError,
             listItems: getModelList(widget.brand, state.carModelOptions),
             selectedValue: _dropdownValue,
             onDropdownChanged: (String? newValue) {
               setState(() {
-                _dropdownValue = newValue ?? '';
+                _dropdownValue = newValue;
+                context.read<MyCarsCubit>().verifyModelSelection(
+                  _dropdownValue ?? '',
+                );
               });
             },
+            onTextfieldChanged: (String? value) {
+              context.read<MyCarsCubit>().verifyPlateNumber(value ?? '');
+            },
             onSavePressed: () {
+              final model = _dropdownValue ?? '';
+              final plate = plateController.text.trim();
+
+              final isModelValid = model.isNotEmpty;
+              final isPlateValid =
+                  plate.replaceAll(RegExp(r'\s+'), '').length == 6;
+
+              if (!isModelValid || !isPlateValid) {
+                context.read<MyCarsCubit>().verifyModelSelection(model);
+                context.read<MyCarsCubit>().verifyPlateNumber(plate);
+                return;
+              }
+
               context.read<MyCarsCubit>().saveNewCar(
                 CarModel(
                   id: Uuid().v4(),
                   brandLogo: widget.brandLogo,
                   brandName: widget.brandName,
-                  carModel: _dropdownValue ?? '',
-                  plateNumber: plateController.text,
+                  carModel: model,
+                  plateNumber: plate,
                 ),
               );
+
               Navigator.of(context)
                 ..pop()
                 ..pop();
