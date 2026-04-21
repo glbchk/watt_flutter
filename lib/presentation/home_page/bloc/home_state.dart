@@ -1,6 +1,7 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
@@ -25,6 +26,7 @@ class HomeState {
   final List<BookingModel>? bookings;
   // final BookingModel? activeBooking;
   // final bool isBooked;
+  final List<MockedFaq>? faq;
 
   HomeState({
     required this.isUserAuthenticated,
@@ -46,6 +48,7 @@ class HomeState {
     // this.stage,
     this.bookings,
     // this.activeBooking,
+    this.faq,
   });
 
   HomeState copyWith({
@@ -68,6 +71,7 @@ class HomeState {
     // ReservationStage? Function()? stage,
     List<BookingModel>? bookings,
     // BookingModel? Function()? activeBooking,
+    List<MockedFaq>? faq,
   }) {
     return HomeState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -97,6 +101,7 @@ class HomeState {
       //     ? activeBooking()
       //     : this.activeBooking,
       // isBooked: isBooked ?? this.isBooked,
+      faq: faq ?? this.faq,
     );
   }
 }

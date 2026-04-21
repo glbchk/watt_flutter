@@ -73,4 +73,13 @@ class MockedDataRepositoryImpl implements MockedDataRepository {
       throw Exception("Failed to fetch public mocked charging stations: $e");
     }
   }
+
+  @override
+  Future<List<MockedFaq>> getFaq() async {
+    try {
+      return await mockDataRemoteDataSource.getFaq();
+    } catch (e) {
+      throw Exception("Failed to fetch faq: $e");
+    }
+  }
 }

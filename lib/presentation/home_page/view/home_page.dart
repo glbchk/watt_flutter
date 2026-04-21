@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
@@ -11,6 +12,7 @@ import 'package:watt/presentation/home_page/view/components/app_drawer_widget.da
 import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
 import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
+import 'package:watt/presentation/settings_pages/help_page/help_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/my_charging_stations_page.dart';
 import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
@@ -311,6 +313,22 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => MyPaymentMethodsPage(),
+                ),
+              );
+            },
+            onPressedInviteFriends: () async {
+              await SharePlus.instance.share(
+                ShareParams(
+                  text:
+                      "Join Watt! Charging stations are waiting for your EV ⚡\n\n${context.read<HomeCubit>().inviteFriends()}",
+                ),
+              );
+            },
+            onPressedHelp: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => HelpPage(),
                 ),
               );
             },

@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
@@ -31,6 +35,7 @@ class HomeCubit extends Cubit<HomeState> {
   final AddBookingUseCase addBookingUseCase = AddBookingUseCase();
   final UpdateBookingUseCase updateBookingUseCase = UpdateBookingUseCase();
   final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
+  final FetchFaqUseCase fetchFaqUseCase = FetchFaqUseCase();
 
   HomeCubit({required this.authBloc, required this.profileCubit})
     : super(HomeState(isUserAuthenticated: true, isLoading: true)) {
@@ -367,5 +372,55 @@ class HomeCubit extends Cubit<HomeState> {
         // isBooked: false,
       ),
     );
+  }
+
+  String inviteFriends() {
+    if (Platform.isIOS) {
+      return "https://www.apple.com/app-store/";
+    } else if (Platform.isAndroid) {
+      return "https://play.google.com/";
+    } else {
+      return "Unknown platform";
+    }
+  }
+
+  Future<void> fetchFaq() async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final List<MockedFaq> faq = await fetchFaqUseCase.execute();
+      print('FAQ fetched successfully: $faq');
+      emit(
+        state.copyWith(
+          faq: faq,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching FAQ: $e');
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          isLoading: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> sendEmail() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'contact@watt.co',
+      queryParameters: {
+        'subject': 'Support Request',
+        'body': 'Hello, I have a question about...',
+      },
+    );
+
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      // Handle the error if no mail app is available
+      debugPrint('Could not launch mail app');
+    }
   }
 }
