@@ -45,4 +45,10 @@ class MockedDataRemoteDataSource {
 
     return KMockedData.mockedPublicChargingStations;
   }
+
+  Future<List<MockedFaq>> getFaq() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    return KMockedData.faqContent;
+  }
 }

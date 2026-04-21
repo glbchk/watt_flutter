@@ -48,3 +48,9 @@ class FetchPublicMockedChargingStationsUseCase extends MockedDataUseCase {
     return mockedDataRepository.getPublicMockedChargingStations();
   }
 }
+
+class FetchFaqUseCase extends MockedDataUseCase {
+  Future<List<MockedFaq>> execute() {
+    return mockedDataRepository.getFaq();
+  }
+}

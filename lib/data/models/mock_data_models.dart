@@ -31,3 +31,9 @@ class MockedMapPopupValues {
   final String logo;
   MockedMapPopupValues(this.name, this.logo);
 }
+
+class MockedFaq {
+  final String question;
+  final String answer;
+  MockedFaq(this.question, this.answer);
+}

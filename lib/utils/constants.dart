@@ -406,6 +406,37 @@ class KMockedData {
       stationStatus: ChargingStationAvailability.available,
     ),
   ];
+
+  static List<MockedFaq> faqContent = [
+    MockedFaq(
+      'What is Watt and how does it work?',
+      'Watt helps you find nearby EV charging stations quickly and easily. Open the app, allow location access, and you’ll see available stations around you. You can view details like location, availability, and directions—all in one place.',
+    ),
+    MockedFaq(
+      'Do I need an account to use the app?',
+      'You can browse charging stations without an account. However, creating an account allows you to save favorites, track your activity, and access personalized features like sharing and recommendations.',
+    ),
+    MockedFaq(
+      'How accurate is the charging station information?',
+      'We strive to keep all station data as accurate and up to date as possible. Information is sourced from trusted providers and regularly updated. However, availability may occasionally change in real time, so it’s always a good idea to double-check before heading out.',
+    ),
+    MockedFaq(
+      'Can I share charging stations with friends?',
+      'Yes. You can easily share stations or invite friends using the built-in share feature. Just tap the share button, and choose your preferred app to send the link.',
+    ),
+    MockedFaq(
+      'Does Watt work on both Android and iOS?',
+      'Yes, Watt is fully supported on both Android and iOS devices. The experience is designed to be consistent across platforms.',
+    ),
+    MockedFaq(
+      'Why do I need to enable location services?',
+      'Location access allows the app to show charging stations near you and provide accurate directions. Without it, you can still search manually, but results may be less convenient.',
+    ),
+    MockedFaq(
+      'Is Watt free to use?',
+      'Yes, Watt is free to download and use. Some features may expand in the future, but the core functionality of finding and viewing charging stations will remain accessible.',
+    ),
+  ];
 }
 
 class KPaymentProvidersIcons {
