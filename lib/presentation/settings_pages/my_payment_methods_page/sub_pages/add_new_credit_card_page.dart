@@ -46,6 +46,7 @@ class _AddNewCreditCardPageState extends State<AddNewCreditCardPage> {
                 context.read<OnboardingBloc>().add(
                   AddedChargingStationsEvent(
                     chargingStations: state.userChargingStations ?? [],
+                    stationId: state.chargingStation?.id ?? '',
                   ),
                 );
               }

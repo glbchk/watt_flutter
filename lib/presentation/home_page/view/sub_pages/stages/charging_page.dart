@@ -337,8 +337,8 @@ class _ChargingPageState extends State<ChargingPage> {
                   ),
                   child: Column(
                     children: [
-                      state.selectedSlots.isEmpty &&
-                              state.errorTimeIsNotChosen != null
+                      (state.selectedSlots?.isEmpty ?? false) &&
+                              (state.errorTimeIsNotChosen != null)
                           ? Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
                               child: Text(

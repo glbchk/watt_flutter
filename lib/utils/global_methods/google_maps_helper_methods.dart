@@ -1,7 +1,26 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 
 class GoogleMapsHelperMethods {
+  static double getMarkerHue({
+    required String stationId,
+    required Set<String> userIds,
+    required ChargingStationType type,
+  }) {
+    print(userIds);
+    if (type == ChargingStationType.public) {
+      return BitmapDescriptor.hueGreen;
+    }
+
+    if (userIds.contains(stationId)) {
+      return BitmapDescriptor.hueRed;
+    }
+
+    return BitmapDescriptor.hueAzure;
+  }
+
   static Future<String> convertPositionToAddress(Position? position) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(

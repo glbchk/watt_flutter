@@ -7,6 +7,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class MapPopupWidget extends StatelessWidget {
   final ChargingStationType chargingStationType;
@@ -70,8 +71,9 @@ class MapPopupWidget extends StatelessWidget {
             return MapPopupWidget(
               chargingStationType: station.type ?? ChargingStationType.private,
               chargingStationName: station.chargingStationName,
-              timeAvailability:
-                  "${station.availableHours?.first.startTime}-${station.availableHours?.first.endTime}",
+              timeAvailability: station.availableHours?.isNotEmpty ?? false
+                  ? "${StringHelperMethods.convertTimeSlotsToTimeRange(station.availableHours ?? [])}"
+                  : 'No available time',
               chargingStationAddress: station.address,
               distanceToChargingStation: distanceToChargingStation,
               plugType: station.plug,
@@ -300,7 +302,9 @@ class MapPopupWidget extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              pricePerKwh ?? '2 SEK/kWh',
+                              pricePerKwh != null
+                                  ? "$pricePerKwh SEK/kWh"
+                                  : '2 SEK/kWh',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,

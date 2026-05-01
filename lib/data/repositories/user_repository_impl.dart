@@ -4,6 +4,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
@@ -79,8 +80,13 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> addChargingStations(
     List<ChargingStationModel> chargingStations,
   ) async {
-    return await userRemoteDataSource.addChargingStations(chargingStations);
+    return await userRemoteDataSource.addStationsToUserData(chargingStations);
   }
+
+  // @override
+  // Future<void> syncStationToGlobal() async {
+  //   return await userRemoteDataSource.syncStationToGlobal();
+  // }
 
   @override
   Future<void> deleteChargingStation(String stationId) async {
@@ -89,7 +95,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<List<ChargingStationModel>> fetchChargingStations() async {
-    return await userRemoteDataSource.fetchChargingStations();
+    return await userRemoteDataSource.fetchUserChargingStations();
   }
 
   @override
@@ -135,21 +141,31 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<ChargingStationModel> fetchOneChargingStation(String stationId) async {
+    return await userRemoteDataSource.fetchOneChargingStation(stationId);
+  }
+
+  @override
   Future<void> addBooking(BookingModel booking) async {
     return await userRemoteDataSource.addBooking(booking);
   }
 
   @override
-  Future<void> updateBookingStage(
+  Future<void> setSlotIsBusy(
     String bookingId,
-    BookingStatus status,
+    List<SlotModel> selectedSlots,
+    String cardNumber,
   ) async {
-    return await userRemoteDataSource.updateBookingStage(bookingId, status);
+    return await userRemoteDataSource.setSlotIsBusy(
+      bookingId,
+      selectedSlots,
+      cardNumber,
+    );
   }
 
   @override
-  Future<void> deleteBooking(String bookingId) async {
-    return await userRemoteDataSource.deleteBooking(bookingId);
+  Future<void> deleteBooking(BookingModel booking) async {
+    return await userRemoteDataSource.deleteBooking(booking);
   }
 
   @override

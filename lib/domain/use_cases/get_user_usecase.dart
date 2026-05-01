@@ -2,6 +2,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
@@ -70,6 +71,12 @@ class AddChargingStationsUseCase extends UserUseCase {
   }
 }
 
+// class SyncStationToGlobalUseCase extends UserUseCase {
+//   Future execute() {
+//     return userRepository.syncStationToGlobal();
+//   }
+// }
+
 class DeleteChargingStationUseCase extends UserUseCase {
   Future execute(String stationId) {
     return userRepository.deleteChargingStation(stationId);
@@ -121,21 +128,31 @@ class GetUserDataUseCase extends UserUseCase {
   }
 }
 
+class FetchOneChargingStationUseCase extends UserUseCase {
+  Future<ChargingStationModel> execute(String stationId) {
+    return userRepository.fetchOneChargingStation(stationId);
+  }
+}
+
 class AddBookingUseCase extends UserUseCase {
   Future execute(BookingModel booking) {
     return userRepository.addBooking(booking);
   }
 }
 
-class UpdateBookingUseCase extends UserUseCase {
-  Future execute(String bookingId, BookingStatus status) {
-    return userRepository.updateBookingStage(bookingId, status);
+class SetSlotIsBusyUseCase extends UserUseCase {
+  Future execute(
+    String bookingId,
+    List<SlotModel> selectedSlots,
+    String cardNumber,
+  ) {
+    return userRepository.setSlotIsBusy(bookingId, selectedSlots, cardNumber);
   }
 }
 
 class DeleteBookingUseCase extends UserUseCase {
-  Future execute(String bookingId) {
-    return userRepository.deleteBooking(bookingId);
+  Future execute(BookingModel booking) {
+    return userRepository.deleteBooking(booking);
   }
 }
 

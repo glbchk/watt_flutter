@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
@@ -14,6 +15,8 @@ import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
+import 'package:watt/utils/constants.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final AuthBloc authBloc;
@@ -21,19 +24,29 @@ class HomeCubit extends Cubit<HomeState> {
   final ProfileCubit profileCubit;
   late StreamSubscription profileSubscription;
 
-  final FetchAddedByUsersMockedChargingStationsUseCase
-  fetchAddedByUsersMockedChargingStationsUseCase =
-      FetchAddedByUsersMockedChargingStationsUseCase();
-  final FetchPublicMockedChargingStationsUseCase
-  fetchPublicMockedChargingStationsUseCase =
-      FetchPublicMockedChargingStationsUseCase();
+  final SeedMockedChargingStationsUseCase seedMockedChargingStationsUseCase =
+      SeedMockedChargingStationsUseCase();
+  // final SyncStationToGlobalUseCase syncStationToGlobalUseCase =
+  //     SyncStationToGlobalUseCase();
+  final GetStationIdsForMapUseCase getStationIdsForMap =
+      GetStationIdsForMapUseCase();
+  FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =
+      FetchPaymentMethodsUseCase();
+  // final FetchAddedByUsersMockedChargingStationsUseCase
+  // fetchAddedByUsersMockedChargingStationsUseCase =
+  //     FetchAddedByUsersMockedChargingStationsUseCase();
+  // final FetchPublicMockedChargingStationsUseCase
+  // fetchPublicMockedChargingStationsUseCase =
+  //     FetchPublicMockedChargingStationsUseCase();
   final GetLocationPermissionUseCase getLocationPermissionUseCase =
       GetLocationPermissionUseCase();
   final GoToMyLocationUseCase goToMyLocationUseCase = GoToMyLocationUseCase();
   final GetDistanceToUseCase getDistanceToUseCase = GetDistanceToUseCase();
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
+  final FetchOneChargingStationUseCase fetchOneChargingStationUseCase =
+      FetchOneChargingStationUseCase();
   final AddBookingUseCase addBookingUseCase = AddBookingUseCase();
-  final UpdateBookingUseCase updateBookingUseCase = UpdateBookingUseCase();
+  final SetSlotIsBusyUseCase setSlotIsBusyUseCase = SetSlotIsBusyUseCase();
   final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
   final FetchFaqUseCase fetchFaqUseCase = FetchFaqUseCase();
 
@@ -119,26 +132,101 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> fetchMockedChargingStations() async {
+  Future<void> seedMockedChargingStations() async {
     try {
-      final addedByUsersChargingStations =
-          await fetchAddedByUsersMockedChargingStationsUseCase.execute();
-      final publicChargingStations =
-          await fetchPublicMockedChargingStationsUseCase.execute();
+      // await syncStationToGlobalUseCase.execute();
+      await seedMockedChargingStationsUseCase.execute(
+        KMockedData.mockedAddedByUsersChargingStations,
+      );
+      await seedMockedChargingStationsUseCase.execute(
+        KMockedData.mockedPublicChargingStations,
+      );
       final List<ChargingStationModel> chargingStationsOnMap = [];
-      chargingStationsOnMap.addAll(addedByUsersChargingStations);
-      chargingStationsOnMap.addAll(publicChargingStations);
+      chargingStationsOnMap.addAll(
+        KMockedData.mockedAddedByUsersChargingStations,
+      );
+      chargingStationsOnMap.addAll(KMockedData.mockedPublicChargingStations);
+      chargingStationsOnMap.addAll(state.userData?.chargingStations ?? []);
+      final result = await getStationIdsForMap.execute();
 
       emit(
         state.copyWith(
           isLoading: false,
           chargingStationsOnMap: chargingStationsOnMap,
+          userStationIds: result['user'],
+          globalStationIds: result['global'],
           errorMessage: () =>
               chargingStationsOnMap.isEmpty ? 'No stations found' : null,
         ),
       );
     } catch (e) {
       emit(state.copyWith(errorMessage: () => e.toString(), isLoading: false));
+    }
+  }
+
+  Future<void> fetchPaymentMethods() async {
+    try {
+      final methods = state.userData?.paymentMethods;
+
+      if (methods != null) {
+        emit(state.copyWith(paymentMethods: methods));
+        return;
+      }
+
+      final paymentMethods = await fetchPaymentMethodsUseCase.execute();
+
+      emit(state.copyWith(paymentMethods: paymentMethods));
+    } catch (e) {
+      emit(state.copyWith(errorMessage: () => e.toString()));
+    }
+  }
+
+  Future<void> setSlotIsBusy(
+    String bookingId,
+    List<SlotModel> selectedSlots,
+    String cardNumber,
+  ) async {
+    try {
+      final selectedIds = selectedSlots.map((s) => s.id).toSet();
+
+      final updatedBookings = state.bookings?.map((booking) {
+        if (booking.id == bookingId) {
+          final updatedSlots = booking.selectedTimes?.map((slot) {
+            if (selectedIds.contains(slot.id)) {
+              return slot.copyWith(isBusy: true);
+            }
+            return slot;
+          }).toList();
+
+          return booking.copyWith(
+            selectedTimes: updatedSlots,
+            cardNumber: cardNumber,
+          );
+        }
+        return booking;
+      }).toList();
+
+      final updatedTimeSlots = state.timeSlots?.map((slot) {
+        if (selectedIds.contains(slot.id)) {
+          return slot.copyWith(isBusy: true);
+        }
+        return slot;
+      }).toList();
+
+      emit(
+        state.copyWith(
+          bookings: updatedBookings,
+          timeSlots: updatedTimeSlots,
+        ),
+      );
+
+      await setSlotIsBusyUseCase.execute(
+        bookingId,
+        selectedSlots,
+        cardNumber,
+      );
+    } catch (e) {
+      emit(state.copyWith(errorMessage: () => e.toString()));
     }
   }
 
@@ -171,7 +259,7 @@ class HomeCubit extends Cubit<HomeState> {
         targetLongitude,
       );
 
-      if (position != null) {
+      if (distance != null) {
         emit(
           state.copyWith(
             isLoading: false,
@@ -195,6 +283,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(isLoading: true));
     try {
       final user = await getUserDataUseCase.execute();
+
       if (user != null) {
         print('User data fetched successfully: $user');
         emit(
@@ -214,6 +303,17 @@ class HomeCubit extends Cubit<HomeState> {
           ),
         );
       }
+
+      final result = await getStationIdsForMap.execute();
+
+      if (result.isNotEmpty) {
+        emit(
+          state.copyWith(
+            userStationIds: result['user'],
+            globalStationIds: result['global'],
+          ),
+        );
+      }
     } catch (e) {
       print('Error fetching user data: $e');
       emit(
@@ -226,59 +326,86 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  // Future<void> bookingStage() async {
-  //   emit(
-  //     state.copyWith(
-  //       // stage: () => ReservationStage.booking,
-  //       // selectedSlots: () => <String>{},
-  //       // isBooked: false,
-  //     ),
-  //   );
-  // }
+  Future<void> fetchOneChargingStation(String stationId) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final station = state.chargingStationsOnMap?.firstWhere(
+        (station) => station.id == stationId,
+      );
+      if (station == null) return;
+      print('Station data fetched successfully: $station');
 
-  void toggleSlot(String slot) {
-    final newSet = Set<String>.from(state.selectedSlots);
+      final List<SlotModel> generatedSlots = [];
+      for (final timeSlot in station.availableHours ?? []) {
+        final slot = StringHelperMethods.generate30MinuteSlots(timeSlot);
+        generatedSlots.addAll(slot);
+      }
 
-    if (newSet.contains(slot)) {
-      newSet.remove(slot);
-    } else {
-      newSet.add(slot);
+      emit(
+        state.copyWith(
+          chargingStation: () => station,
+          timeSlots: generatedSlots,
+          isLoading: false,
+          isUserAuthenticated: true,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching user data: $e');
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          chargingStation: () => null,
+          isLoading: false,
+          clearUserData: true,
+        ),
+      );
     }
+  }
+
+  void toggleSlot(String slotId) {
+    final List<SlotModel> updatedSlots = List.from(
+      state.selectedSlots ?? [],
+    );
+
+    final slot = state.timeSlots?.firstWhere(
+      (s) => s.id == slotId,
+    );
+
+    final alreadySelected = updatedSlots.any((s) => s.id == slotId);
+    if (alreadySelected) {
+      updatedSlots.removeWhere((s) => s.id == slotId);
+    } else {
+      if (slot != null) updatedSlots.add(slot);
+    }
+
+    print(updatedSlots);
 
     emit(
       state.copyWith(
-        selectedSlots: () => newSet,
-        errorTimeNotChosen: () => null,
+        selectedSlots: () => updatedSlots,
+        errorTimeIsNotChosen: () => null,
       ),
     );
   }
 
   Future<void> timeIsNotChosen() async {
-    if (state.selectedSlots.isEmpty) {
+    if (state.selectedSlots?.isEmpty ?? false) {
       emit(
         state.copyWith(
           // stage: () => ReservationStage.booking,
           // isBooked: false,
-          errorTimeNotChosen: () => "The time wasn't chosen!",
+          errorTimeIsNotChosen: () => "The time wasn't chosen!",
         ),
       );
     } else {
       emit(
         state.copyWith(
-          errorTimeNotChosen: null,
+          errorTimeIsNotChosen: null,
           // isBooked: false,
         ),
       );
     }
   }
-
-  // Future<void> generateUuid(String id) async {
-  //   emit(
-  //     state.copyWith(
-  //       activeBookingId: () => id,
-  //     ),
-  //   );
-  // }
 
   Future<void> reservationRequestedStage(BookingModel booking) async {
     try {
@@ -292,7 +419,6 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(
         state.copyWith(
-          // activeBooking: () => booking,
           bookings: updatedBookings,
         ),
       );
@@ -301,11 +427,41 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  Future<void> fetchOneBooking(String bookingId) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final booking = state.bookings?.firstWhere(
+        (b) => b.id == bookingId,
+      );
+      if (booking == null) return;
+      print('Station data fetched successfully: $booking');
+      emit(
+        state.copyWith(
+          booking: () => booking,
+          isLoading: false,
+          isUserAuthenticated: true,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching user data: $e');
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          booking: () => null,
+          isLoading: false,
+          clearUserData: true,
+        ),
+      );
+    }
+  }
+
   Future<void> clearBookingState() async {
     try {
       emit(
         state.copyWith(
-          selectedSlots: () => <String>{},
+          selectedSlots: () => null,
+          booking: () => null,
+          errorTimeIsNotChosen: () => null,
         ),
       );
     } catch (e) {
@@ -314,28 +470,26 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> cancelBooking(String bookingId) async {
-    for (final booking in (state.bookings ?? [])) {
-      if (booking.id == bookingId) {
-        print(booking.id);
-        print(bookingId);
-      }
-    }
-
-    final updatedBookings = (state.bookings ?? [])
-        .where((b) => b.id != bookingId)
-        .toList();
-
-    emit(
-      state.copyWith(
-        selectedSlots: () => <String>{},
-        bookings: updatedBookings,
-        // activeBooking: () => null,
-      ),
-    );
-
     try {
-      await deleteBookingUseCase.execute(bookingId);
-      // await fetchUserData();
+      print('Booking id in the method: ${bookingId}');
+      final bookingToDelete = state.bookings?.firstWhere(
+        (b) => b.id == bookingId,
+      );
+      if (bookingToDelete == null) return;
+
+      await deleteBookingUseCase.execute(bookingToDelete);
+
+      final updatedBookings = (state.bookings ?? [])
+          .where((b) => b.id != bookingId)
+          .toList();
+
+      emit(
+        state.copyWith(
+          selectedSlots: () => null,
+          bookings: updatedBookings,
+          // activeBooking: () => null,
+        ),
+      );
     } catch (e) {
       print('Error cancelling booking $e');
     }
@@ -353,7 +507,7 @@ class HomeCubit extends Cubit<HomeState> {
       ),
     );
 
-    await updateBookingUseCase.execute(bookingId, booking.status);
+    // await updateBookingUseCase.execute(bookingId, booking.status);
   }
 
   Future<void> chargingStage() async {

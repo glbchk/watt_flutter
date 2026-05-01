@@ -21,6 +21,7 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/map_popup_widget.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,6 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   Set<Marker> buildMarkers(List<ChargingStationModel> locations) {
     final Set<Marker> markers = {};
+    final state = context.read<HomeCubit>().state;
 
     for (final location in locations) {
       markers.add(
@@ -65,13 +67,13 @@ class _HomePageState extends State<HomePage> {
             location.addressLongitude ?? 0.0,
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            location.type == ChargingStationType.private
-                ? BitmapDescriptor.hueAzure
-                : BitmapDescriptor.hueGreen,
+            GoogleMapsHelperMethods.getMarkerHue(
+              stationId: location.id,
+              userIds: state.userStationIds,
+              type: location.type ?? ChargingStationType.private,
+            ),
           ),
           onTap: () async {
-            final state = context.read<HomeCubit>().state;
-
             await context.read<HomeCubit>().getDistanceToChargingStation(
               location.addressLatitude ?? 0.0,
               location.addressLongitude ?? 0.0,
@@ -106,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => ReservationBookingPage(
-                        station: location,
+                        stationId: location.id,
                       ),
                     ),
                   );
@@ -117,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => ReservationBookingPage(
-                        station: location,
+                        stationId: location.id,
                       ),
                     ),
                   );
@@ -138,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => ReservationBookingPage(
-                        station: location,
+                        stationId: location.id,
                       ),
                     ),
                   );
@@ -158,11 +160,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initHome() async {
-    await Future.wait([
-      context.read<HomeCubit>().getLocationPermission(),
-      context.read<HomeCubit>().fetchMockedChargingStations(),
-      context.read<HomeCubit>().fetchUserData(),
-    ]);
+    await context.read<HomeCubit>().fetchUserData();
+    if (!mounted) return;
+    await context.read<HomeCubit>().getLocationPermission();
+    if (!mounted) return;
+    await context.read<HomeCubit>().seedMockedChargingStations();
   }
 
   @override

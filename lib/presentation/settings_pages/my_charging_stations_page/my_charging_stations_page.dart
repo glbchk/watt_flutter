@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
@@ -35,6 +36,12 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
           extendBodyBehindAppBar: false,
           appBarBackgroundColor: context.theme.appColors.transparent,
           scaffoldBackgroundColor: context.theme.appColors.primary,
+          leading: BackButton(
+            onPressed: () {
+              context.read<HomeCubit>().fetchUserData();
+              Navigator.of(context).pop();
+            },
+          ),
           body: Stack(
             children: [
               CustomScrollView(

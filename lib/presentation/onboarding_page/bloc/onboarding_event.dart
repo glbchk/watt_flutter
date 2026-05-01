@@ -59,9 +59,11 @@ class DeleteCarEvent extends OnboardingEvent {
 
 class AddedChargingStationsEvent extends OnboardingEvent {
   final List<ChargingStationModel> chargingStations;
+  final String stationId;
 
   AddedChargingStationsEvent({
     required this.chargingStations,
+    required this.stationId,
   });
 }
 

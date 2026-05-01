@@ -47,6 +47,7 @@ class _AddNewChargingStationPageState extends State<AddNewChargingStationPage> {
                 context.read<OnboardingBloc>().add(
                   AddedChargingStationsEvent(
                     chargingStations: state.userChargingStations ?? [],
+                    stationId: state.chargingStation?.id ?? '',
                   ),
                 );
               }

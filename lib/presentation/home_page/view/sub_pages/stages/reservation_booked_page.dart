@@ -10,17 +10,16 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/line_card_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
-import 'package:watt/utils/global_methods/string_helper_methods.dart';
 import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class ReservationBookedPage extends StatefulWidget {
   final ChargingStationType type;
-  final ChargingStationModel station;
+  final String stationId;
 
   const ReservationBookedPage({
     super.key,
     required this.type,
-    required this.station,
+    required this.stationId,
   });
 
   @override
@@ -29,6 +28,11 @@ class ReservationBookedPage extends StatefulWidget {
 
 class _ReservationBookedPageState extends State<ReservationBookedPage> {
   bool isCollapsed = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -397,8 +401,8 @@ class _ReservationBookedPageState extends State<ReservationBookedPage> {
                   ),
                   child: Column(
                     children: [
-                      state.selectedSlots.isEmpty &&
-                              state.errorTimeIsNotChosen != null
+                      (state.selectedSlots?.isEmpty ?? false) &&
+                              (state.errorTimeIsNotChosen != null)
                           ? Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
                               child: Text(
@@ -435,20 +439,21 @@ class _ReservationBookedPageState extends State<ReservationBookedPage> {
                             child: WattMainButton(
                               label: 'Start Charging',
                               onPressed: () async {
-                                final convertedTimeSlots =
-                                    StringHelperMethods.convertSelectedSlotsToTimeSlots(
-                                      state.selectedSlots,
-                                    );
+                                // final convertedTimeSlots =
+                                //     StringHelperMethods.convertSelectedSlotsToTimeSlots(
+                                //       state.selectedSlots,
+                                //     );
 
                                 final BookingModel bookingToSave = BookingModel(
                                   id: Uuid().v4(),
                                   status: BookingStatus.pending,
-                                  station: widget.station,
+                                  stationId: state.chargingStation?.id,
                                   date: DateTime.now().toString(),
-                                  selectedTimes: convertedTimeSlots,
+                                  // selectedTimes: convertedTimeSlots,
                                   price:
                                       double.tryParse(
-                                        widget.station.pricePerKwh ?? '',
+                                        state.chargingStation?.pricePerKwh ??
+                                            '',
                                       ) ??
                                       0,
                                 );

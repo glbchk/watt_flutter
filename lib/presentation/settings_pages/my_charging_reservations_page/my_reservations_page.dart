@@ -7,6 +7,7 @@ import 'package:watt/presentation/settings_pages/my_charging_reservations_page/b
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
+import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class MyReservationsPage extends StatefulWidget {
   const MyReservationsPage({super.key});
@@ -165,17 +166,18 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                                 itemBuilder: (context, index) {
                                   final booking = bookings?[index];
                                   final selectedTime =
-                                      bookings?[index].selectedTimes;
-                                  print(booking?.station?.chargingStationName);
+                                      StringHelperMethods.convertToOneSlot(
+                                        bookings?[index].selectedTimes ?? [],
+                                      );
+                                  print(
+                                    booking?.stationId,
+                                  );
 
                                   return BookingCardWidget(
-                                    chargingStationName:
-                                        booking?.station?.chargingStationName,
+                                    chargingStationName: booking?.stationId,
                                     dateOfBooking: booking?.date,
-                                    chargingStationTimeSlot:
-                                        "${selectedTime?.first.startTime}-${selectedTime?.first.endTime}",
-                                    chargingStationAddress:
-                                        booking?.station?.address,
+                                    chargingStationTimeSlot: selectedTime,
+                                    chargingStationAddress: booking?.stationId,
                                     onPressedReject: () {},
                                     onPressedAccept: () {},
                                     onPressedContactUser: () {},
