@@ -73,7 +73,7 @@ class CreditCardWidget extends StatelessWidget {
                       '● ● ● ●',
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
-                        fontSize: 18,
+                        fontSize: 13,
                       ),
                     ),
                   );
@@ -84,7 +84,7 @@ class CreditCardWidget extends StatelessWidget {
                     // fourDigitsFormatted,
                     style: TextStyle(
                       color: context.theme.appColors.onPrimary,
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -103,7 +103,7 @@ class CreditCardWidget extends StatelessWidget {
                       'Card Holder'.toUpperCase(),
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
-                        fontSize: 12,
+                        fontSize: 13,
                       ),
                     ),
                     Text(
@@ -111,7 +111,7 @@ class CreditCardWidget extends StatelessWidget {
                       //currentCard.cardName ?? '',
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
-                        fontSize: 18,
+                        fontSize: 15,
                       ),
                     ),
                   ],
@@ -125,7 +125,7 @@ class CreditCardWidget extends StatelessWidget {
                       'Expires'.toUpperCase(),
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
-                        fontSize: 12,
+                        fontSize: 13,
                       ),
                     ),
                     Text(
@@ -133,7 +133,7 @@ class CreditCardWidget extends StatelessWidget {
                       // currentCard.expiry ?? '',
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

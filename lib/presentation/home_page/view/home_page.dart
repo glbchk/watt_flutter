@@ -46,17 +46,20 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> generateMarkers(
     List<ChargingStationModel> stations,
+    HomeState state,
   ) async {
-    final markers = buildMarkers(stations);
+    final markers = buildMarkers(stations, state);
 
     setState(() {
       _markers = markers;
     });
   }
 
-  Set<Marker> buildMarkers(List<ChargingStationModel> locations) {
+  Set<Marker> buildMarkers(
+    List<ChargingStationModel> locations,
+    HomeState state,
+  ) {
     final Set<Marker> markers = {};
-    final state = context.read<HomeCubit>().state;
 
     for (final location in locations) {
       markers.add(
@@ -97,8 +100,31 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            if (location.type == ChargingStationType.private) {
-              print(location.stationStatus?.label);
+            final bool isUserOwner = state.userStationIds.contains(location.id);
+            print(location.id);
+            print(location.stationStatus?.label);
+            print(isUserOwner);
+            if (isUserOwner) {
+              MapPopupWidget.show(
+                context: context,
+                station: location,
+                singleButtonLabel: 'Your stations',
+                onPressedMyStation: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MyChargingStationsPage(),
+                    ),
+                  );
+                },
+                distanceToChargingStation: distanceKm != null
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
+                    : 'Unknown',
+                stationStatus: location.stationStatus?.label,
+              );
+            } else if (location.type == ChargingStationType.private) {
               MapPopupWidget.show(
                 context: context,
                 station: location,
@@ -125,7 +151,9 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 distanceToChargingStation: distanceKm != null
-                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
                     : 'Unknown',
                 stationStatus: location.stationStatus?.label,
               );
@@ -146,7 +174,9 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 distanceToChargingStation: distanceKm != null
-                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
                     : 'Unknown',
                 stationStatus: location.stationStatus?.label,
               );
@@ -194,7 +224,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (state.chargingStationsOnMap != null) {
-          generateMarkers(state.chargingStationsOnMap ?? []);
+          generateMarkers(state.chargingStationsOnMap ?? [], state);
         }
 
         if (state.address != null) {

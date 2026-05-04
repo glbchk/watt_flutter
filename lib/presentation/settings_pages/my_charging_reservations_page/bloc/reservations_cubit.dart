@@ -1,18 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/domain/use_cases/get_auth_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_state.dart';
-import 'package:watt/presentation/settings_pages/profile_page/enum/profile_data_type_enum.dart';
 
 class ReservationsCubit extends Cubit<ReservationsState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
 
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
+  final FetchBookedChargingStationsUseCase fetchBookedChargingStationsUseCase =
+      FetchBookedChargingStationsUseCase();
+  final FetchBookingsUseCase fetchBookingsUseCase = FetchBookingsUseCase();
+  final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
   final ReauthenticateUserUseCase reauthenticateUserUseCase =
       ReauthenticateUserUseCase();
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
@@ -33,15 +37,19 @@ class ReservationsCubit extends Cubit<ReservationsState> {
     });
   }
 
-  Future<void> fetchUserData() async {
+  Future<void> fetchBookingData() async {
     emit(state.copyWith(isLoading: true));
     try {
-      final user = await getUserDataUseCase.execute();
-      if (user != null) {
-        print('User data fetched successfully: $user');
+      final bookings = await fetchBookingsUseCase.execute();
+      final bookedChargingStations = await fetchBookedChargingStationsUseCase
+          .execute();
+
+      if (bookedChargingStations != null) {
+        print('User data fetched successfully: $bookedChargingStations');
         emit(
           state.copyWith(
-            userData: user,
+            bookings: bookings,
+            bookedChargingStations: bookedChargingStations,
             isLoading: false,
             isUserAuthenticated: true,
           ),
@@ -50,9 +58,10 @@ class ReservationsCubit extends Cubit<ReservationsState> {
         print('User data is null');
         emit(
           state.copyWith(
+            bookings: [],
+            bookedChargingStations: [],
             isLoading: false,
             isUserAuthenticated: false,
-            clearUserData: true,
           ),
         );
       }
@@ -61,122 +70,174 @@ class ReservationsCubit extends Cubit<ReservationsState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
+          bookings: [],
+          bookedChargingStations: [],
           isLoading: false,
-          clearUserData: true,
         ),
       );
     }
   }
 
-  Future<void> editNameUserData(String name) async {
-    state.copyWith(isLoading: true);
-
+  Future<void> deleteBooking(BookingModel booking) async {
     try {
-      await updateUserNameUseCase.execute(name);
+      print('Booking id in the method: ${booking}');
+      final bookingToDelete = state.bookings?.firstWhere(
+        (b) => b.id == booking.id,
+      );
+      if (bookingToDelete == null) return;
 
-      print('User name updated!');
+      await deleteBookingUseCase.execute(bookingToDelete);
+
+      final updatedBookings = (state.bookings ?? [])
+          .where((b) => b.id != booking.id)
+          .toList();
+
       emit(
         state.copyWith(
-          userData: state.userData?.copyUserWith(name: name),
-          isLoading: false,
+          bookings: updatedBookings,
         ),
       );
     } catch (e) {
-      print('Error changing user name: $e');
-      emit(
-        state.copyWith(
-          errorMessage: () => e.toString(),
-          isLoading: false,
-        ),
-      );
+      print('Error cancelling booking $e');
     }
   }
 
-  Future<void> editEmailUserData(String email) async {
-    state.copyWith(isLoading: true);
+  // Future<void> fetchBookedChargingStations() async {
+  //   emit(state.copyWith(isLoading: true));
+  //   try {
+  //     final bookedChargingStations = await fetchBookedChargingStationsUseCase
+  //         .execute();
+  //     if (bookedChargingStations == null) return;
+  //     print('Stations data fetched successfully: $bookedChargingStations');
+  //     emit(
+  //       state.copyWith(
+  //         bookedChargingStations: bookedChargingStations,
+  //         isLoading: false,
+  //         isUserAuthenticated: true,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error fetching booked charging stations: $e');
+  //     emit(
+  //       state.copyWith(
+  //         errorMessage: () => e.toString(),
+  //         bookedChargingStations: [],
+  //         isLoading: false,
+  //         clearUserData: true,
+  //       ),
+  //     );
+  //   }
+  // }
 
-    try {
-      await updateUserEmailUseCase.execute(email);
-
-      print('User email updated!');
-      emit(
-        state.copyWith(
-          userData: state.userData?.copyUserWith(email: email),
-          isLoading: false,
-        ),
-      );
-    } catch (e) {
-      if (e.toString().contains('requires-recent-login')) {
-        emit(
-          state.copyWith(
-            errorMessage: () => 'reauth-required',
-            isLoading: false,
-          ),
-        );
-        return;
-      }
-
-      print('Error changing user email: $e');
-      emit(
-        state.copyWith(
-          errorMessage: () => e.toString(),
-          isLoading: false,
-        ),
-      );
-    }
-  }
-
-  Future<void> editPhoneNumberUserData(String phoneNumber) async {
-    state.copyWith(isLoading: true);
-
-    try {
-      await updateUserPhoneNumberUseCase.execute(phoneNumber);
-
-      print('User phone number updated!');
-      emit(
-        state.copyWith(
-          userData: state.userData?.copyUserWith(phoneNumber: phoneNumber),
-          isLoading: false,
-        ),
-      );
-    } catch (e) {
-      print('Error changing user phone number: $e');
-      emit(
-        state.copyWith(
-          errorMessage: () => e.toString(),
-          isLoading: false,
-        ),
-      );
-    }
-  }
-
-  Future<void> reauthenticateUser(
-    String password,
-    ProfileDataType type,
-    String newValue,
-  ) async {
-    try {
-      await reauthenticateUserUseCase.execute(password);
-
-      await editEmailUserData(newValue);
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          userData: state.userData?.copyUserWith(email: newValue),
-          passwordError: () => null,
-          errorMessage: () => null,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: () => "Wrong password. Please try again.",
-        ),
-      );
-    }
-  }
+  // Future<void> editNameUserData(String name) async {
+  //   state.copyWith(isLoading: true);
+  //
+  //   try {
+  //     await updateUserNameUseCase.execute(name);
+  //
+  //     print('User name updated!');
+  //     emit(
+  //       state.copyWith(
+  //         userData: state.userData?.copyUserWith(name: name),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error changing user name: $e');
+  //     emit(
+  //       state.copyWith(
+  //         errorMessage: () => e.toString(),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   }
+  // }
+  //
+  // Future<void> editEmailUserData(String email) async {
+  //   state.copyWith(isLoading: true);
+  //
+  //   try {
+  //     await updateUserEmailUseCase.execute(email);
+  //
+  //     print('User email updated!');
+  //     emit(
+  //       state.copyWith(
+  //         userData: state.userData?.copyUserWith(email: email),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     if (e.toString().contains('requires-recent-login')) {
+  //       emit(
+  //         state.copyWith(
+  //           errorMessage: () => 'reauth-required',
+  //           isLoading: false,
+  //         ),
+  //       );
+  //       return;
+  //     }
+  //
+  //     print('Error changing user email: $e');
+  //     emit(
+  //       state.copyWith(
+  //         errorMessage: () => e.toString(),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   }
+  // }
+  //
+  // Future<void> editPhoneNumberUserData(String phoneNumber) async {
+  //   state.copyWith(isLoading: true);
+  //
+  //   try {
+  //     await updateUserPhoneNumberUseCase.execute(phoneNumber);
+  //
+  //     print('User phone number updated!');
+  //     emit(
+  //       state.copyWith(
+  //         userData: state.userData?.copyUserWith(phoneNumber: phoneNumber),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error changing user phone number: $e');
+  //     emit(
+  //       state.copyWith(
+  //         errorMessage: () => e.toString(),
+  //         isLoading: false,
+  //       ),
+  //     );
+  //   }
+  // }
+  //
+  // Future<void> reauthenticateUser(
+  //   String password,
+  //   ProfileDataType type,
+  //   String newValue,
+  // ) async {
+  //   try {
+  //     await reauthenticateUserUseCase.execute(password);
+  //
+  //     await editEmailUserData(newValue);
+  //
+  //     emit(
+  //       state.copyWith(
+  //         isLoading: false,
+  //         userData: state.userData?.copyUserWith(email: newValue),
+  //         passwordError: () => null,
+  //         errorMessage: () => null,
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     emit(
+  //       state.copyWith(
+  //         isLoading: false,
+  //         errorMessage: () => "Wrong password. Please try again.",
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> verifyNameUserData(String value) async {
     if (value.length < 3) {

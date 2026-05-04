@@ -12,6 +12,7 @@ class BookingCardWidget extends StatelessWidget {
   final VoidCallback? onPressedReject;
   final VoidCallback? onPressedAccept;
   final VoidCallback? onPressedContactUser;
+  final String? negativeLabel;
 
   const BookingCardWidget({
     super.key,
@@ -22,6 +23,7 @@ class BookingCardWidget extends StatelessWidget {
     this.onPressedReject,
     this.onPressedAccept,
     this.onPressedContactUser,
+    this.negativeLabel,
   });
 
   @override
@@ -61,7 +63,7 @@ class BookingCardWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        chargingStationName ?? 'Charging Station Here',
+                        chargingStationName ?? 'No name found',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -114,7 +116,7 @@ class BookingCardWidget extends StatelessWidget {
                     color: context.theme.appColors.grey3,
                   ),
                   Text(
-                    chargingStationAddress ?? "John's Amp",
+                    chargingStationAddress ?? "Address not found",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -125,7 +127,7 @@ class BookingCardWidget extends StatelessWidget {
                 spacing: 15,
                 children: [
                   WattWhiteButton(
-                    label: 'Reject',
+                    label: negativeLabel ?? 'Reject',
                     textColor: context.theme.appColors.error,
                     textScaler: TextScaler.linear(0.9),
                     onPressed: () {

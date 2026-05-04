@@ -1,35 +1,37 @@
-import 'package:watt/data/models/user_model.dart';
+import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 
 class ReservationsState {
   final bool isUserAuthenticated;
   final bool isLoading;
   final bool? isLocationEnabled;
-  final UserModel? userData;
   final String? errorMessage;
   final String? nameError;
   final String? emailError;
   final String? phoneNumberError;
   final String? newEmailValue;
   final String? passwordError;
+  final List<BookingModel>? bookings;
+  final List<ChargingStationModel>? bookedChargingStations;
 
   ReservationsState({
     required this.isUserAuthenticated,
     this.isLoading = false,
     this.isLocationEnabled,
-    this.userData,
     this.errorMessage,
     this.nameError,
     this.emailError,
     this.phoneNumberError,
     this.newEmailValue,
     this.passwordError,
+    this.bookings,
+    this.bookedChargingStations,
   });
 
   ReservationsState copyWith({
     bool? isUserAuthenticated,
     bool? isLoading,
     bool? isLocationEnabled,
-    UserModel? userData,
     String? Function()? errorMessage,
     bool clearUserData = false,
     String? Function()? nameError,
@@ -37,12 +39,13 @@ class ReservationsState {
     String? Function()? phoneNumberError,
     String? Function()? newEmailValue,
     String? Function()? passwordError,
+    List<BookingModel>? bookings,
+    List<ChargingStationModel>? bookedChargingStations,
   }) {
     return ReservationsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,
-      userData: clearUserData ? null : (userData ?? this.userData),
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
       nameError: nameError != null ? nameError() : this.nameError,
       emailError: emailError != null ? emailError() : this.emailError,
@@ -55,6 +58,9 @@ class ReservationsState {
       passwordError: passwordError != null
           ? passwordError()
           : this.passwordError,
+      bookings: bookings ?? this.bookings,
+      bookedChargingStations:
+          bookedChargingStations ?? this.bookedChargingStations,
     );
   }
 }

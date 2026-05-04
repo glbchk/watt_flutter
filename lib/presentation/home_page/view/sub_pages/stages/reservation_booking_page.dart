@@ -34,12 +34,6 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
   void initState() {
     super.initState();
     context.read<HomeCubit>().fetchOneChargingStation(widget.stationId);
-
-    // for (final slot in s.chargingStation?.availableHours ?? []) {
-    //   slots.addAll(
-    //     StringHelperMethods.generate30MinuteSlots(slot),
-    //   );
-    // }
   }
 
   @override
@@ -156,13 +150,8 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                                     'Status Unknown',
                                               ),
                                               Text(
-                                                StringHelperMethods.convertTimeSlotsToTimeRange(
-                                                      state
-                                                              .chargingStation
-                                                              ?.availableHours ??
-                                                          [],
-                                                    ) ??
-                                                    'No available days',
+                                                state.availableTime ??
+                                                    'No available time today',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                 ),

@@ -2,7 +2,6 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
-import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
@@ -134,25 +133,45 @@ class FetchOneChargingStationUseCase extends UserUseCase {
   }
 }
 
-class AddBookingUseCase extends UserUseCase {
-  Future execute(BookingModel booking) {
-    return userRepository.addBooking(booking);
+// class AddBookingUseCase extends UserUseCase {
+//   Future execute(BookingModel booking) {
+//     return userRepository.addBooking(booking);
+//   }
+// }
+
+class FetchOneBookingUseCase extends UserUseCase {
+  Future execute(String stationId) {
+    return userRepository.fetchOneBooking(stationId);
   }
 }
 
-class SetSlotIsBusyUseCase extends UserUseCase {
+class ConfirmBookingWithPaymentUseCase extends UserUseCase {
   Future execute(
-    String bookingId,
-    List<SlotModel> selectedSlots,
+    BookingModel bookingToSave,
     String cardNumber,
   ) {
-    return userRepository.setSlotIsBusy(bookingId, selectedSlots, cardNumber);
+    return userRepository.confirmBookingWithPayment(
+      bookingToSave,
+      cardNumber,
+    );
   }
 }
 
 class DeleteBookingUseCase extends UserUseCase {
   Future execute(BookingModel booking) {
     return userRepository.deleteBooking(booking);
+  }
+}
+
+class FetchBookingsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchBookings();
+  }
+}
+
+class FetchBookedChargingStationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchBookedChargingStations();
   }
 }
 

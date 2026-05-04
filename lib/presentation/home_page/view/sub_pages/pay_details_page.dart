@@ -217,7 +217,7 @@ class _PayDetailsPageState extends State<PayDetailsPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => PayWithCreditCardPage(
-                                        bookingId: widget.booking.id,
+                                        booking: widget.booking,
                                       ),
                                     ),
                                   );

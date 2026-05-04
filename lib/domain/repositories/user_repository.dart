@@ -2,7 +2,6 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
-import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
@@ -28,12 +27,14 @@ abstract class UserRepository {
   Future<void> updateDefaultReceivingEarnings(String ibanId, bool isReceiver);
   Future<UserModel?> fetchUserData();
   Future<ChargingStationModel> fetchOneChargingStation(String stationId);
-  Future<void> addBooking(BookingModel booking);
-  Future<void> setSlotIsBusy(
-    String bookingId,
-    List<SlotModel> selectedSlots,
+  // Future<void> addBooking(BookingModel booking);
+  Future<BookingModel?> fetchOneBooking(String stationId);
+  Future<void> confirmBookingWithPayment(
+    BookingModel booking,
     String cardNumber,
   );
   Future<void> deleteBooking(BookingModel booking);
+  Future<List<BookingModel>> fetchBookings();
+  Future<List<ChargingStationModel>> fetchBookedChargingStations();
   Future<void> deleteUser();
 }

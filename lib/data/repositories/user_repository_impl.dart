@@ -4,7 +4,6 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
-import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
@@ -145,20 +144,23 @@ class UserRepositoryImpl implements UserRepository {
     return await userRemoteDataSource.fetchOneChargingStation(stationId);
   }
 
+  // @override
+  // Future<void> addBooking(BookingModel booking) async {
+  //   return await userRemoteDataSource.addBooking(booking);
+  // }
+
   @override
-  Future<void> addBooking(BookingModel booking) async {
-    return await userRemoteDataSource.addBooking(booking);
+  Future<BookingModel?> fetchOneBooking(String stationId) async {
+    return await userRemoteDataSource.fetchOneBooking(stationId);
   }
 
   @override
-  Future<void> setSlotIsBusy(
-    String bookingId,
-    List<SlotModel> selectedSlots,
+  Future<void> confirmBookingWithPayment(
+    BookingModel bookingToSave,
     String cardNumber,
   ) async {
-    return await userRemoteDataSource.setSlotIsBusy(
-      bookingId,
-      selectedSlots,
+    return await userRemoteDataSource.confirmBookingWithPayment(
+      bookingToSave,
       cardNumber,
     );
   }
@@ -166,6 +168,16 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> deleteBooking(BookingModel booking) async {
     return await userRemoteDataSource.deleteBooking(booking);
+  }
+
+  @override
+  Future<List<BookingModel>> fetchBookings() async {
+    return await userRemoteDataSource.fetchBookings();
+  }
+
+  @override
+  Future<List<ChargingStationModel>> fetchBookedChargingStations() async {
+    return await userRemoteDataSource.fetchBookedChargingStations();
   }
 
   @override

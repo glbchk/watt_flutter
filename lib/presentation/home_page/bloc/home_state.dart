@@ -34,6 +34,7 @@ class HomeState {
   // final bool isBooked;
   final List<MockedFaq>? faq;
   final List<CreditCardModel>? paymentMethods;
+  final String? availableTime;
 
   HomeState({
     required this.isUserAuthenticated,
@@ -62,6 +63,7 @@ class HomeState {
     // this.activeBooking,
     this.faq,
     this.paymentMethods,
+    this.availableTime,
   });
 
   HomeState copyWith({
@@ -91,6 +93,7 @@ class HomeState {
     // BookingModel? Function()? activeBooking,
     List<MockedFaq>? faq,
     List<CreditCardModel>? paymentMethods,
+    String? availableTime,
   }) {
     return HomeState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -129,6 +132,7 @@ class HomeState {
       // isBooked: isBooked ?? this.isBooked,
       faq: faq ?? this.faq,
       paymentMethods: paymentMethods ?? this.paymentMethods,
+      availableTime: availableTime ?? this.availableTime,
     );
   }
 }

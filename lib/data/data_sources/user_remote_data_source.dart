@@ -378,85 +378,145 @@ class UserRemoteDataSource {
     return station;
   }
 
-  Future<void> addBooking(BookingModel booking) async {
-    User? user = auth.currentUser;
+  // Future<void> addBooking(BookingModel booking) async {
+  //   User? user = auth.currentUser;
+  //
+  //   await firestore.collection("users").doc(user?.uid).update({
+  //     'bookings': FieldValue.arrayUnion([booking.toJson()]),
+  //   });
+  // }
 
-    await firestore.collection("users").doc(user?.uid).update({
-      'bookings': FieldValue.arrayUnion([booking.toJson()]),
-    });
+  Future<BookingModel?> fetchOneBooking(String stationId) async {
+    User? user = auth.currentUser;
+    if (user == null) return null;
+
+    final querySnapshot = await firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("bookings")
+        .where("stationId", isEqualTo: stationId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return null;
+    }
+
+    final data = querySnapshot.docs.first.data();
+
+    return BookingModel.fromJson(data);
   }
 
-  Future<void> setSlotIsBusy(
-    String bookingId,
-    List<SlotModel> selectedSlots,
+  Future<void> confirmBookingWithPayment(
+    BookingModel booking,
     String cardNumber,
   ) async {
     final user = auth.currentUser;
     if (user == null) return;
 
-    final docRef = firestore.collection("users").doc(user.uid);
-    final docSnapshot = await docRef.get();
-
-    if (!docSnapshot.exists) return;
-
-    final List<dynamic> rawBookings = docSnapshot.data()?['bookings'] ?? [];
-    List<BookingModel> bookingsList = rawBookings
-        .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
+    final busySlots = (booking.selectedTimes ?? [])
+        .map((s) => s.copyWith(isBusy: true))
         .toList();
 
-    int bookingIndex = bookingsList.indexWhere((b) => b.id == bookingId);
+    final confirmedBooking = booking.copyWith(
+      selectedTimes: busySlots,
+      cardNumber: cardNumber,
+      status: BookingStatus.confirmed,
+    );
 
-    if (bookingIndex != -1) {
-      final booking = bookingsList[bookingIndex];
-      final existingSlots = booking.selectedTimes ?? [];
+    await firestore.collection("users").doc(user.uid).update({
+      'bookings': FieldValue.arrayUnion([confirmedBooking.toJson()]),
+    });
 
-      final selectedIds = selectedSlots.map((s) => s.id).toSet();
+    final stationRef = firestore
+        .collection("app_charging_stations")
+        .doc(booking.stationId);
 
-      List<SlotModel> updatedSlotsList = existingSlots.map((slot) {
-        if (selectedIds.contains(slot.id)) {
-          return slot.copyWith(isBusy: true);
-        }
-        return slot;
-      }).toList();
+    final busySlotsJson = busySlots.map((s) => s.toJson()).toList();
 
-      bookingsList[bookingIndex] = booking.copyWith(
-        selectedTimes: updatedSlotsList,
-        cardNumber: cardNumber,
-      );
+    await stationRef.set(
+      {'slots': FieldValue.arrayUnion(busySlotsJson)},
+      SetOptions(merge: true),
+    );
+  }
 
-      await docRef.update({
-        'bookings': bookingsList.map((b) => b.toJson()).toList(),
-      });
+  Future<List<BookingModel>> fetchBookings() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
 
-      final stationRef = firestore
-          .collection("app_charging_stations")
-          .doc(booking.stationId);
-      final stationSnap = await stationRef.get();
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = doc.data()?['bookings'] ?? [];
 
-      if (stationSnap.exists) {
-        List<dynamic> globalSlotsRaw = stationSnap.data()?['slots'] ?? [];
-
-        List<Map<String, dynamic>> updatedGlobalSlots = globalSlotsRaw.map((
-          slotJson,
-        ) {
-          if (selectedIds.contains(slotJson['id'])) {
-            slotJson['is_busy'] = true;
-          }
-          return slotJson as Map<String, dynamic>;
-        }).toList();
-
-        await stationRef.update({'slots': updatedGlobalSlots});
-      }
-    }
+    return bookingsJson
+        .map(
+          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+        )
+        .toList();
   }
 
   Future<void> deleteBooking(BookingModel booking) async {
-    User? user = auth.currentUser;
-    final docRef = firestore.collection("users").doc(user?.uid);
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final docRef = firestore.collection("users").doc(user.uid);
 
     await docRef.update({
       'bookings': FieldValue.arrayRemove([booking.toJson()]),
     });
+
+    final stationRef = firestore
+        .collection("app_charging_stations")
+        .doc(booking.stationId);
+
+    final stationDoc = await stationRef.get();
+    final data = stationDoc.data();
+
+    final List<dynamic> slotsJson = data?['slots'] ?? [];
+
+    final updatedSlots = slotsJson.map((json) {
+      final s = SlotModel.fromJson(json);
+
+      final isPartOfBooking =
+          booking.selectedTimes?.any(
+            (b) => b.startTime == s.startTime && b.endTime == s.endTime,
+          ) ??
+          false;
+
+      if (isPartOfBooking) {
+        return s.copyWith(isBusy: false).toJson();
+      }
+
+      return json;
+    }).toList();
+
+    await stationRef.update({
+      'slots': updatedSlots,
+    });
+  }
+
+  Future<List<ChargingStationModel>> fetchBookedChargingStations() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final userDoc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = userDoc.data()?['bookings'] ?? [];
+
+    final stationIds = bookingsJson
+        .map((b) => b['station_id'] as String?)
+        .whereType<String>()
+        .toSet()
+        .toList();
+
+    if (stationIds.isEmpty) return [];
+
+    final stationsSnapshot = await firestore
+        .collection("app_charging_stations")
+        .where(FieldPath.documentId, whereIn: stationIds)
+        .get();
+
+    return stationsSnapshot.docs
+        .map((doc) => ChargingStationModel.fromJson(doc.data()))
+        .toList();
   }
 
   Future<void> deleteUser() async {

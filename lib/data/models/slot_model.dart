@@ -19,7 +19,7 @@ class SlotModel {
       dayStamp: json['day_stamp'],
       startTime: json['start_time'],
       endTime: json['end_time'],
-      isBusy: json['is_busy'],
+      isBusy: json['is_busy'] ?? false,
     );
   }
 

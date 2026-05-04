@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/credit_card_widget.dart';
+import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -10,8 +12,8 @@ import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class PayWithCreditCardPage extends StatefulWidget {
-  final String bookingId;
-  const PayWithCreditCardPage({super.key, required this.bookingId});
+  final BookingModel booking;
+  const PayWithCreditCardPage({super.key, required this.booking});
 
   @override
   State<PayWithCreditCardPage> createState() => _PayWithCreditCardPageState();
@@ -51,7 +53,24 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
+    return BlocConsumer<HomeCubit, HomeState>(
+      // listenWhen: (previous, current) =>
+      //     previous.paymentMethods != current.paymentMethods ||
+      //     previous.errorMessage != current.errorMessage,
+      listener: (context, state) {
+        // _fetchCompleted = true;
+        if (state.paymentMethods != null && state.paymentMethods!.isEmpty) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => MyPaymentMethodsPage()),
+          );
+        }
+        if (state.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.errorMessage!)),
+          );
+        }
+      },
       builder: (context, state) {
         // final paymentMethods = [
         //   CreditCardModel(
@@ -85,19 +104,20 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
         final paymentMethods = state.paymentMethods ?? [];
         print('Payment methods in state: ${paymentMethods.length}');
 
-        // if (state.isLoading) {
-        //   return const Scaffold(
-        //     body: Center(child: CircularProgressIndicator()),
-        //   );
-        // }
-
         if (paymentMethods.isEmpty) {
           return const Scaffold(
-            body: Center(child: Text('No payment methods found')),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        final currentCard = paymentMethods[_currentIndex];
+        // if (paymentMethods.isEmpty) {
+        //   return const Scaffold(
+        //     body: Center(child: Text('No payment methods found')),
+        //   );
+        // }
+
+        final safeIndex = _currentIndex.clamp(0, paymentMethods.length - 1);
+        final currentCard = paymentMethods[safeIndex];
         //
         // cardNumberController.text = currentCard.cardNumber ?? '';
         // cardHolderController.text = currentCard.cardName ?? '';
@@ -230,9 +250,8 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
                     label: 'Select Method',
                     onPressed: () {
                       final cardNumber = currentCard.cardNumber ?? '';
-                      context.read<HomeCubit>().setSlotIsBusy(
-                        widget.bookingId,
-                        state.selectedSlots ?? [],
+                      context.read<HomeCubit>().confirmBookingWithPayment(
+                        widget.booking,
                         cardNumber,
                       );
                       Navigator.of(context)

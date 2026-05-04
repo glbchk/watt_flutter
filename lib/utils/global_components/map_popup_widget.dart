@@ -22,6 +22,8 @@ class MapPopupWidget extends StatelessWidget {
   final VoidCallback? onPressedMoreDetails;
   final VoidCallback? onPressedToBook;
   final VoidCallback? onPressedPublicCharger;
+  final VoidCallback? onPressedMyStation;
+  final String? singleButtonLabel;
 
   const MapPopupWidget({
     super.key,
@@ -37,6 +39,8 @@ class MapPopupWidget extends StatelessWidget {
     this.onPressedMoreDetails,
     this.onPressedToBook,
     this.onPressedPublicCharger,
+    this.onPressedMyStation,
+    this.singleButtonLabel,
   });
 
   static Future<void> show({
@@ -53,6 +57,8 @@ class MapPopupWidget extends StatelessWidget {
     VoidCallback? onPressedMoreDetails,
     VoidCallback? onPressedToBook,
     VoidCallback? onPressedPublicCharger,
+    VoidCallback? onPressedMyStation,
+    String? singleButtonLabel,
   }) {
     // Navigator.pop(dialogContext);
     return showModalBottomSheet(
@@ -82,7 +88,9 @@ class MapPopupWidget extends StatelessWidget {
               onPressedMoreDetails: onPressedMoreDetails,
               onPressedToBook: onPressedToBook,
               onPressedPublicCharger: onPressedPublicCharger,
+              onPressedMyStation: onPressedMyStation,
               stationStatus: stationStatus,
+              singleButtonLabel: singleButtonLabel,
             );
           },
         );
@@ -379,7 +387,8 @@ class MapPopupWidget extends StatelessWidget {
                       ],
                     ),
               const SizedBox(height: 20),
-              chargingStationType == ChargingStationType.private
+              chargingStationType == ChargingStationType.private &&
+                      singleButtonLabel != 'Your stations'
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -407,11 +416,15 @@ class MapPopupWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: WattWhiteButton(
-                            label: 'Public Charger',
+                            label: singleButtonLabel ?? 'Public Charger',
                             textScaler: TextScaler.linear(0.85),
                             noShadow: false,
                             onPressed: () {
-                              onPressedPublicCharger?.call();
+                              if (singleButtonLabel != null) {
+                                onPressedMyStation?.call();
+                              } else {
+                                onPressedPublicCharger?.call();
+                              }
                             },
                           ),
                         ),

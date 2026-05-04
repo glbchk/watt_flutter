@@ -129,8 +129,14 @@ class StringHelperMethods {
 
   static List<SlotModel> generate30MinuteSlots(
     TimeSlotModel availability,
+    List<SlotModel> busySlots,
   ) {
     List<SlotModel> slots = [];
+
+    final busyTimeRanges = busySlots
+        .where((s) => s.isBusy)
+        .map((s) => '${s.startTime}-${s.endTime}')
+        .toSet();
 
     final DateFormat formatter = DateFormat('HH:mm');
     final DateTime now = DateTime.now();
@@ -164,12 +170,16 @@ class StringHelperMethods {
 
         if (nextSlot.isAfter(endDateTime)) break;
 
+        final startStr = formatter.format(currentSlot);
+        final endStr = formatter.format(nextSlot);
+        final timeKey = '$startStr-$endStr';
+
         slots.add(
           SlotModel(
             id: Uuid().v4(),
-            startTime: formatter.format(currentSlot),
-            endTime: formatter.format(nextSlot),
-            isBusy: false,
+            startTime: startStr,
+            endTime: endStr,
+            isBusy: busyTimeRanges.contains(timeKey),
           ),
         );
 
@@ -285,26 +295,20 @@ class StringHelperMethods {
     return allSlots.where((slot) => selectedSlots.contains(slot)).toList();
   }
 
-  static String? convertTimeSlotsToTimeRange(List<TimeSlotModel> timeSlots) {
-    if (timeSlots.isEmpty) {
-      return 'No time slots exist';
-    } else {
-      int todayDayOfWeek = DateTime.now().weekday;
-
-      final todaySlot = timeSlots.firstWhere(
-        (slot) => slot.availableDays?.contains(todayDayOfWeek) ?? false,
-        orElse: () => TimeSlotModel(
-          id: '',
-          startTime: null,
-          endTime: null,
-        ),
-      );
-
-      if (todaySlot.startTime == null || todaySlot.endTime == null) {
-        return 'No available time today';
-      }
-
-      return '${todaySlot.startTime} - ${todaySlot.endTime}';
+  static String? convertTimeSlotsToTimeRange(List<TimeSlotModel>? timeSlots) {
+    if (timeSlots == null || timeSlots.isEmpty) {
+      return 'No schedule set';
     }
+
+    final firstSlot = timeSlots.first;
+
+    if (firstSlot.startTime == null || firstSlot.endTime == null) {
+      return 'Times not configured';
+    }
+
+    final start = firstSlot.startTime.toString();
+    final end = firstSlot.endTime.toString();
+
+    return '$start - $end';
   }
 }
