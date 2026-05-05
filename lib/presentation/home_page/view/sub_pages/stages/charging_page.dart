@@ -24,6 +24,7 @@ class ChargingPage extends StatefulWidget {
 class _ChargingPageState extends State<ChargingPage> {
   bool isCollapsed = false;
 
+  //TODO: NEED TO BE FINISHED
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(

@@ -14,7 +14,7 @@ import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
+import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
@@ -26,18 +26,10 @@ class HomeCubit extends Cubit<HomeState> {
 
   final SeedMockedChargingStationsUseCase seedMockedChargingStationsUseCase =
       SeedMockedChargingStationsUseCase();
-  // final SyncStationToGlobalUseCase syncStationToGlobalUseCase =
-  //     SyncStationToGlobalUseCase();
   final GetStationIdsForMapUseCase getStationIdsForMap =
       GetStationIdsForMapUseCase();
   FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =
       FetchPaymentMethodsUseCase();
-  // final FetchAddedByUsersMockedChargingStationsUseCase
-  // fetchAddedByUsersMockedChargingStationsUseCase =
-  //     FetchAddedByUsersMockedChargingStationsUseCase();
-  // final FetchPublicMockedChargingStationsUseCase
-  // fetchPublicMockedChargingStationsUseCase =
-  //     FetchPublicMockedChargingStationsUseCase();
   final GetLocationPermissionUseCase getLocationPermissionUseCase =
       GetLocationPermissionUseCase();
   final GoToMyLocationUseCase goToMyLocationUseCase = GoToMyLocationUseCase();
@@ -45,7 +37,6 @@ class HomeCubit extends Cubit<HomeState> {
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
   final FetchOneChargingStationUseCase fetchOneChargingStationUseCase =
       FetchOneChargingStationUseCase();
-  // final AddBookingUseCase addBookingUseCase = AddBookingUseCase();
   final FetchOneBookingUseCase fetchOneBookingUseCase =
       FetchOneBookingUseCase();
   final ConfirmBookingWithPaymentUseCase confirmBookingWithPaymentUseCase =
@@ -321,14 +312,6 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> fetchOneChargingStation(String stationId) async {
-    // emit(
-    //   state.copyWith(
-    //     isLoading: true,
-    //     chargingStation: () => null,
-    //     timeSlots: [],
-    //     selectedSlots: () => [],
-    //   ),
-    // );
     emit(state.copyWith(isLoading: true));
 
     try {
@@ -499,39 +482,6 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       print("Can't be cleared $e");
     }
-  }
-
-  Future<void> bookedStage(String bookingId, BookingModel booking) async {
-    final List<BookingModel> bookings = List.from(state.bookings ?? []);
-    bookings.add(booking);
-
-    emit(
-      state.copyWith(
-        // stage: () => ReservationStage.booked,
-        bookings: bookings,
-        // isBooked: true,
-      ),
-    );
-
-    // await updateBookingUseCase.execute(bookingId, booking.status);
-  }
-
-  Future<void> chargingStage() async {
-    emit(
-      state.copyWith(
-        // stage: () => ReservationStage.charging,
-        // isBooked: true,
-      ),
-    );
-  }
-
-  Future<void> publicChargerStage() async {
-    emit(
-      state.copyWith(
-        // stage: () => ReservationStage.publicCharger,
-        // isBooked: false,
-      ),
-    );
   }
 
   String inviteFriends() {

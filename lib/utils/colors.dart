@@ -1,32 +1,5 @@
 import 'package:flutter/material.dart';
 
-// abstract class AppPalette {
-//   // Red
-//   static const red = Colors.red;
-//   static const imperialRed = Color(0xFFE54B4B);
-//
-//   // White
-//   static const seashell = Color(0xFFF7EBE8);
-//
-//   // Grey
-//   static const grey = _GreyColors();
-// }
-//
-// /// Alternative way to group colors in the palette.
-// ///
-// /// The downside is that you won't be able
-// /// to use them as constructor default values,
-// /// because they are not constants.
-// ///
-// /// Usage example: `AppPalette.grey.grey50`.
-// class _GreyColors {
-//   const _GreyColors();
-//
-//   final grey1 = const Color(0xFF8692A9);
-//   final grey100 = const Color(0xFFF5F5F5);
-//   // 0xFF8692A9
-// }
-
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color primary;
   final Color onPrimary;
@@ -257,29 +230,6 @@ extension ThemeGetter on BuildContext {
   // Usage example: `context.theme`
   ThemeData get theme => Theme.of(this);
 }
-
-// const firstPrimaryColor = Color(0xFF1581FF);
-// const secondPrimaryColor = Color(0xFF0067E0);
-// const lightGreyColor = Color(0xFFF4F6F9);
-// const greyAppColor = Color(0xFF8692A9);
-// const borderTFColor = Color(0xFFDBDFE3);
-// const hintTextColor = Color(0xFFAEB8C8);
-// const successColor = Color(0xFF37C750);
-// // const anotherGreyColor = Color(0xFF4B545A);
-//
-// const wattBlackColor = Color(0xFF3D4B61);
-//
-// const wattColorScheme = ColorScheme(
-//   brightness: Brightness.light,
-//   primary: Color(0xFF1581FF), // Your main brand color
-//   onPrimary: Colors.white, // Color of text/icons on top of primary
-//   secondary: Color(0xFF0067E0), // Accent color
-//   onSecondary: Colors.black,
-//   error: Color(0xFFEB5757),
-//   onError: Colors.white,
-//   surface: Color(0xFFF4F6F9), // Background of cards/dialogs
-//   onSurface: Colors.black, // Text on background
-// );
 
 final wattGradient = LinearGradient(
   begin: Alignment.topCenter,

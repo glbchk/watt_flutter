@@ -9,7 +9,5 @@ abstract class MockedDataRepository {
   Future<List<String>> getPlugOptions();
   Future<void> seedChargingStations(List<ChargingStationModel> mockedStations);
   Future<Map<String, Set<String>>> getStationIdsForMap();
-  // Future<List<ChargingStationModel>> getAddedByUsersMockedChargingStations();
-  // Future<List<ChargingStationModel>> getPublicMockedChargingStations();
   Future<List<MockedFaq>> getFaq();
 }

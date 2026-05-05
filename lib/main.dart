@@ -8,19 +8,19 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/bloc/onboarding_bloc.dart';
-import 'package:watt/presentation/settings_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
-import 'package:watt/presentation/settings_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
-import 'package:watt/presentation/settings_pages/my_payment_methods_page/bloc/my_payment_methods_cubit.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/notifiers.dart';
 
 import 'firebase_options.dart';
 import 'presentation/home_page/bloc/home_cubit.dart';
+import 'presentation/menu_pages/cars_page/bloc/my_cars_cubit.dart';
+import 'presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
+import 'presentation/menu_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
+import 'presentation/menu_pages/my_payment_methods_page/bloc/my_payment_methods_cubit.dart';
+import 'presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
 import 'presentation/onboarding_page/view/add_charging_station/bloc/charging_station_bloc.dart';
 import 'presentation/onboarding_page/view/add_payment_method/bloc/payment_method_bloc.dart';
-import 'presentation/settings_pages/cars_page/bloc/my_cars_cubit.dart';
-import 'presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

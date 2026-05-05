@@ -82,11 +82,6 @@ class UserRepositoryImpl implements UserRepository {
     return await userRemoteDataSource.addStationsToUserData(chargingStations);
   }
 
-  // @override
-  // Future<void> syncStationToGlobal() async {
-  //   return await userRemoteDataSource.syncStationToGlobal();
-  // }
-
   @override
   Future<void> deleteChargingStation(String stationId) async {
     return await userRemoteDataSource.deleteChargingStation(stationId);
@@ -143,11 +138,6 @@ class UserRepositoryImpl implements UserRepository {
   Future<ChargingStationModel> fetchOneChargingStation(String stationId) async {
     return await userRemoteDataSource.fetchOneChargingStation(stationId);
   }
-
-  // @override
-  // Future<void> addBooking(BookingModel booking) async {
-  //   return await userRemoteDataSource.addBooking(booking);
-  // }
 
   @override
   Future<BookingModel?> fetchOneBooking(String stationId) async {

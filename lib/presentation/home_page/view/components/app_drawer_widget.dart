@@ -38,7 +38,6 @@ class AppDrawer extends StatelessWidget {
     final double drawerWidth = MediaQuery.of(context).size.width;
 
     return Drawer(
-      // 1. Give it the rounded corners on the right side
       elevation: 0,
       backgroundColor: Colors.transparent,
       width: drawerWidth,
@@ -60,7 +59,6 @@ class AppDrawer extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  // 2. The Blue Header Section
                   Container(
                     width: double.infinity,
                     padding: EdgeInsets.only(
@@ -71,7 +69,7 @@ class AppDrawer extends StatelessWidget {
                     decoration: const BoxDecoration(
                       color: Color(
                         0xFF007AFF,
-                      ), // The specific Blue from your screenshot
+                      ),
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(30),
                       ),
@@ -109,7 +107,6 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
 
-                  // 3. The Scrollable List of Menu Items
                   Expanded(
                     child: ListView(
                       padding: const EdgeInsets.only(
@@ -127,7 +124,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         _buildMenuItem(
                           Icons.calendar_today_outlined,
-                          'Bookings',
+                          'Bookings - (Unfinished)',
                           () {
                             onPressedBookings?.call();
                           },
@@ -188,7 +185,6 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
 
-                  // 4. App Version at the bottom
                   Padding(
                     padding: const EdgeInsets.only(left: 35, bottom: 35),
                     child: Align(
@@ -207,16 +203,15 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
 
-          // 2. The Floating "X" Button
           Positioned(
             top: MediaQuery.of(
               context,
-            ).viewPadding.top, // Align with the profile area
-            right: 20, // Place it 15px after the drawer ends
+            ).viewPadding.top,
+            right: 20,
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-              }, // Closes the drawer
+              },
               child: Container(
                 height: 40,
                 width: 40,

@@ -70,12 +70,6 @@ class AddChargingStationsUseCase extends UserUseCase {
   }
 }
 
-// class SyncStationToGlobalUseCase extends UserUseCase {
-//   Future execute() {
-//     return userRepository.syncStationToGlobal();
-//   }
-// }
-
 class DeleteChargingStationUseCase extends UserUseCase {
   Future execute(String stationId) {
     return userRepository.deleteChargingStation(stationId);
@@ -132,12 +126,6 @@ class FetchOneChargingStationUseCase extends UserUseCase {
     return userRepository.fetchOneChargingStation(stationId);
   }
 }
-
-// class AddBookingUseCase extends UserUseCase {
-//   Future execute(BookingModel booking) {
-//     return userRepository.addBooking(booking);
-//   }
-// }
 
 class FetchOneBookingUseCase extends UserUseCase {
   Future execute(String stationId) {

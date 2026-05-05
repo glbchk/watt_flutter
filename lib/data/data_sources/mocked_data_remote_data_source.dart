@@ -107,19 +107,6 @@ class MockedDataRemoteDataSource {
     return {'user': userIds, 'global': globalIds};
   }
 
-  // Future<List<ChargingStationModel>>
-  // getAddedByUsersMockedChargingStations() async {
-  //   await Future.delayed(const Duration(seconds: 1));
-  //
-  //   return KMockedData.mockedAddedByUsersChargingStations;
-  // }
-  //
-  // Future<List<ChargingStationModel>> getPublicMockedChargingStations() async {
-  //   await Future.delayed(const Duration(seconds: 1));
-  //
-  //   return KMockedData.mockedPublicChargingStations;
-  // }
-
   Future<List<MockedFaq>> getFaq() async {
     await Future.delayed(const Duration(seconds: 1));
 

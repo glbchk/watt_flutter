@@ -25,13 +25,9 @@ class HomeState {
   final bool clearUserData;
   final List<SlotModel>? selectedSlots;
   final List<SlotModel>? timeSlots;
-  // final List<SlotModel> generatedSlots;
   final String? errorTimeIsNotChosen;
-  // final ReservationStage? stage;
   final BookingModel? booking;
   final List<BookingModel>? bookings;
-  // final BookingModel? activeBooking;
-  // final bool isBooked;
   final List<MockedFaq>? faq;
   final List<CreditCardModel>? paymentMethods;
   final String? availableTime;
@@ -55,12 +51,9 @@ class HomeState {
     this.clearUserData = false,
     this.selectedSlots = const [],
     this.timeSlots,
-    // this.generatedSlots = const [],
     this.errorTimeIsNotChosen,
-    // this.stage,
     this.booking,
     this.bookings,
-    // this.activeBooking,
     this.faq,
     this.paymentMethods,
     this.availableTime,
@@ -85,12 +78,9 @@ class HomeState {
     bool clearUserData = false,
     List<SlotModel>? Function()? selectedSlots,
     List<SlotModel>? timeSlots,
-    // List<SlotModel>? Function()? generatedSlots,
     String? Function()? errorTimeIsNotChosen,
-    // ReservationStage? Function()? stage,
     BookingModel? Function()? booking,
     List<BookingModel>? bookings,
-    // BookingModel? Function()? activeBooking,
     List<MockedFaq>? faq,
     List<CreditCardModel>? paymentMethods,
     String? availableTime,
@@ -119,17 +109,11 @@ class HomeState {
           ? selectedSlots()
           : this.selectedSlots,
       timeSlots: timeSlots ?? this.timeSlots,
-      // generatedSlots: generatedSlots != null ? generatedSlots() : this.generatedSlots,
       errorTimeIsNotChosen: errorTimeIsNotChosen != null
           ? errorTimeIsNotChosen()
           : this.errorTimeIsNotChosen,
-      // stage: stage != null ? stage() : this.stage,
       booking: booking != null ? booking() : this.booking,
       bookings: bookings ?? this.bookings,
-      // activeBooking: activeBooking != null
-      //     ? activeBooking()
-      //     : this.activeBooking,
-      // isBooked: isBooked ?? this.isBooked,
       faq: faq ?? this.faq,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       availableTime: availableTime ?? this.availableTime,

@@ -42,12 +42,6 @@ class _PayDetailsPageState extends State<PayDetailsPage> {
             blurRadius: 30,
             leading: BackButton(
               onPressed: () {
-                // context.read<OnboardingBloc>().add(
-                //   NameVerificationEvent(value: ''),
-                // );
-                // context.read<OnboardingBloc>().add(
-                //   PhoneNumberVerificationEvent(value: ''),
-                // );
                 Navigator.of(context).pop();
               },
             ),

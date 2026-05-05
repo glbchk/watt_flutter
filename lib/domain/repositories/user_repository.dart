@@ -17,7 +17,6 @@ abstract class UserRepository {
   Future<void> updatePlateNumber(String carId, String plateNumber);
   Future<void> deleteCar(String carId);
   Future<void> addChargingStations(List<ChargingStationModel> chargingStations);
-  // Future<void> syncStationToGlobal();
   Future<void> deleteChargingStation(String stationId);
   Future<List<ChargingStationModel>> fetchChargingStations();
   Future<void> addPaymentMethod(CreditCardModel creditCard);
@@ -27,7 +26,6 @@ abstract class UserRepository {
   Future<void> updateDefaultReceivingEarnings(String ibanId, bool isReceiver);
   Future<UserModel?> fetchUserData();
   Future<ChargingStationModel> fetchOneChargingStation(String stationId);
-  // Future<void> addBooking(BookingModel booking);
   Future<BookingModel?> fetchOneBooking(String stationId);
   Future<void> confirmBookingWithPayment(
     BookingModel booking,

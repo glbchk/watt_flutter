@@ -49,18 +49,6 @@ class GetStationIdsForMapUseCase extends MockedDataUseCase {
   }
 }
 
-// class FetchAddedByUsersMockedChargingStationsUseCase extends MockedDataUseCase {
-//   Future<List<ChargingStationModel>> execute() {
-//     return mockedDataRepository.getAddedByUsersMockedChargingStations();
-//   }
-// }
-//
-// class FetchPublicMockedChargingStationsUseCase extends MockedDataUseCase {
-//   Future<List<ChargingStationModel>> execute() {
-//     return mockedDataRepository.getPublicMockedChargingStations();
-//   }
-// }
-
 class FetchFaqUseCase extends MockedDataUseCase {
   Future<List<MockedFaq>> execute() {
     return mockedDataRepository.getFaq();

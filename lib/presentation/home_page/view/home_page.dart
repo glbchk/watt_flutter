@@ -10,13 +10,13 @@ import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
 import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
-import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
-import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
-import 'package:watt/presentation/settings_pages/help_page/help_page.dart';
-import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
-import 'package:watt/presentation/settings_pages/my_charging_stations_page/my_charging_stations_page.dart';
-import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
-import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
+import 'package:watt/presentation/menu_pages/bookings_page/bookings_page.dart';
+import 'package:watt/presentation/menu_pages/cars_page/my_cars_page.dart';
+import 'package:watt/presentation/menu_pages/help_page/help_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/my_reservations_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_stations_page/my_charging_stations_page.dart';
+import 'package:watt/presentation/menu_pages/my_payment_methods_page/my_payment_methods_page.dart';
+import 'package:watt/presentation/menu_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/map_popup_widget.dart';
@@ -163,7 +163,6 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 station: location,
                 onPressedPublicCharger: () {
-                  context.read<HomeCubit>().publicChargerStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -254,17 +253,6 @@ class _HomePageState extends State<HomePage> {
                 });
           }
         }
-
-        // if (state.myLocation != null && state.stationDistance != null) {
-        //   final latLng = LatLng(
-        //     state.myLocation!.latitude,
-        //     state.myLocation!.longitude,
-        //   );
-        //
-        //   _mapController?.animateCamera(
-        //     CameraUpdate.newLatLngZoom(latLng, 15),
-        //   );
-        // }
       },
       builder: (context, state) {
         final suggestions = state.locationSuggestions ?? [];
@@ -320,15 +308,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => MyCarsPage(
-                    // car: CarModel(
-                    //   id: '141',
-                    //   plateNumber: 'AAA111',
-                    //   brandName: KMockedData.cars[2].name,
-                    //   carModel: 'Model S',
-                    //   brandLogo: KMockedData.cars[2].logo,
-                    // ),
-                  ),
+                  builder: (_) => MyCarsPage(),
                 ),
               );
             },
@@ -399,42 +379,8 @@ class _HomePageState extends State<HomePage> {
                   }
                 },
                 markers: _markers,
-                // markers: state.addressPosition == null ? {} : _markers,
-
-                // Marker(
-                //   markerId: const MarkerId('selected_point'),
-                //   position: LatLng(
-                //     state.addressPosition?.latitude ?? 0.0,
-                //     state.addressPosition?.longitude ?? 0.0,
-                //   ),
-                //   infoWindow: InfoWindow(
-                //     title: state.address,
-                //   ),
-                //   icon: BitmapDescriptor.defaultMarkerWithHue(
-                //     BitmapDescriptor.hueAzure,
-                //   ),
-                // ),
               ),
 
-              // if (state.address != null)
-              // Positioned(
-              //   bottom: 0,
-              //   left: 0,
-              //   right: 0,
-              //   child: SafeArea(
-              //     child: Padding(
-              //       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.end,
-              //         children: [
-              //         ...stations.map((station) {
-              //           return MapPopupWidget.show(context: context, station: station),
-              //           );}).toList(),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
               Positioned(
                 bottom: 0,
                 left: 0,

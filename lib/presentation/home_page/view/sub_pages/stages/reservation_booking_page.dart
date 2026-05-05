@@ -28,8 +28,6 @@ class ReservationBookingPage extends StatefulWidget {
 class _ReservationBookingPageState extends State<ReservationBookingPage> {
   bool isCollapsed = false;
 
-  // final slots = <SlotModel>[];
-
   @override
   void initState() {
     super.initState();
@@ -56,7 +54,6 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
           leading: BackButton(
             color: context.theme.appColors.onSecondary,
             onPressed: () {
-              // context.read<HomeCubit>().clearBookingState();
               Navigator.of(context).pop();
             },
           ),

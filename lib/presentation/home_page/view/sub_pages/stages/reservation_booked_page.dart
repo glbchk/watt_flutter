@@ -29,6 +29,7 @@ class ReservationBookedPage extends StatefulWidget {
 class _ReservationBookedPageState extends State<ReservationBookedPage> {
   bool isCollapsed = false;
 
+  //TODO: NEED TO BE FINISHED
   @override
   void initState() {
     super.initState();

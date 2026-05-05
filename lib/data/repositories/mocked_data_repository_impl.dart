@@ -72,28 +72,6 @@ class MockedDataRepositoryImpl implements MockedDataRepository {
     }
   }
 
-  // @override
-  // Future<List<ChargingStationModel>>
-  // getAddedByUsersMockedChargingStations() async {
-  //   try {
-  //     return await mockDataRemoteDataSource
-  //         .getAddedByUsersMockedChargingStations();
-  //   } catch (e) {
-  //     throw Exception(
-  //       "Failed to fetch added by users mocked charging stations: $e",
-  //     );
-  //   }
-  // }
-  //
-  // @override
-  // Future<List<ChargingStationModel>> getPublicMockedChargingStations() async {
-  //   try {
-  //     return await mockDataRemoteDataSource.getPublicMockedChargingStations();
-  //   } catch (e) {
-  //     throw Exception("Failed to fetch public mocked charging stations: $e");
-  //   }
-  // }
-
   @override
   Future<List<MockedFaq>> getFaq() async {
     try {

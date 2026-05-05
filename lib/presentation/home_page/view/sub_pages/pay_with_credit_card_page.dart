@@ -4,7 +4,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/credit_card_widget.dart';
-import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
+import 'package:watt/presentation/menu_pages/my_payment_methods_page/my_payment_methods_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -44,21 +44,10 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
     super.dispose();
   }
 
-  // void _updateTextFields(CreditCardModel card) {
-  //   cardNumberController.text = card.cardNumber ?? '';
-  //   cardHolderController.text = card.cardName ?? '';
-  //   expiryDateController.text = card.expiry ?? '';
-  //   cvvController.text = '***';
-  // }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeState>(
-      // listenWhen: (previous, current) =>
-      //     previous.paymentMethods != current.paymentMethods ||
-      //     previous.errorMessage != current.errorMessage,
       listener: (context, state) {
-        // _fetchCompleted = true;
         if (state.paymentMethods != null && state.paymentMethods!.isEmpty) {
           Navigator.pushReplacement(
             context,
@@ -72,35 +61,6 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
         }
       },
       builder: (context, state) {
-        // final paymentMethods = [
-        //   CreditCardModel(
-        //     id: '1',
-        //     cardName: 'First Card',
-        //     cardNumber: '3341 5678 9012 3456',
-        //     expiry: '1/11',
-        //     cvv: '345',
-        //     networkLogo: '',
-        //     isDefaultPaymentMethod: true,
-        //   ),
-        //   CreditCardModel(
-        //     id: '2',
-        //     cardName: 'Second Card',
-        //     cardNumber: '3530 2345 6789 1012',
-        //     expiry: '2/24',
-        //     cvv: '456',
-        //     networkLogo: '',
-        //     isDefaultPaymentMethod: true,
-        //   ),
-        //   CreditCardModel(
-        //     id: '3',
-        //     cardName: 'Third Card',
-        //     cardNumber: '3144 5678 9012 3456',
-        //     expiry: '3/23',
-        //     cvv: '123',
-        //     networkLogo: KPaymentProvidersIcons.visa,
-        //     isDefaultPaymentMethod: true,
-        //   ),
-        // ];
         final paymentMethods = state.paymentMethods ?? [];
         print('Payment methods in state: ${paymentMethods.length}');
 
@@ -110,32 +70,11 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
           );
         }
 
-        // if (paymentMethods.isEmpty) {
-        //   return const Scaffold(
-        //     body: Center(child: Text('No payment methods found')),
-        //   );
-        // }
-
         final safeIndex = _currentIndex.clamp(0, paymentMethods.length - 1);
         final currentCard = paymentMethods[safeIndex];
-        //
-        // cardNumberController.text = currentCard.cardNumber ?? '';
-        // cardHolderController.text = currentCard.cardName ?? '';
-        // expiryDateController.text = currentCard.expiry ?? '';
-        //
         final cardType = StringHelperMethods.getCardType(
           currentCard.cardNumber ?? '',
         );
-
-        // final rawCard = currentCard.cardNumber ?? "";
-        // final lastFour = rawCard.length >= 4
-        //     ? rawCard.substring(rawCard.length - 4)
-        //     : rawCard;
-        // final fourDigitsFormatted = lastFour.split('').join(' ');
-
-        // if (paymentMethods.isNotEmpty && cardNumberController.text.isEmpty) {
-        //   _updateTextFields(paymentMethods[0]);
-        // }
 
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
@@ -148,12 +87,6 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
           leading: BackButton(
             color: context.theme.appColors.onSecondary,
             onPressed: () {
-              // context.read<OnboardingBloc>().add(
-              //   NameVerificationEvent(value: ''),
-              // );
-              // context.read<OnboardingBloc>().add(
-              //   PhoneNumberVerificationEvent(value: ''),
-              // );
               Navigator.of(context).pop();
             },
           ),
@@ -166,12 +99,9 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
                   onPageChanged: (index) {
                     setState(() {
                       _currentIndex = index;
-                      // _updateTextFields(paymentMethods[index]);
                     });
                   },
                   itemBuilder: (context, index) {
-                    // final card = paymentMethods[index];
-
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(

@@ -36,9 +36,6 @@ class CreditCardWidget extends StatelessWidget {
         image: DecorationImage(
           image: AssetImage(
             bg ?? 'No path found',
-            // StringHelperMethods.getBGAssetPath(
-            //   networkLogo,
-            // ),
           ),
           fit: BoxFit.cover,
         ),
@@ -52,9 +49,6 @@ class CreditCardWidget extends StatelessWidget {
               children: [
                 SvgPicture.asset(
                   networkLogo ?? 'No path found',
-                  // StringHelperMethods.getNetworkLogoAssetPath(
-                  //   networkLogo,
-                  // ),
                   height: 45,
                   width: 45,
                 ),
@@ -130,7 +124,6 @@ class CreditCardWidget extends StatelessWidget {
                     ),
                     Text(
                       expiry ?? '1/11',
-                      // currentCard.expiry ?? '',
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
                         fontSize: 15,

@@ -24,8 +24,6 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final DeleteCarUseCase deleteCarUseCase = DeleteCarUseCase();
   final AddChargingStationsUseCase addChargingStationsUseCase =
       AddChargingStationsUseCase();
-  // final SyncStationToGlobalUseCase syncStationToGlobalUseCase =
-  //     SyncStationToGlobalUseCase();
   final FetchUserChargingStationsUseCase fetchUserChargingStationsUseCase =
       FetchUserChargingStationsUseCase();
   final FetchPaymentMethodsUseCase fetchPaymentMethodsUseCase =

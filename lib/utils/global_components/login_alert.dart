@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_cubit.dart';
-import 'package:watt/presentation/settings_pages/profile_page/bloc/profile_state.dart';
+import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
+import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';

@@ -1,27 +1,3 @@
-// enum PaymentMethodType {
-//   creditCard,
-//   iban,
-// }
-//
-// abstract class PaymentMethodModel {
-//   final String id;
-//   final PaymentMethodType type;
-//
-//   PaymentMethodModel({required this.id, required this.type});
-//
-//   factory PaymentMethodModel.fromJson(Map<String, dynamic> json) {
-//     final type = PaymentMethodType.values.byName(json['type']);
-//     switch (type) {
-//       case PaymentMethodType.creditCard:
-//         return CreditCardModel.fromJson(json);
-//       case PaymentMethodType.iban:
-//         return IbanModel.fromJson(json);
-//     }
-//   }
-//
-//   Map<String, dynamic> toJson();
-// }
-
 class CreditCardModel {
   final String id;
   final String? cardName;

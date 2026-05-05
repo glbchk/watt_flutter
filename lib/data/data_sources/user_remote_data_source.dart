@@ -151,33 +151,6 @@ class UserRemoteDataSource {
     }
   }
 
-  // Future<void> syncStationToGlobal() async {
-  //   final user = auth.currentUser;
-  //   if (user == null) return;
-  //
-  //   final userDoc = await firestore.collection("users").doc(user.uid).get();
-  //   final stationsData = userDoc.data()?['charging_stations'] as List<dynamic>?;
-  //
-  //   if (stationsData == null || stationsData.isEmpty) {
-  //     print("User has no private stations to publish.");
-  //     return;
-  //   }
-  //
-  //   for (var stationMap in stationsData) {
-  //     final String? id = stationMap['id'];
-  //     if (id == null) continue;
-  //
-  //     await firestore
-  //         .collection("app_charging_stations")
-  //         .doc(id)
-  //         .set(stationMap as Map<String, dynamic>, SetOptions(merge: true));
-  //
-  //     print("Synced station $id to global collection");
-  //   }
-  //
-  //   print("Successfully published all stations to the global map.");
-  // }
-
   Future<void> deleteChargingStation(String stationId) async {
     User? user = auth.currentUser;
     final userDocRef = firestore.collection("users").doc(user?.uid);
@@ -377,14 +350,6 @@ class UserRemoteDataSource {
 
     return station;
   }
-
-  // Future<void> addBooking(BookingModel booking) async {
-  //   User? user = auth.currentUser;
-  //
-  //   await firestore.collection("users").doc(user?.uid).update({
-  //     'bookings': FieldValue.arrayUnion([booking.toJson()]),
-  //   });
-  // }
 
   Future<BookingModel?> fetchOneBooking(String stationId) async {
     User? user = auth.currentUser;
