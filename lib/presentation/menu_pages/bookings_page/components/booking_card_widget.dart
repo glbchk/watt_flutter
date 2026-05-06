@@ -13,6 +13,8 @@ class BookingCardWidget extends StatelessWidget {
   final VoidCallback? onPressedAccept;
   final VoidCallback? onPressedContactUser;
   final String? negativeLabel;
+  final String? positiveLabel;
+  final Color? positiveButtonColor;
 
   const BookingCardWidget({
     super.key,
@@ -24,6 +26,8 @@ class BookingCardWidget extends StatelessWidget {
     this.onPressedAccept,
     this.onPressedContactUser,
     this.negativeLabel,
+    this.positiveLabel,
+    this.positiveButtonColor,
   });
 
   @override
@@ -135,8 +139,9 @@ class BookingCardWidget extends StatelessWidget {
                     },
                   ),
                   WattMainButton(
-                    label: 'Accept',
-                    backgroundColor: context.theme.appColors.success,
+                    label: positiveLabel ?? 'Accept',
+                    backgroundColor:
+                        positiveButtonColor ?? context.theme.appColors.success,
                     buttonShadow: context.theme.appColors.successShadow
                         .withAlpha(30),
                     onPressed: () {

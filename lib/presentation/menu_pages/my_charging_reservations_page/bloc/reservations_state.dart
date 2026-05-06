@@ -11,6 +11,7 @@ class ReservationsState {
   final String? phoneNumberError;
   final String? newEmailValue;
   final String? passwordError;
+  final ChargingStationModel? bookedChargingStation;
   final List<BookingModel>? bookings;
   final List<ChargingStationModel>? bookedChargingStations;
 
@@ -24,6 +25,7 @@ class ReservationsState {
     this.phoneNumberError,
     this.newEmailValue,
     this.passwordError,
+    this.bookedChargingStation,
     this.bookings,
     this.bookedChargingStations,
   });
@@ -39,6 +41,7 @@ class ReservationsState {
     String? Function()? phoneNumberError,
     String? Function()? newEmailValue,
     String? Function()? passwordError,
+    ChargingStationModel? Function()? bookedChargingStation,
     List<BookingModel>? bookings,
     List<ChargingStationModel>? bookedChargingStations,
   }) {
@@ -58,6 +61,9 @@ class ReservationsState {
       passwordError: passwordError != null
           ? passwordError()
           : this.passwordError,
+      bookedChargingStation: bookedChargingStation != null
+          ? bookedChargingStation()
+          : this.bookedChargingStation,
       bookings: bookings ?? this.bookings,
       bookedChargingStations:
           bookedChargingStations ?? this.bookedChargingStations,

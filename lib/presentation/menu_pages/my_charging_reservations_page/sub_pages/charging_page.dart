@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/data/models/booking_model.dart';
-import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
-import 'package:watt/presentation/home_page/bloc/home_state.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/battery_glow_widget.dart';
+import 'package:watt/utils/global_components/charging_progress_bar_widget.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
-import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_components/dynamic_timer_widget.dart';
+import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
-import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class ChargingPage extends StatefulWidget {
   final BookingModel booking;
@@ -23,11 +25,20 @@ class ChargingPage extends StatefulWidget {
 
 class _ChargingPageState extends State<ChargingPage> {
   bool isCollapsed = false;
+  Duration duration = Duration(minutes: 30);
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ReservationsCubit>().fetchOneBookedChargingStation(
+      widget.booking.stationId ?? '',
+    );
+  }
 
   //TODO: NEED TO BE FINISHED
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
+    return BlocBuilder<ReservationsCubit, ReservationsState>(
       builder: (context, state) {
         return DefaultAppBar(
           resizeToAvoidBottomInset: false,
@@ -103,7 +114,10 @@ class _ChargingPageState extends State<ChargingPage> {
                                         spacing: 2,
                                         children: [
                                           Text(
-                                            'Charging Station Here',
+                                            state
+                                                    .bookedChargingStation
+                                                    ?.chargingStationName ??
+                                                'Charging Station Here',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -129,18 +143,20 @@ class _ChargingPageState extends State<ChargingPage> {
                                             ],
                                           ),
                                           SizedBox(height: 6),
-                                          Text(
-                                            '2020-11-09',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                            ),
+                                          StatusWidget(
+                                            label:
+                                                state
+                                                    .bookedChargingStation
+                                                    ?.stationStatus
+                                                    ?.label ??
+                                                'Status Unknown',
                                           ),
                                         ],
                                       ),
-                                      Container(
+                                      Image.asset(
+                                        'assets/images/map_screenshot.png',
                                         height: 80,
                                         width: 80,
-                                        color: Colors.black,
                                       ),
                                     ],
                                   ),
@@ -160,7 +176,8 @@ class _ChargingPageState extends State<ChargingPage> {
                                     spacing: 8,
                                     children: [
                                       Text(
-                                        "John’s Amp",
+                                        state.bookedChargingStation?.address ??
+                                            "John’s Amp",
                                         style: TextStyle(
                                           fontSize: 13,
                                         ),
@@ -207,7 +224,10 @@ class _ChargingPageState extends State<ChargingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                'Type 2',
+                                                state
+                                                        .bookedChargingStation
+                                                        ?.plug ??
+                                                    'Type 2',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -241,7 +261,10 @@ class _ChargingPageState extends State<ChargingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                '11 kW',
+                                                state
+                                                        .bookedChargingStation
+                                                        ?.chargingEffect ??
+                                                    '11 kW',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -275,7 +298,12 @@ class _ChargingPageState extends State<ChargingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                '2 SEK/kWh',
+                                                state
+                                                            .bookedChargingStation
+                                                            ?.pricePerKwh !=
+                                                        null
+                                                    ? "${state.bookedChargingStation?.pricePerKwh} SEK/kWh"
+                                                    : '2 SEK/kWh',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -298,8 +326,39 @@ class _ChargingPageState extends State<ChargingPage> {
                                         ),
                                       ),
                                       SizedBox(height: 10),
+                                      Column(
+                                        spacing: 10,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'You are charging:',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: context
+                                                      .theme
+                                                      .appColors
+                                                      .grey1,
+                                                ),
+                                              ),
+                                              SizedBox(width: 10),
+                                              DynamicTimerWidget(
+                                                initialMinutes:
+                                                    duration.inMinutes,
+                                              ),
+                                            ],
+                                          ),
 
-                                      SizedBox(height: 200),
+                                          SizedBox(height: 10),
+                                          BatteryGlow(),
+
+                                          ChargingProgressBarWidget(
+                                            duration: duration,
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -313,81 +372,18 @@ class _ChargingPageState extends State<ChargingPage> {
                 ),
               ),
               Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: context.theme.appColors.background,
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.theme.appColors.onSecondary.withAlpha(
-                          26,
-                        ),
-                        spreadRadius: 0,
-                        blurRadius: 30,
-                        offset: Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    top: 10.0,
-                    right: 20.0,
-                    bottom: 34.0,
-                  ),
-                  child: Column(
-                    children: [
-                      (state.selectedSlots?.isEmpty ?? false) &&
-                              (state.errorTimeIsNotChosen != null)
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Text(
-                                state.errorTimeIsNotChosen ?? '',
-                                style: TextStyle(
-                                  color: context.theme.appColors.error,
-                                ),
-                              ),
-                            )
-                          : SizedBox(height: 0),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: WattMainButton(
-                              icon: Icon(
-                                Icons.phone,
-                                color: context.theme.appColors.onSurface,
-                              ),
-                              label: 'Contact',
-                              backgroundColor:
-                                  context.theme.appColors.background,
-                              iconColor: context.theme.appColors.onSurface,
-                              textColor: context.theme.appColors.onSurface,
-                              buttonShadow: context.theme.appColors.onSecondary
-                                  .withAlpha(38),
-                              onPressed: () {
-                                UiHelperMethods.showContactOptions(context);
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 15),
-
-                          Expanded(
-                            child: WattWhiteButton(
-                              label: 'Stop charging',
-                              textColor: context.theme.appColors.error,
-                              onPressed: () async {
-                                // await context.read<HomeCubit>().cancelBooking(
-                                //   state.activeBooking?.id ?? '',
-                                // );
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                left: 20,
+                right: 20,
+                bottom: 34,
+                child: WattWhiteButton(
+                  label: 'Stop charging',
+                  textColor: context.theme.appColors.error,
+                  onPressed: () async {
+                    // await context.read<HomeCubit>().cancelBooking(
+                    //   state.activeBooking?.id ?? '',
+                    // );
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ],

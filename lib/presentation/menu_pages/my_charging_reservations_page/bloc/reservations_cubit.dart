@@ -19,6 +19,8 @@ class ReservationsCubit extends Cubit<ReservationsState> {
   final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
   final ReauthenticateUserUseCase reauthenticateUserUseCase =
       ReauthenticateUserUseCase();
+  final FetchOneBookedChargingStationUseCase
+  fetchOneBookedChargingStationUseCase = FetchOneBookedChargingStationUseCase();
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
   final UpdateUserEmailUseCase updateUserEmailUseCase =
       UpdateUserEmailUseCase();
@@ -72,6 +74,32 @@ class ReservationsCubit extends Cubit<ReservationsState> {
           errorMessage: () => e.toString(),
           bookings: [],
           bookedChargingStations: [],
+          isLoading: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchOneBookedChargingStation(String stationId) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final station = await fetchOneBookedChargingStationUseCase.execute(
+        stationId,
+      );
+
+      print('Charging station data fetched successfully: $station');
+      emit(
+        state.copyWith(
+          bookedChargingStation: () => station,
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      print('Error fetching charging station data: $e');
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          bookedChargingStation: () => null,
           isLoading: false,
         ),
       );

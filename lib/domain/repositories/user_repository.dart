@@ -34,5 +34,6 @@ abstract class UserRepository {
   Future<void> deleteBooking(BookingModel booking);
   Future<List<BookingModel>> fetchBookings();
   Future<List<ChargingStationModel>> fetchBookedChargingStations();
+  Future<ChargingStationModel> fetchOneBookedChargingStation(String stationId);
   Future<void> deleteUser();
 }

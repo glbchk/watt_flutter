@@ -171,6 +171,13 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
+  Future<ChargingStationModel> fetchOneBookedChargingStation(
+    String stationId,
+  ) async {
+    return await userRemoteDataSource.fetchOneBookedChargingStation(stationId);
+  }
+
+  @override
   Future<void> deleteUser() async {
     await userRemoteDataSource.deleteUser();
   }

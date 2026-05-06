@@ -163,6 +163,12 @@ class FetchBookedChargingStationsUseCase extends UserUseCase {
   }
 }
 
+class FetchOneBookedChargingStationUseCase extends UserUseCase {
+  Future<ChargingStationModel> execute(String stationId) {
+    return userRepository.fetchOneBookedChargingStation(stationId);
+  }
+}
+
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {
     return userRepository.deleteUser();

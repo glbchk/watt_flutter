@@ -419,6 +419,20 @@ class UserRemoteDataSource {
         .toList();
   }
 
+  Future<ChargingStationModel> fetchOneBookedChargingStation(
+    String stationId,
+  ) async {
+    final docRef = await firestore
+        .collection("app_charging_stations")
+        .doc(stationId)
+        .get();
+    if (!docRef.exists) {
+      throw Exception("Charging station not found in global directory");
+    }
+
+    return ChargingStationModel.fromJson(docRef.data() as Map<String, dynamic>);
+  }
+
   Future<void> deleteBooking(BookingModel booking) async {
     final user = auth.currentUser;
     if (user == null) return;

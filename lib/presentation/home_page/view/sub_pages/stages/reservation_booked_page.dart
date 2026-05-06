@@ -5,7 +5,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/stages/charging_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/line_card_widget.dart';

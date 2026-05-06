@@ -5,9 +5,11 @@ import 'package:watt/presentation/menu_pages/bookings_page/components/past_booki
 import 'package:watt/presentation/menu_pages/bookings_page/sub_pages/past_booking_details_page.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
+import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
 class MyReservationsPage extends StatefulWidget {
   const MyReservationsPage({super.key});
@@ -59,6 +61,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                 SliverAppBar(
                   expandedHeight: 200.0,
                   pinned: true,
+                  backgroundColor: context.theme.appColors.primary,
                   leading: BackButton(
                     color: context.theme.appColors.background,
                     onPressed: () => Navigator.of(context).pop(),
@@ -158,8 +161,21 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                             booking,
                           );
                         },
-                        onPressedAccept: () {},
-                        onPressedContactUser: () {},
+                        positiveLabel: 'Start charging',
+                        positiveButtonColor: context.theme.appColors.primary,
+                        onPressedAccept: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChargingPage(
+                                booking: booking,
+                              ),
+                            ),
+                          );
+                        },
+                        onPressedContactUser: () {
+                          UiHelperMethods.showContactOptions(context);
+                        },
                       );
                     },
                   ),
