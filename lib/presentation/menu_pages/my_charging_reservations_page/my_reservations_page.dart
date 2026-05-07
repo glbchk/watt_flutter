@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/components/booking_card_widget.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/components/past_booking_card_widget.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/sub_pages/past_booking_details_page.dart';
@@ -23,7 +24,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
   void initState() {
     super.initState();
 
-    context.read<ReservationsCubit>().fetchBookingData();
+    context.read<ReservationsCubit>().fetchUpcomingReservationsData();
   }
 
   @override
@@ -35,7 +36,8 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<ReservationsCubit, ReservationsState>(
       builder: (context, state) {
-        final bookings = state.bookings;
+        final upcomingReservations = state.upcomingReservations;
+        final pastReservations = state.pastReservations;
 
         if (state.isLoading) {
           return const Scaffold(
@@ -90,7 +92,6 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                     ),
                   ),
 
-                  // ✅ MOVE TABBAR HERE
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(64),
                     child: Container(
@@ -119,21 +120,19 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                 ),
               ],
 
-              // ✅ NO COLUMN HERE
               body: TabBarView(
                 children: [
                   ListView.builder(
-                    // padding: const EdgeInsets.all(20),
-                    itemCount: bookings?.length ?? 0,
+                    itemCount: upcomingReservations?.length ?? 0,
                     itemBuilder: (context, index) {
-                      final booking = bookings![index];
+                      final upcomingReservation = upcomingReservations![index];
 
                       String stationName = "Loading...";
                       String stationAddress = "Loading...";
 
-                      if (state.bookedChargingStations != null) {
-                        for (var station in state.bookedChargingStations!) {
-                          if (station.id == booking.stationId) {
+                      if (state.reservedChargingStations != null) {
+                        for (var station in state.reservedChargingStations!) {
+                          if (station.id == upcomingReservation.stationId) {
                             stationName =
                                 station.chargingStationName ??
                                 "Unknown Station";
@@ -146,20 +145,35 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
 
                       final scheduledTime =
                           StringHelperMethods.convertToOneSlot(
-                            booking.selectedTimes ?? [],
+                            upcomingReservation.selectedTimes ?? [],
+                          );
+
+                      DateTime parsedDate = DateTime.parse(
+                        upcomingReservation.date ?? '',
+                      );
+
+                      String formattedDate = DateFormat(
+                        'yyyy-MM-dd',
+                      ).format(parsedDate);
+
+                      final time =
+                          StringHelperMethods.calculateTotalBookingMinutes(
+                            upcomingReservation.selectedTimes,
                           );
 
                       return BookingCardWidget(
                         chargingStationName: stationName,
-                        dateOfBooking: scheduledTime,
-                        chargingStationTimeSlot: "...",
+                        dateOfBooking: formattedDate,
+                        chargingStationTimeSlot: scheduledTime,
                         chargingStationAddress: stationAddress,
-                        negativeLabel: 'Cancel',
+                        negativeLabel: 'Cancel reservation',
                         onPressedReject: () {
-                          print(booking.id);
-                          context.read<ReservationsCubit>().deleteBooking(
-                            booking,
-                          );
+                          print(upcomingReservation.id);
+                          context
+                              .read<ReservationsCubit>()
+                              .stopChargingOrCancelReservation(
+                                upcomingReservation,
+                              );
                         },
                         positiveLabel: 'Start charging',
                         positiveButtonColor: context.theme.appColors.primary,
@@ -168,7 +182,8 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => ChargingPage(
-                                booking: booking,
+                                reservation: upcomingReservation,
+                                duration: Duration(minutes: time),
                               ),
                             ),
                           );
@@ -181,10 +196,44 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                   ),
 
                   ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: 5,
+                    itemCount: pastReservations?.length ?? 0,
                     itemBuilder: (context, index) {
+                      final pastReservation = pastReservations![index];
+
+                      String stationName = "Loading...";
+                      String? startTime = "Loading...";
+                      String? endTime = "Loading...";
+
+                      if (state.reservedChargingStations != null) {
+                        for (var station in state.reservedChargingStations!) {
+                          if (station.id == pastReservation.stationId) {
+                            stationName =
+                                station.chargingStationName ??
+                                "Unknown Station";
+                            startTime = StringHelperMethods.convertToStartTime(
+                              pastReservation.date ?? '',
+                              pastReservation.selectedTimes ?? [],
+                            );
+                            endTime = StringHelperMethods.convertToEndTime(
+                              pastReservation.date ?? '',
+                              pastReservation.selectedTimes ?? [],
+                            );
+                            // DateTime dateTime = DateTime.parse(rawDate);
+                            //
+                            // String formattedDate = DateFormat('yyyy-MM-dd, HH:mm').format(dateTime);
+                            //
+                            // print(formattedDate);
+
+                            // startTime = station.address ?? "Unknown Address";
+                            break;
+                          }
+                        }
+                      }
+
                       return PastBookingCardWidget(
+                        customerName: stationName,
+                        startTimeOfBooking: startTime ?? '',
+                        endTimeOfBooking: endTime ?? '',
                         onPressed: () {
                           Navigator.push(
                             context,

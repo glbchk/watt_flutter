@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/domain/use_cases/get_auth_usecase.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
@@ -13,14 +13,20 @@ class ReservationsCubit extends Cubit<ReservationsState> {
   late StreamSubscription authSubscription;
 
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
-  final FetchBookedChargingStationsUseCase fetchBookedChargingStationsUseCase =
-      FetchBookedChargingStationsUseCase();
-  final FetchBookingsUseCase fetchBookingsUseCase = FetchBookingsUseCase();
-  final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
+  final FetchUpcomingReservedChargingStationsUseCase
+  fetchUpcomingReservedChargingStationsUseCase =
+      FetchUpcomingReservedChargingStationsUseCase();
+  final FetchUpcomingReservationsUseCase fetchUpcomingReservationsUseCase =
+      FetchUpcomingReservationsUseCase();
+  final DeleteUpcomingReservationUseCase deleteUpcomingReservationUseCase =
+      DeleteUpcomingReservationUseCase();
   final ReauthenticateUserUseCase reauthenticateUserUseCase =
       ReauthenticateUserUseCase();
-  final FetchOneBookedChargingStationUseCase
-  fetchOneBookedChargingStationUseCase = FetchOneBookedChargingStationUseCase();
+  final FetchOneUpcomingReservedChargingStationUseCase
+  fetchOneUpcomingReservedChargingStationUseCase =
+      FetchOneUpcomingReservedChargingStationUseCase();
+  final StopChargingOrCancelReservationUseCase stopChargingUseCase =
+      StopChargingOrCancelReservationUseCase();
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
   final UpdateUserEmailUseCase updateUserEmailUseCase =
       UpdateUserEmailUseCase();
@@ -39,58 +45,61 @@ class ReservationsCubit extends Cubit<ReservationsState> {
     });
   }
 
-  Future<void> fetchBookingData() async {
+  Future<void> fetchUpcomingReservationsData() async {
     emit(state.copyWith(isLoading: true));
     try {
-      final bookings = await fetchBookingsUseCase.execute();
-      final bookedChargingStations = await fetchBookedChargingStationsUseCase
-          .execute();
+      final reservations = await fetchUpcomingReservationsUseCase.execute();
+      final reservedChargingStations =
+          await fetchUpcomingReservedChargingStationsUseCase.execute();
 
-      if (bookedChargingStations != null) {
-        print('User data fetched successfully: $bookedChargingStations');
+      if (reservedChargingStations != null) {
+        print(
+          'Upcoming reservations fetched successfully: $reservedChargingStations',
+        );
         emit(
           state.copyWith(
-            bookings: bookings,
-            bookedChargingStations: bookedChargingStations,
+            upcomingReservations: reservations,
+            reservedChargingStations: reservedChargingStations,
             isLoading: false,
             isUserAuthenticated: true,
           ),
         );
       } else {
-        print('User data is null');
+        print('Upcoming reservations are null');
         emit(
           state.copyWith(
-            bookings: [],
-            bookedChargingStations: [],
+            upcomingReservations: [],
+            reservedChargingStations: [],
             isLoading: false,
             isUserAuthenticated: false,
           ),
         );
       }
     } catch (e) {
-      print('Error fetching user data: $e');
+      print('Error fetching upcoming reservations: $e');
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          bookings: [],
-          bookedChargingStations: [],
+          upcomingReservations: [],
+          reservedChargingStations: [],
           isLoading: false,
         ),
       );
     }
   }
 
-  Future<void> fetchOneBookedChargingStation(String stationId) async {
+  Future<void> fetchOneUpcomingReservedChargingStation(String stationId) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final station = await fetchOneBookedChargingStationUseCase.execute(
-        stationId,
-      );
+      final station = await fetchOneUpcomingReservedChargingStationUseCase
+          .execute(
+            stationId,
+          );
 
       print('Charging station data fetched successfully: $station');
       emit(
         state.copyWith(
-          bookedChargingStation: () => station,
+          reservedChargingStation: () => station,
           isLoading: false,
         ),
       );
@@ -99,34 +108,65 @@ class ReservationsCubit extends Cubit<ReservationsState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          bookedChargingStation: () => null,
+          reservedChargingStation: () => null,
           isLoading: false,
         ),
       );
     }
   }
 
-  Future<void> deleteBooking(BookingModel booking) async {
+  Future<void> deleteUpcomingReservation(ReservationModel reservation) async {
     try {
-      print('Booking id in the method: ${booking}');
-      final bookingToDelete = state.bookings?.firstWhere(
-        (b) => b.id == booking.id,
+      print('Reservation id in the method: ${reservation}');
+      final reservationToDelete = state.upcomingReservations?.firstWhere(
+        (b) => b.id == reservation.id,
       );
-      if (bookingToDelete == null) return;
+      if (reservationToDelete == null) return;
 
-      await deleteBookingUseCase.execute(bookingToDelete);
+      await deleteUpcomingReservationUseCase.execute(reservationToDelete);
 
-      final updatedBookings = (state.bookings ?? [])
-          .where((b) => b.id != booking.id)
+      final updatedReservations = (state.upcomingReservations ?? [])
+          .where((b) => b.id != reservation.id)
           .toList();
 
       emit(
         state.copyWith(
-          bookings: updatedBookings,
+          upcomingReservations: updatedReservations,
         ),
       );
     } catch (e) {
-      print('Error cancelling booking $e');
+      print('Error cancelling reservation $e');
+    }
+  }
+
+  Future<void> stopChargingOrCancelReservation(
+    ReservationModel reservation,
+  ) async {
+    try {
+      // final reservationToDelete = state.upcomingReservations?.firstWhere(
+      //   (b) => b.id == reservation.id,
+      // );
+      // if (reservationToDelete == null) return;
+
+      final updatedUpcomingReservations = (state.upcomingReservations ?? [])
+          .where((b) => b.id != reservation.id)
+          .toList();
+
+      final updatedPastReservations = <ReservationModel>[
+        ...(state.pastReservations ?? []),
+        reservation,
+      ];
+
+      emit(
+        state.copyWith(
+          upcomingReservations: updatedUpcomingReservations,
+          pastReservations: updatedPastReservations,
+        ),
+      );
+
+      await stopChargingUseCase.execute(reservation);
+    } catch (e) {
+      print('Error deleting upcoming reservation $e');
     }
   }
 

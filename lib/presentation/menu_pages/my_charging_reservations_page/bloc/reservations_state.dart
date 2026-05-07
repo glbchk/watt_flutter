@@ -1,5 +1,5 @@
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 
 class ReservationsState {
   final bool isUserAuthenticated;
@@ -11,9 +11,10 @@ class ReservationsState {
   final String? phoneNumberError;
   final String? newEmailValue;
   final String? passwordError;
-  final ChargingStationModel? bookedChargingStation;
-  final List<BookingModel>? bookings;
-  final List<ChargingStationModel>? bookedChargingStations;
+  final ChargingStationModel? reservedChargingStation;
+  final List<ReservationModel>? upcomingReservations;
+  final List<ReservationModel>? pastReservations;
+  final List<ChargingStationModel>? reservedChargingStations;
 
   ReservationsState({
     required this.isUserAuthenticated,
@@ -25,9 +26,10 @@ class ReservationsState {
     this.phoneNumberError,
     this.newEmailValue,
     this.passwordError,
-    this.bookedChargingStation,
-    this.bookings,
-    this.bookedChargingStations,
+    this.reservedChargingStation,
+    this.upcomingReservations,
+    this.pastReservations,
+    this.reservedChargingStations,
   });
 
   ReservationsState copyWith({
@@ -41,9 +43,10 @@ class ReservationsState {
     String? Function()? phoneNumberError,
     String? Function()? newEmailValue,
     String? Function()? passwordError,
-    ChargingStationModel? Function()? bookedChargingStation,
-    List<BookingModel>? bookings,
-    List<ChargingStationModel>? bookedChargingStations,
+    ChargingStationModel? Function()? reservedChargingStation,
+    List<ReservationModel>? upcomingReservations,
+    List<ReservationModel>? pastReservations,
+    List<ChargingStationModel>? reservedChargingStations,
   }) {
     return ReservationsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -61,12 +64,13 @@ class ReservationsState {
       passwordError: passwordError != null
           ? passwordError()
           : this.passwordError,
-      bookedChargingStation: bookedChargingStation != null
-          ? bookedChargingStation()
-          : this.bookedChargingStation,
-      bookings: bookings ?? this.bookings,
-      bookedChargingStations:
-          bookedChargingStations ?? this.bookedChargingStations,
+      reservedChargingStation: reservedChargingStation != null
+          ? reservedChargingStation()
+          : this.reservedChargingStation,
+      upcomingReservations: upcomingReservations ?? this.upcomingReservations,
+      pastReservations: pastReservations ?? this.pastReservations,
+      reservedChargingStations:
+          reservedChargingStations ?? this.reservedChargingStations,
     );
   }
 }

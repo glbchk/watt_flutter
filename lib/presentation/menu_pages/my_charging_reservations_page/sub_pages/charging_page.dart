@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/utils/colors.dart';
@@ -12,11 +12,13 @@ import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class ChargingPage extends StatefulWidget {
-  final BookingModel booking;
+  final ReservationModel reservation;
+  final Duration duration;
 
   const ChargingPage({
     super.key,
-    required this.booking,
+    required this.reservation,
+    required this.duration,
   });
 
   @override
@@ -25,13 +27,13 @@ class ChargingPage extends StatefulWidget {
 
 class _ChargingPageState extends State<ChargingPage> {
   bool isCollapsed = false;
-  Duration duration = Duration(minutes: 30);
+  // Duration duration = Duration(minutes: 30);
 
   @override
   void initState() {
     super.initState();
-    context.read<ReservationsCubit>().fetchOneBookedChargingStation(
-      widget.booking.stationId ?? '',
+    context.read<ReservationsCubit>().fetchOneUpcomingReservedChargingStation(
+      widget.reservation.stationId ?? '',
     );
   }
 
@@ -115,7 +117,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                         children: [
                                           Text(
                                             state
-                                                    .bookedChargingStation
+                                                    .reservedChargingStation
                                                     ?.chargingStationName ??
                                                 'Charging Station Here',
                                             maxLines: 1,
@@ -146,7 +148,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                           StatusWidget(
                                             label:
                                                 state
-                                                    .bookedChargingStation
+                                                    .reservedChargingStation
                                                     ?.stationStatus
                                                     ?.label ??
                                                 'Status Unknown',
@@ -176,7 +178,9 @@ class _ChargingPageState extends State<ChargingPage> {
                                     spacing: 8,
                                     children: [
                                       Text(
-                                        state.bookedChargingStation?.address ??
+                                        state
+                                                .reservedChargingStation
+                                                ?.address ??
                                             "John’s Amp",
                                         style: TextStyle(
                                           fontSize: 13,
@@ -225,7 +229,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                               ),
                                               Text(
                                                 state
-                                                        .bookedChargingStation
+                                                        .reservedChargingStation
                                                         ?.plug ??
                                                     'Type 2',
                                                 style: TextStyle(
@@ -262,7 +266,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                               ),
                                               Text(
                                                 state
-                                                        .bookedChargingStation
+                                                        .reservedChargingStation
                                                         ?.chargingEffect ??
                                                     '11 kW',
                                                 style: TextStyle(
@@ -299,10 +303,10 @@ class _ChargingPageState extends State<ChargingPage> {
                                               ),
                                               Text(
                                                 state
-                                                            .bookedChargingStation
+                                                            .reservedChargingStation
                                                             ?.pricePerKwh !=
                                                         null
-                                                    ? "${state.bookedChargingStation?.pricePerKwh} SEK/kWh"
+                                                    ? "${state.reservedChargingStation?.pricePerKwh} SEK/kWh"
                                                     : '2 SEK/kWh',
                                                 style: TextStyle(
                                                   fontSize: 13,
@@ -346,7 +350,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                               SizedBox(width: 10),
                                               DynamicTimerWidget(
                                                 initialMinutes:
-                                                    duration.inMinutes,
+                                                    widget.duration.inMinutes,
                                               ),
                                             ],
                                           ),
@@ -355,7 +359,7 @@ class _ChargingPageState extends State<ChargingPage> {
                                           BatteryGlow(),
 
                                           ChargingProgressBarWidget(
-                                            duration: duration,
+                                            duration: widget.duration,
                                           ),
                                         ],
                                       ),
@@ -379,9 +383,11 @@ class _ChargingPageState extends State<ChargingPage> {
                   label: 'Stop charging',
                   textColor: context.theme.appColors.error,
                   onPressed: () async {
-                    // await context.read<HomeCubit>().cancelBooking(
-                    //   state.activeBooking?.id ?? '',
-                    // );
+                    context
+                        .read<ReservationsCubit>()
+                        .stopChargingOrCancelReservation(
+                          widget.reservation,
+                        );
                     Navigator.pop(context);
                   },
                 ),

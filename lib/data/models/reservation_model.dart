@@ -1,6 +1,6 @@
 import 'package:watt/data/models/slot_model.dart';
 
-enum BookingStatus {
+enum ReservationStatus {
   available,
   pending,
   confirmed,
@@ -8,9 +8,9 @@ enum BookingStatus {
   cancelled,
 }
 
-class BookingModel {
+class ReservationModel {
   final String id;
-  final BookingStatus status;
+  final ReservationStatus status;
   final String? stationId;
   final String? date;
   final List<SlotModel>? selectedTimes;
@@ -18,9 +18,9 @@ class BookingModel {
   final double? price;
   final String? cardNumber;
 
-  BookingModel({
+  ReservationModel({
     required this.id,
-    this.status = BookingStatus.pending,
+    this.status = ReservationStatus.pending,
     this.stationId,
     this.date,
     this.selectedTimes,
@@ -29,12 +29,12 @@ class BookingModel {
     this.cardNumber,
   });
 
-  factory BookingModel.fromJson(Map<String, dynamic> json) {
-    return BookingModel(
+  factory ReservationModel.fromJson(Map<String, dynamic> json) {
+    return ReservationModel(
       id: json['id'],
-      status: BookingStatus.values.firstWhere(
+      status: ReservationStatus.values.firstWhere(
         (e) => e.name == json['status'],
-        orElse: () => BookingStatus.available,
+        orElse: () => ReservationStatus.available,
       ),
       stationId: json['station_id'],
       date: json['date'],
@@ -60,9 +60,9 @@ class BookingModel {
     };
   }
 
-  BookingModel copyWith({
+  ReservationModel copyWith({
     String? id,
-    BookingStatus? status,
+    ReservationStatus? status,
     String? stationId,
     String? date,
     List<SlotModel>? selectedTimes,
@@ -70,7 +70,7 @@ class BookingModel {
     double? price,
     String? cardNumber,
   }) {
-    return BookingModel(
+    return ReservationModel(
       id: id ?? this.id,
       status: status ?? this.status,
       stationId: stationId ?? this.stationId,

@@ -311,4 +311,33 @@ class StringHelperMethods {
 
     return '$start - $end';
   }
+
+  static int calculateTotalBookingMinutes(List<SlotModel>? selectedSlots) {
+    if (selectedSlots == null || selectedSlots.isEmpty) return 0;
+
+    int totalMinutes = 0;
+
+    for (final slot in selectedSlots) {
+      if (slot.startTime != null && slot.endTime != null) {
+        final startParts = slot.startTime?.split(':');
+        final endParts = slot.endTime?.split(':');
+
+        if (startParts?.length == 2 && endParts?.length == 2) {
+          final startHour = int.tryParse(startParts![0]) ?? 0;
+          final startMin = int.tryParse(startParts[1]) ?? 0;
+          final endHour = int.tryParse(endParts![0]) ?? 0;
+          final endMin = int.tryParse(endParts[1]) ?? 0;
+
+          final startTotal = (startHour * 60) + startMin;
+          final endTotal = (endHour * 60) + endMin;
+
+          if (endTotal > startTotal) {
+            totalMinutes += (endTotal - startTotal);
+          }
+        }
+      }
+    }
+
+    return totalMinutes;
+  }
 }

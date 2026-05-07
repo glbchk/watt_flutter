@@ -9,7 +9,7 @@ import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reserve_station_page.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/bookings_page.dart';
 import 'package:watt/presentation/menu_pages/cars_page/my_cars_page.dart';
 import 'package:watt/presentation/menu_pages/help_page/help_page.dart';
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
+                      builder: (_) => ReserveStationPage(
                         stationId: location.id,
                       ),
                     ),
@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
+                      builder: (_) => ReserveStationPage(
                         stationId: location.id,
                       ),
                     ),
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
+                      builder: (_) => ReserveStationPage(
                         stationId: location.id,
                       ),
                     ),

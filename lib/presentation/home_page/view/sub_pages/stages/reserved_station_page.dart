@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
-import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
-import 'package:watt/presentation/home_page/view/components/time_slot_selector_widget.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/pay_details_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
-import 'package:watt/utils/global_components/status_widget.dart';
+import 'package:watt/utils/global_components/line_card_widget.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
-import 'package:watt/utils/global_methods/string_helper_methods.dart';
 import 'package:watt/utils/global_methods/ui_helper_methods.dart';
 
-class ReservationBookingPage extends StatefulWidget {
+class ReservedStationPage extends StatefulWidget {
+  final ChargingStationType type;
   final String stationId;
 
-  const ReservationBookingPage({
+  const ReservedStationPage({
     super.key,
+    required this.type,
     required this.stationId,
   });
 
   @override
-  State<ReservationBookingPage> createState() => _ReservationBookingPageState();
+  State<ReservedStationPage> createState() => _ReservedStationPageState();
 }
 
-class _ReservationBookingPageState extends State<ReservationBookingPage> {
+class _ReservedStationPageState extends State<ReservedStationPage> {
   bool isCollapsed = false;
 
+  //TODO: NEED TO BE FINISHED
   @override
   void initState() {
     super.initState();
-    context.read<HomeCubit>().fetchOneChargingStation(widget.stationId);
   }
 
   @override
@@ -54,6 +54,12 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
           leading: BackButton(
             color: context.theme.appColors.onSecondary,
             onPressed: () {
+              // context.read<OnboardingBloc>().add(
+              //   NameVerificationEvent(value: ''),
+              // );
+              // context.read<OnboardingBloc>().add(
+              //   PhoneNumberVerificationEvent(value: ''),
+              // );
               Navigator.of(context).pop();
             },
           ),
@@ -106,10 +112,7 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                         spacing: 2,
                                         children: [
                                           Text(
-                                            state
-                                                    .chargingStation
-                                                    ?.chargingStationName ??
-                                                'Name not found',
+                                            'Charging Station Here',
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
@@ -135,32 +138,18 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                             ],
                                           ),
                                           SizedBox(height: 6),
-                                          Row(
-                                            spacing: 10,
-                                            children: [
-                                              StatusWidget(
-                                                label:
-                                                    state
-                                                        .chargingStation
-                                                        ?.stationStatus
-                                                        ?.label ??
-                                                    'Status Unknown',
-                                              ),
-                                              Text(
-                                                state.availableTime ??
-                                                    'No available time today',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ],
+                                          Text(
+                                            '2020-11-09',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                            ),
                                           ),
                                         ],
                                       ),
-                                      Image.asset(
-                                        'assets/images/map_screenshot.png',
+                                      Container(
                                         height: 80,
                                         width: 80,
+                                        color: Colors.black,
                                       ),
                                     ],
                                   ),
@@ -179,37 +168,11 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                         CrossAxisAlignment.start,
                                     spacing: 8,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            state.chargingStation?.address ??
-                                                'No address',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                            ),
-                                          ),
-                                          Spacer(),
-                                          Container(
-                                            width: 62,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  context.theme.appColors.grey4,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    10,
-                                                  ),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              state.stationDistance.toString(),
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        "John’s Amp",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                        ),
                                       ),
                                       Divider(
                                         height: 1,
@@ -253,8 +216,7 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                state.chargingStation?.plug ??
-                                                    'Type 2',
+                                                'Type 2',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -288,10 +250,7 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                state
-                                                        .chargingStation
-                                                        ?.chargingEffect ??
-                                                    '11 kW',
+                                                '11 kW',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -325,7 +284,7 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                                 ),
                                               ),
                                               Text(
-                                                '${state.chargingStation?.pricePerKwh ?? 'Unknown'} SEK/kWh',
+                                                '2 SEK/kWh',
                                                 style: TextStyle(
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.bold,
@@ -353,23 +312,12 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          if (state
-                                                  .chargingStation
-                                                  ?.availableHours
-                                                  ?.isNotEmpty ??
-                                              false) ...[
-                                            TimeSlotSelectorWidget(
-                                              slots: state.timeSlots ?? [],
-                                              selectedSlots:
-                                                  state.selectedSlots ?? [],
-                                              onToggle: (slot) {
-                                                context
-                                                    .read<HomeCubit>()
-                                                    .toggleSlot(slot);
-                                              },
-                                            ),
-                                            SizedBox(height: 30),
-                                          ],
+                                          LineCardWidget(
+                                            label: 'Booked Time',
+                                            startTime: '2020-11-09, 8:00',
+                                            endTime: '2020-11-09, 12:00',
+                                          ),
+                                          SizedBox(height: 30),
                                           Text(
                                             'Notes'.toUpperCase(),
                                             style: TextStyle(
@@ -489,69 +437,57 @@ class _ReservationBookingPageState extends State<ReservationBookingPage> {
 
                           Expanded(
                             child: WattMainButton(
-                              label: 'Book',
+                              label: 'Start Charging',
                               onPressed: () async {
                                 // final convertedTimeSlots =
                                 //     StringHelperMethods.convertSelectedSlotsToTimeSlots(
-                                //       state.selectedSlots ?? [],
-                                //       slots,
+                                //       state.selectedSlots,
                                 //     );
-                                double powerKw =
-                                    double.tryParse(
-                                      state.chargingStation?.chargingEffect
-                                              ?.replaceAll('kW', '') ??
-                                          '',
-                                    ) ??
-                                    0;
-                                final calculatedEnergyAmount =
-                                    StringHelperMethods.calculateEnergyAmount(
-                                      DateTime.now(),
-                                      state.selectedSlots ?? [],
-                                      powerKw,
-                                    );
 
-                                final BookingModel bookingToSave = BookingModel(
+                                final ReservationModel
+                                bookingToSave = ReservationModel(
                                   id: Uuid().v4(),
-                                  status: BookingStatus.pending,
+                                  status: ReservationStatus.pending,
                                   stationId: state.chargingStation?.id,
                                   date: DateTime.now().toString(),
-                                  selectedTimes: state.selectedSlots ?? [],
-                                  energyAmount: calculatedEnergyAmount,
-                                  price: StringHelperMethods.calculatePrice(
-                                    calculatedEnergyAmount,
-                                    double.tryParse(
-                                          state.chargingStation?.pricePerKwh ??
-                                              '',
-                                        ) ??
-                                        0,
-                                  ),
+                                  // selectedTimes: convertedTimeSlots,
+                                  price:
+                                      double.tryParse(
+                                        state.chargingStation?.pricePerKwh ??
+                                            '',
+                                      ) ??
+                                      0,
                                 );
-                                print(bookingToSave.id);
 
-                                if (state.selectedSlots?.isEmpty ?? false) {
-                                  context.read<HomeCubit>().timeIsNotChosen();
-                                } else {
-                                  context
-                                      .read<HomeCubit>()
-                                      .reservationRequestedStage(
-                                        bookingToSave,
-                                      );
+                                // await context.read<HomeCubit>().generateUuid(
+                                //   bookingToSave.bookingId,
+                                // );
 
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => PayDetailsPage(
-                                        booking: bookingToSave,
-                                      ),
-                                    ),
-                                  ).then((_) async {
-                                    if (context.mounted) {
-                                      await context
-                                          .read<HomeCubit>()
-                                          .clearBookingState();
-                                    }
-                                  });
-                                }
+                                // if (state.stage == ReservationStage.booking) {
+                                //   if (state.selectedSlots.isNotEmpty) {
+                                //     context
+                                //         .read<HomeCubit>()
+                                //         .reservationRequestedStage(
+                                //           bookingToSave,
+                                //         );
+                                //   } else {
+                                //     context.read<HomeCubit>().timeIsNotChosen();
+                                //   }
+                                // } else if (state.stage ==
+                                //     ReservationStage.booked) {
+                                //   context.read<HomeCubit>().bookedStage(
+                                //     bookingToSave.bookingId,
+                                //     bookingToSave,
+                                //   );
+                                // }
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (_) => ChargingPage(
+                                //       booking: bookingToSave,
+                                //     ),
+                                //   ),
+                                // );
                               },
                             ),
                           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/sub_pages/pay_with_credit_card_page.dart';
@@ -11,8 +11,8 @@ import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class PayDetailsPage extends StatefulWidget {
-  final BookingModel booking;
-  const PayDetailsPage({super.key, required this.booking});
+  final ReservationModel reservation;
+  const PayDetailsPage({super.key, required this.reservation});
 
   @override
   State<PayDetailsPage> createState() => _PayDetailsPageState();
@@ -161,18 +161,18 @@ class _PayDetailsPageState extends State<PayDetailsPage> {
                                 label: 'Choose Time Slot',
                                 startTime:
                                     StringHelperMethods.convertToStartTime(
-                                      widget.booking.date ?? '',
-                                      widget.booking.selectedTimes ?? [],
+                                      widget.reservation.date ?? '',
+                                      widget.reservation.selectedTimes ?? [],
                                     ),
                                 endTime: StringHelperMethods.convertToEndTime(
-                                  widget.booking.date ?? '',
-                                  widget.booking.selectedTimes ?? [],
+                                  widget.reservation.date ?? '',
+                                  widget.reservation.selectedTimes ?? [],
                                 ),
-                                energy: widget.booking.energyAmount != 0.0
-                                    ? '${widget.booking.energyAmount.toString()} kWh'
+                                energy: widget.reservation.energyAmount != 0.0
+                                    ? '${widget.reservation.energyAmount.toString()} kWh'
                                     : 'No energy amount',
-                                price: widget.booking.price != 0.0
-                                    ? '${widget.booking.price.toString()} SEK'
+                                price: widget.reservation.price != 0.0
+                                    ? '${widget.reservation.price.toString()} SEK'
                                     : 'No price',
                               ),
                               SizedBox(height: 170),
@@ -211,7 +211,7 @@ class _PayDetailsPageState extends State<PayDetailsPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => PayWithCreditCardPage(
-                                        booking: widget.booking,
+                                        reservation: widget.reservation,
                                       ),
                                     ),
                                   );

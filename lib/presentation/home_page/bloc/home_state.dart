@@ -1,8 +1,8 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
@@ -26,8 +26,8 @@ class HomeState {
   final List<SlotModel>? selectedSlots;
   final List<SlotModel>? timeSlots;
   final String? errorTimeIsNotChosen;
-  final BookingModel? booking;
-  final List<BookingModel>? bookings;
+  final ReservationModel? reservation;
+  final List<ReservationModel>? upcomingReservations;
   final List<MockedFaq>? faq;
   final List<CreditCardModel>? paymentMethods;
   final String? availableTime;
@@ -52,8 +52,8 @@ class HomeState {
     this.selectedSlots = const [],
     this.timeSlots,
     this.errorTimeIsNotChosen,
-    this.booking,
-    this.bookings,
+    this.reservation,
+    this.upcomingReservations,
     this.faq,
     this.paymentMethods,
     this.availableTime,
@@ -79,8 +79,8 @@ class HomeState {
     List<SlotModel>? Function()? selectedSlots,
     List<SlotModel>? timeSlots,
     String? Function()? errorTimeIsNotChosen,
-    BookingModel? Function()? booking,
-    List<BookingModel>? bookings,
+    ReservationModel? Function()? reservation,
+    List<ReservationModel>? upcomingReservations,
     List<MockedFaq>? faq,
     List<CreditCardModel>? paymentMethods,
     String? availableTime,
@@ -112,8 +112,8 @@ class HomeState {
       errorTimeIsNotChosen: errorTimeIsNotChosen != null
           ? errorTimeIsNotChosen()
           : this.errorTimeIsNotChosen,
-      booking: booking != null ? booking() : this.booking,
-      bookings: bookings ?? this.bookings,
+      reservation: reservation != null ? reservation() : this.reservation,
+      upcomingReservations: upcomingReservations ?? this.upcomingReservations,
       faq: faq ?? this.faq,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       availableTime: availableTime ?? this.availableTime,

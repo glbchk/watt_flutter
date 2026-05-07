@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/domain/use_cases/get_google_maps_usecase.dart';
 import 'package:watt/domain/use_cases/get_mock_data_usecase.dart';
@@ -37,11 +37,13 @@ class HomeCubit extends Cubit<HomeState> {
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
   final FetchOneChargingStationUseCase fetchOneChargingStationUseCase =
       FetchOneChargingStationUseCase();
-  final FetchOneBookingUseCase fetchOneBookingUseCase =
-      FetchOneBookingUseCase();
-  final ConfirmBookingWithPaymentUseCase confirmBookingWithPaymentUseCase =
-      ConfirmBookingWithPaymentUseCase();
-  final DeleteBookingUseCase deleteBookingUseCase = DeleteBookingUseCase();
+  final FetchOneUpcomingReservationUseCase fetchOneReservationUseCase =
+      FetchOneUpcomingReservationUseCase();
+  final ConfirmUpcomingReservationWithPaymentUseCase
+  confirmUpcomingReservationWithPaymentUseCase =
+      ConfirmUpcomingReservationWithPaymentUseCase();
+  final DeleteUpcomingReservationUseCase deleteReservationUseCase =
+      DeleteUpcomingReservationUseCase();
   final FetchFaqUseCase fetchFaqUseCase = FetchFaqUseCase();
 
   HomeCubit({required this.authBloc, required this.profileCubit})
@@ -174,23 +176,23 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> confirmBookingWithPayment(
-    BookingModel booking,
+  Future<void> confirmUpcomingReservationWithPayment(
+    ReservationModel upcomingReservation,
     String cardNumber,
   ) async {
     try {
-      final busySlots = (booking.selectedTimes ?? [])
+      final busySlots = (upcomingReservation.selectedTimes ?? [])
           .map((s) => s.copyWith(isBusy: true))
           .toList();
 
-      final confirmedBooking = booking.copyWith(
+      final confirmedReservation = upcomingReservation.copyWith(
         selectedTimes: busySlots,
         cardNumber: cardNumber,
       );
 
-      final updatedBookings = <BookingModel>[
-        ...(state.bookings ?? []),
-        confirmedBooking,
+      final updatedReservations = <ReservationModel>[
+        ...(state.upcomingReservations ?? []),
+        confirmedReservation,
       ];
       final updatedTimeSlots = state.timeSlots?.map((slot) {
         final isSelected = busySlots.any(
@@ -201,13 +203,13 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(
         state.copyWith(
-          bookings: updatedBookings,
+          upcomingReservations: updatedReservations,
           timeSlots: updatedTimeSlots,
         ),
       );
 
-      await confirmBookingWithPaymentUseCase.execute(
-        confirmedBooking,
+      await confirmUpcomingReservationWithPaymentUseCase.execute(
+        confirmedReservation,
         cardNumber,
       );
     } catch (e) {
@@ -334,7 +336,7 @@ class HomeCubit extends Cubit<HomeState> {
         station.availableHours ?? [],
       );
 
-      final bookingFuture = fetchOneBookingUseCase.execute(stationId);
+      final reservationFuture = fetchOneReservationUseCase.execute(stationId);
 
       final List<SlotModel> generatedSlots = [];
 
@@ -346,8 +348,8 @@ class HomeCubit extends Cubit<HomeState> {
         generatedSlots.addAll(slot);
       }
 
-      final bookingDoc = await bookingFuture;
-      List<SlotModel> busySlots = bookingDoc?.selectedTimes ?? [];
+      final reservationDoc = await reservationFuture;
+      List<SlotModel> busySlots = reservationDoc?.selectedTimes ?? [];
 
       final updatedSlots = generatedSlots.map((slot) {
         final isBusy = busySlots.any(
@@ -366,10 +368,9 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
     } catch (e) {
-      print('Error fetching user data: $e');
+      print('Error fetching charging station: $e');
       emit(
         state.copyWith(
-          // chargingStation: () => null,
           errorMessage: () => e.toString(),
           isLoading: false,
         ),
@@ -407,8 +408,6 @@ class HomeCubit extends Cubit<HomeState> {
     if (state.selectedSlots?.isEmpty ?? false) {
       emit(
         state.copyWith(
-          // stage: () => ReservationStage.booking,
-          // isBooked: false,
           errorTimeIsNotChosen: () => "The time wasn't chosen!",
         ),
       );
@@ -422,19 +421,17 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> reservationRequestedStage(BookingModel booking) async {
+  Future<void> reservationRequestedStage(ReservationModel reservation) async {
     try {
-      // await addBookingUseCase.execute(booking);
-
-      final List<BookingModel> updatedBookings = List.from(
-        state.bookings ?? [],
+      final List<ReservationModel> updatedReservations = List.from(
+        state.upcomingReservations ?? [],
       );
 
-      updatedBookings.add(booking);
+      updatedReservations.add(reservation);
 
       emit(
         state.copyWith(
-          bookings: updatedBookings,
+          upcomingReservations: updatedReservations,
         ),
       );
     } catch (e) {
@@ -442,27 +439,27 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> fetchOneBooking(String bookingId) async {
+  Future<void> fetchOneUpcomingReservation(String reservationId) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final booking = state.bookings?.firstWhere(
-        (b) => b.id == bookingId,
+      final reservation = state.upcomingReservations?.firstWhere(
+        (b) => b.id == reservationId,
       );
-      if (booking == null) return;
-      print('Station data fetched successfully: $booking');
+      if (reservation == null) return;
+      print('Reservation fetched successfully: $reservation');
       emit(
         state.copyWith(
-          booking: () => booking,
+          reservation: () => reservation,
           isLoading: false,
           isUserAuthenticated: true,
         ),
       );
     } catch (e) {
-      print('Error fetching user data: $e');
+      print('Error fetching reservation: $e');
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          booking: () => null,
+          reservation: () => null,
           isLoading: false,
           clearUserData: true,
         ),
@@ -470,12 +467,12 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> clearBookingState() async {
+  Future<void> clearUpcomingReservationState() async {
     try {
       emit(
         state.copyWith(
           selectedSlots: () => null,
-          booking: () => null,
+          reservation: () => null,
           errorTimeIsNotChosen: () => null,
         ),
       );

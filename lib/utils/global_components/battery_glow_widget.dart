@@ -24,7 +24,7 @@ class _BatteryGlowState extends State<BatteryGlow>
       duration: const Duration(milliseconds: 1800),
     )..repeat(reverse: true);
 
-    _animation = Tween<double>(begin: 4, end: 20).animate(
+    _animation = Tween<double>(begin: 4, end: 10).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/credit_card_widget.dart';
@@ -12,8 +12,8 @@ import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class PayWithCreditCardPage extends StatefulWidget {
-  final BookingModel booking;
-  const PayWithCreditCardPage({super.key, required this.booking});
+  final ReservationModel reservation;
+  const PayWithCreditCardPage({super.key, required this.reservation});
 
   @override
   State<PayWithCreditCardPage> createState() => _PayWithCreditCardPageState();
@@ -180,10 +180,12 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
                     label: 'Select Method',
                     onPressed: () {
                       final cardNumber = currentCard.cardNumber ?? '';
-                      context.read<HomeCubit>().confirmBookingWithPayment(
-                        widget.booking,
-                        cardNumber,
-                      );
+                      context
+                          .read<HomeCubit>()
+                          .confirmUpcomingReservationWithPayment(
+                            widget.reservation,
+                            cardNumber,
+                          );
                       Navigator.of(context)
                         ..pop()
                         ..pop();

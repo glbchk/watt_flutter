@@ -46,15 +46,19 @@ class PastBookingCardWidget extends StatelessWidget {
                         ),
                       ),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 4,
                         children: [
                           Text(
-                            startTimeOfBooking ?? 'Start - 2020-11-09, 9:30',
+                            startTimeOfBooking != null
+                                ? 'Start - $startTimeOfBooking'
+                                : 'Start - Fake 2020-11-09, 9:30',
                             style: TextStyle(fontSize: 13),
                           ),
                           Text(
-                            endTimeOfBooking ?? 'End - 2020-11-09, 12:30',
+                            endTimeOfBooking != null
+                                ? 'End - $endTimeOfBooking'
+                                : 'End - Fake 2020-11-09, 12:30',
                             style: TextStyle(fontSize: 13),
                           ),
                         ],

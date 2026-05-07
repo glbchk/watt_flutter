@@ -1,7 +1,7 @@
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
@@ -127,45 +127,51 @@ class FetchOneChargingStationUseCase extends UserUseCase {
   }
 }
 
-class FetchOneBookingUseCase extends UserUseCase {
+class FetchOneUpcomingReservationUseCase extends UserUseCase {
   Future execute(String stationId) {
-    return userRepository.fetchOneBooking(stationId);
+    return userRepository.fetchOneUpcomingReservation(stationId);
   }
 }
 
-class ConfirmBookingWithPaymentUseCase extends UserUseCase {
+class ConfirmUpcomingReservationWithPaymentUseCase extends UserUseCase {
   Future execute(
-    BookingModel bookingToSave,
+    ReservationModel reservationToSave,
     String cardNumber,
   ) {
-    return userRepository.confirmBookingWithPayment(
-      bookingToSave,
+    return userRepository.confirmUpcomingReservationWithPayment(
+      reservationToSave,
       cardNumber,
     );
   }
 }
 
-class DeleteBookingUseCase extends UserUseCase {
-  Future execute(BookingModel booking) {
-    return userRepository.deleteBooking(booking);
+class DeleteUpcomingReservationUseCase extends UserUseCase {
+  Future execute(ReservationModel reservation) {
+    return userRepository.deleteUpcomingReservation(reservation);
   }
 }
 
-class FetchBookingsUseCase extends UserUseCase {
+class FetchUpcomingReservationsUseCase extends UserUseCase {
   Future execute() {
-    return userRepository.fetchBookings();
+    return userRepository.fetchUpcomingReservations();
   }
 }
 
-class FetchBookedChargingStationsUseCase extends UserUseCase {
+class FetchUpcomingReservedChargingStationsUseCase extends UserUseCase {
   Future execute() {
-    return userRepository.fetchBookedChargingStations();
+    return userRepository.fetchUpcomingReservedChargingStations();
   }
 }
 
-class FetchOneBookedChargingStationUseCase extends UserUseCase {
+class FetchOneUpcomingReservedChargingStationUseCase extends UserUseCase {
   Future<ChargingStationModel> execute(String stationId) {
-    return userRepository.fetchOneBookedChargingStation(stationId);
+    return userRepository.fetchOneUpcomingReservedChargingStation(stationId);
+  }
+}
+
+class StopChargingOrCancelReservationUseCase extends UserUseCase {
+  Future execute(ReservationModel reservation) {
+    return userRepository.stopChargingOrCancelReservation(reservation);
   }
 }
 

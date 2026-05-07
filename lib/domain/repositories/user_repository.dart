@@ -1,7 +1,7 @@
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
@@ -26,14 +26,17 @@ abstract class UserRepository {
   Future<void> updateDefaultReceivingEarnings(String ibanId, bool isReceiver);
   Future<UserModel?> fetchUserData();
   Future<ChargingStationModel> fetchOneChargingStation(String stationId);
-  Future<BookingModel?> fetchOneBooking(String stationId);
-  Future<void> confirmBookingWithPayment(
-    BookingModel booking,
+  Future<ReservationModel?> fetchOneUpcomingReservation(String stationId);
+  Future<void> confirmUpcomingReservationWithPayment(
+    ReservationModel reservationToSave,
     String cardNumber,
   );
-  Future<void> deleteBooking(BookingModel booking);
-  Future<List<BookingModel>> fetchBookings();
-  Future<List<ChargingStationModel>> fetchBookedChargingStations();
-  Future<ChargingStationModel> fetchOneBookedChargingStation(String stationId);
+  Future<void> deleteUpcomingReservation(ReservationModel booking);
+  Future<List<ReservationModel>> fetchUpcomingReservations();
+  Future<List<ChargingStationModel>> fetchUpcomingReservedChargingStations();
+  Future<ChargingStationModel> fetchOneUpcomingReservedChargingStation(
+    String stationId,
+  );
+  Future<void> stopChargingOrCancelReservation(ReservationModel reservation);
   Future<void> deleteUser();
 }

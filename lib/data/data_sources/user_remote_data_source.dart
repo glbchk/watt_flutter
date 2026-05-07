@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
@@ -351,14 +351,16 @@ class UserRemoteDataSource {
     return station;
   }
 
-  Future<BookingModel?> fetchOneBooking(String stationId) async {
+  Future<ReservationModel?> fetchOneUpcomingReservation(
+    String stationId,
+  ) async {
     User? user = auth.currentUser;
     if (user == null) return null;
 
     final querySnapshot = await firestore
         .collection("users")
         .doc(user.uid)
-        .collection("bookings")
+        .collection("upcoming_reservations")
         .where("stationId", isEqualTo: stationId)
         .limit(1)
         .get();
@@ -369,33 +371,35 @@ class UserRemoteDataSource {
 
     final data = querySnapshot.docs.first.data();
 
-    return BookingModel.fromJson(data);
+    return ReservationModel.fromJson(data);
   }
 
-  Future<void> confirmBookingWithPayment(
-    BookingModel booking,
+  Future<void> confirmUpcomingReservationWithPayment(
+    ReservationModel reservation,
     String cardNumber,
   ) async {
     final user = auth.currentUser;
     if (user == null) return;
 
-    final busySlots = (booking.selectedTimes ?? [])
+    final busySlots = (reservation.selectedTimes ?? [])
         .map((s) => s.copyWith(isBusy: true))
         .toList();
 
-    final confirmedBooking = booking.copyWith(
+    final confirmedReservation = reservation.copyWith(
       selectedTimes: busySlots,
       cardNumber: cardNumber,
-      status: BookingStatus.confirmed,
+      status: ReservationStatus.confirmed,
     );
 
     await firestore.collection("users").doc(user.uid).update({
-      'bookings': FieldValue.arrayUnion([confirmedBooking.toJson()]),
+      'upcoming_reservations': FieldValue.arrayUnion([
+        confirmedReservation.toJson(),
+      ]),
     });
 
     final stationRef = firestore
         .collection("app_charging_stations")
-        .doc(booking.stationId);
+        .doc(reservation.stationId);
 
     final busySlotsJson = busySlots.map((s) => s.toJson()).toList();
 
@@ -405,21 +409,23 @@ class UserRemoteDataSource {
     );
   }
 
-  Future<List<BookingModel>> fetchBookings() async {
+  Future<List<ReservationModel>> fetchUpcomingReservations() async {
     User? user = auth.currentUser;
     if (user == null) return [];
 
     final doc = await firestore.collection("users").doc(user.uid).get();
-    final List<dynamic> bookingsJson = doc.data()?['bookings'] ?? [];
+    final List<dynamic> reservationsJson =
+        doc.data()?['upcoming_reservations'] ?? [];
 
-    return bookingsJson
+    return reservationsJson
         .map(
-          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+          (booking) =>
+              ReservationModel.fromJson(booking as Map<String, dynamic>),
         )
         .toList();
   }
 
-  Future<ChargingStationModel> fetchOneBookedChargingStation(
+  Future<ChargingStationModel> fetchOneUpcomingReservedChargingStation(
     String stationId,
   ) async {
     final docRef = await firestore
@@ -433,19 +439,19 @@ class UserRemoteDataSource {
     return ChargingStationModel.fromJson(docRef.data() as Map<String, dynamic>);
   }
 
-  Future<void> deleteBooking(BookingModel booking) async {
+  Future<void> deleteUpcomingReservation(ReservationModel reservation) async {
     final user = auth.currentUser;
     if (user == null) return;
 
     final docRef = firestore.collection("users").doc(user.uid);
 
     await docRef.update({
-      'bookings': FieldValue.arrayRemove([booking.toJson()]),
+      'upcoming_reservations': FieldValue.arrayRemove([reservation.toJson()]),
     });
 
     final stationRef = firestore
         .collection("app_charging_stations")
-        .doc(booking.stationId);
+        .doc(reservation.stationId);
 
     final stationDoc = await stationRef.get();
     final data = stationDoc.data();
@@ -455,13 +461,13 @@ class UserRemoteDataSource {
     final updatedSlots = slotsJson.map((json) {
       final s = SlotModel.fromJson(json);
 
-      final isPartOfBooking =
-          booking.selectedTimes?.any(
+      final isPartOfReservation =
+          reservation.selectedTimes?.any(
             (b) => b.startTime == s.startTime && b.endTime == s.endTime,
           ) ??
           false;
 
-      if (isPartOfBooking) {
+      if (isPartOfReservation) {
         return s.copyWith(isBusy: false).toJson();
       }
 
@@ -473,14 +479,16 @@ class UserRemoteDataSource {
     });
   }
 
-  Future<List<ChargingStationModel>> fetchBookedChargingStations() async {
+  Future<List<ChargingStationModel>>
+  fetchUpcomingReservedChargingStations() async {
     User? user = auth.currentUser;
     if (user == null) return [];
 
     final userDoc = await firestore.collection("users").doc(user.uid).get();
-    final List<dynamic> bookingsJson = userDoc.data()?['bookings'] ?? [];
+    final List<dynamic> reservationsJson =
+        userDoc.data()?['upcoming_reservations'] ?? [];
 
-    final stationIds = bookingsJson
+    final stationIds = reservationsJson
         .map((b) => b['station_id'] as String?)
         .whereType<String>()
         .toSet()
@@ -496,6 +504,23 @@ class UserRemoteDataSource {
     return stationsSnapshot.docs
         .map((doc) => ChargingStationModel.fromJson(doc.data()))
         .toList();
+  }
+
+  Future<void> stopChargingOrCancelReservation(
+    ReservationModel reservation,
+  ) async {
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final docRef = firestore.collection("users").doc(user.uid);
+
+    await docRef.update({
+      'upcoming_reservations': FieldValue.arrayRemove([reservation.toJson()]),
+    });
+
+    await firestore.collection("users").doc(user.uid).update({
+      'past_reservations': FieldValue.arrayUnion([reservation.toJson()]),
+    });
   }
 
   Future<void> deleteUser() async {
