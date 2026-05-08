@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:watt/utils/colors.dart';
 
-class PastBookingCardWidget extends StatelessWidget {
+class PastReservationCardWidget extends StatelessWidget {
   final String? customerName;
-  final String? startTimeOfBooking;
-  final String? endTimeOfBooking;
+  final String? startTimeOfReservation;
+  final String? endTimeOfReservation;
   final VoidCallback? onPressed;
 
-  const PastBookingCardWidget({
+  const PastReservationCardWidget({
     super.key,
     this.customerName,
-    this.startTimeOfBooking,
-    this.endTimeOfBooking,
+    this.startTimeOfReservation,
+    this.endTimeOfReservation,
     this.onPressed,
   });
 
@@ -50,14 +50,14 @@ class PastBookingCardWidget extends StatelessWidget {
                         spacing: 4,
                         children: [
                           Text(
-                            startTimeOfBooking != null
-                                ? 'Start - $startTimeOfBooking'
+                            startTimeOfReservation != null
+                                ? 'Start - $startTimeOfReservation'
                                 : 'Start - Fake 2020-11-09, 9:30',
                             style: TextStyle(fontSize: 13),
                           ),
                           Text(
-                            endTimeOfBooking != null
-                                ? 'End - $endTimeOfBooking'
+                            endTimeOfReservation != null
+                                ? 'End - $endTimeOfReservation'
                                 : 'End - Fake 2020-11-09, 12:30',
                             style: TextStyle(fontSize: 13),
                           ),

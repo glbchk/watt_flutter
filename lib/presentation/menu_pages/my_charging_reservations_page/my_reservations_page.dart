@@ -6,7 +6,7 @@ import 'package:watt/presentation/menu_pages/bookings_page/components/past_booki
 import 'package:watt/presentation/menu_pages/bookings_page/sub_pages/past_booking_details_page.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
-import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_generic_test_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
@@ -24,7 +24,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
   void initState() {
     super.initState();
 
-    context.read<ReservationsCubit>().fetchUpcomingReservationsData();
+    context.read<ReservationsCubit>().fetchUpcomingAndPastReservationsData();
   }
 
   @override
@@ -61,7 +61,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
-                  expandedHeight: 200.0,
+                  expandedHeight: 210.0,
                   pinned: true,
                   backgroundColor: context.theme.appColors.primary,
                   leading: BackButton(
@@ -104,11 +104,18 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                         ),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        padding: const EdgeInsets.only(
+                          left: 20.0,
+                          top: 10.0,
+                          right: 20.0,
+                        ),
                         child: TabBar(
+                          indicatorSize: TabBarIndicatorSize.tab,
+
+                          indicatorWeight: 2.0,
+                          indicatorColor: context.theme.appColors.primary,
                           labelColor: context.theme.appColors.primary,
                           unselectedLabelColor: context.theme.appColors.grey1,
-                          indicatorColor: const Color(0xFF007AFF),
                           tabs: const [
                             Tab(text: 'Upcoming'),
                             Tab(text: 'Past'),
@@ -122,89 +129,123 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
 
               body: TabBarView(
                 children: [
-                  ListView.builder(
-                    itemCount: upcomingReservations?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final upcomingReservation = upcomingReservations![index];
+                  MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      itemCount: upcomingReservations?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final upcomingReservation =
+                            upcomingReservations![index];
 
-                      String stationName = "Loading...";
-                      String stationAddress = "Loading...";
+                        String stationName = "Loading...";
+                        String stationAddress = "Loading...";
 
-                      if (state.reservedChargingStations != null) {
-                        for (var station in state.reservedChargingStations!) {
-                          if (station.id == upcomingReservation.stationId) {
-                            stationName =
-                                station.chargingStationName ??
-                                "Unknown Station";
-                            stationAddress =
-                                station.address ?? "Unknown Address";
-                            break;
+                        if (state.reservedChargingStations != null) {
+                          for (var station in state.reservedChargingStations!) {
+                            if (station.id == upcomingReservation.stationId) {
+                              stationName =
+                                  station.chargingStationName ??
+                                  "Unknown Station";
+                              stationAddress =
+                                  station.address ?? "Unknown Address";
+                              break;
+                            }
                           }
                         }
-                      }
 
-                      final scheduledTime =
-                          StringHelperMethods.convertToOneSlot(
-                            upcomingReservation.selectedTimes ?? [],
-                          );
+                        final scheduledTime =
+                            StringHelperMethods.convertToOneSlot(
+                              upcomingReservation.selectedTimes ?? [],
+                            );
 
-                      DateTime parsedDate = DateTime.parse(
-                        upcomingReservation.date ?? '',
-                      );
+                        DateTime parsedDate = DateTime.parse(
+                          upcomingReservation.date ?? '',
+                        );
 
-                      String formattedDate = DateFormat(
-                        'yyyy-MM-dd',
-                      ).format(parsedDate);
+                        String formattedDate = DateFormat(
+                          'yyyy-MM-dd',
+                        ).format(parsedDate);
 
-                      final time =
-                          StringHelperMethods.calculateTotalBookingMinutes(
-                            upcomingReservation.selectedTimes,
-                          );
+                        final time =
+                            StringHelperMethods.calculateTotalBookingMinutes(
+                              upcomingReservation.selectedTimes,
+                            );
 
-                      return BookingCardWidget(
-                        chargingStationName: stationName,
-                        dateOfBooking: formattedDate,
-                        chargingStationTimeSlot: scheduledTime,
-                        chargingStationAddress: stationAddress,
-                        negativeLabel: 'Cancel reservation',
-                        onPressedReject: () {
-                          print(upcomingReservation.id);
-                          context
-                              .read<ReservationsCubit>()
-                              .stopChargingOrCancelReservation(
-                                upcomingReservation,
-                              );
-                        },
-                        positiveLabel: 'Start charging',
-                        positiveButtonColor: context.theme.appColors.primary,
-                        onPressedAccept: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChargingPage(
-                                reservation: upcomingReservation,
-                                duration: Duration(minutes: time),
+                        return ReservationCardWidget(
+                          chargingStationName: stationName,
+                          dateOfReservation: formattedDate,
+                          chargingStationTimeSlot: scheduledTime,
+                          chargingStationAddress: stationAddress,
+                          negativeLabel: 'Cancel reservation',
+                          onPressedReject: () {
+                            print(upcomingReservation.id);
+                            context
+                                .read<ReservationsCubit>()
+                                .stopChargingOrCancelReservation(
+                                  upcomingReservation,
+                                );
+                          },
+                          positiveLabel: 'Start charging',
+                          positiveButtonColor: context.theme.appColors.primary,
+                          onPressedAccept: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider.value(
+                                  value: context.read<ReservationsCubit>(),
+                                  child:
+                                      ChargingTestPage<
+                                        ReservationsCubit,
+                                        ReservationsState
+                                      >(
+                                        reservation: upcomingReservation,
+                                        duration: Duration(minutes: time),
+                                        onInit: (cubit) => cubit
+                                            .fetchOneUpcomingReservedChargingStation(
+                                              upcomingReservation.stationId ??
+                                                  '',
+                                            ),
+                                        onStopCharging: (cubit, reservation) =>
+                                            cubit
+                                                .stopChargingOrCancelReservation(
+                                                  reservation,
+                                                ),
+                                      ),
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                        onPressedContactUser: () {
-                          UiHelperMethods.showContactOptions(context);
-                        },
-                      );
-                    },
+                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (_) => ChargingPage(
+                            //       reservation: upcomingReservation,
+                            //       duration: Duration(minutes: time),
+                            //     ),
+                            //   ),
+                            // );
+                          },
+                          onPressedContactUser: () {
+                            UiHelperMethods.showContactOptions(context);
+                          },
+                        );
+                      },
+                    ),
                   ),
 
-                  ListView.builder(
-                    itemCount: pastReservations?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final pastReservation = pastReservations![index];
+                  MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                      itemCount: pastReservations?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final pastReservation = pastReservations![index];
 
-                      String stationName = "Loading...";
-                      String? startTime = "Loading...";
-                      String? endTime = "Loading...";
+                        String stationName = "Loading...";
+                        String? startTime = "Loading...";
+                        String? endTime = "Loading...";
+                        print('station id: ${pastReservation.stationId}');
 
-                      if (state.reservedChargingStations != null) {
                         for (var station in state.reservedChargingStations!) {
                           if (station.id == pastReservation.stationId) {
                             stationName =
@@ -218,32 +259,28 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                               pastReservation.date ?? '',
                               pastReservation.selectedTimes ?? [],
                             );
-                            // DateTime dateTime = DateTime.parse(rawDate);
-                            //
-                            // String formattedDate = DateFormat('yyyy-MM-dd, HH:mm').format(dateTime);
-                            //
-                            // print(formattedDate);
-
-                            // startTime = station.address ?? "Unknown Address";
                             break;
                           }
                         }
-                      }
 
-                      return PastBookingCardWidget(
-                        customerName: stationName,
-                        startTimeOfBooking: startTime ?? '',
-                        endTimeOfBooking: endTime ?? '',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => PastBookingDetailsPage(),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 20.0),
+                          child: PastReservationCardWidget(
+                            customerName: stationName,
+                            startTimeOfReservation: startTime ?? '',
+                            endTimeOfReservation: endTime ?? '',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PastBookingDetailsPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),

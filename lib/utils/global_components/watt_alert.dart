@@ -6,27 +6,34 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
+import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class WattAlertWidget extends StatelessWidget {
   final String? svg;
   final String title;
   final String? message;
+  final double? heightBetweenMessageAndTextfield;
   final TextEditingController? controller;
   final Function(String?)? onChanged;
   final String? errorMessage;
   final String? buttonLabel;
   final VoidCallback? onConfirm;
+  final String? cancelLabel;
+  final VoidCallback? onCancelConfirm;
 
   const WattAlertWidget({
     super.key,
     this.svg,
     required this.title,
     this.message,
+    this.heightBetweenMessageAndTextfield,
     this.controller,
     this.onChanged,
     this.errorMessage,
     this.buttonLabel,
     this.onConfirm,
+    this.cancelLabel,
+    this.onCancelConfirm,
   });
 
   static Future<void> show({
@@ -34,11 +41,14 @@ class WattAlertWidget extends StatelessWidget {
     String? svg,
     required String title,
     String? message,
+    double? heightBetweenMessageAndTextfield,
     TextEditingController? controller,
     Function(String?)? onChanged,
     String? emailError,
     String? buttonLabel,
     VoidCallback? onConfirm,
+    String? cancelLabel,
+    VoidCallback? onCancelConfirm,
   }) {
     return showDialog(
       context: context,
@@ -60,11 +70,15 @@ class WattAlertWidget extends StatelessWidget {
                 svg: svg,
                 title: title,
                 message: message,
+                heightBetweenMessageAndTextfield:
+                    heightBetweenMessageAndTextfield,
                 controller: controller,
                 onChanged: onChanged,
                 errorMessage: currentError,
                 buttonLabel: buttonLabel,
                 onConfirm: onConfirm,
+                cancelLabel: cancelLabel,
+                onCancelConfirm: onCancelConfirm,
               );
             },
           ),
@@ -104,7 +118,8 @@ class WattAlertWidget extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-          if (message != null) const SizedBox(height: 30),
+          if (message != null)
+            SizedBox(height: heightBetweenMessageAndTextfield ?? 30),
           if (controller != null)
             CustomTextField(
               label: 'Email',
@@ -114,15 +129,33 @@ class WattAlertWidget extends StatelessWidget {
               onChanged: onChanged,
               error: errorMessage,
             ),
-          const SizedBox(height: 20),
+          if (controller != null) const SizedBox(height: 20),
         ],
       ),
       actions: [
-        WattMainButton(
-          label: buttonLabel ?? '',
-          onPressed: () {
-            if (onConfirm != null) onConfirm?.call();
-          },
+        Row(
+          children: [
+            if (cancelLabel != null)
+              Expanded(
+                child: WattWhiteButton(
+                  label: cancelLabel ?? '',
+                  onPressed: () => onCancelConfirm?.call(),
+                ),
+              ),
+
+            if (cancelLabel != null) const SizedBox(width: 12),
+            Expanded(
+              child: WattMainButton(
+                label: buttonLabel ?? '',
+                textColor: context.theme.appColors.error,
+                backgroundColor: context.theme.appColors.background,
+                buttonShadow: cancelLabel != null
+                    ? context.theme.appColors.onSecondary.withAlpha(38)
+                    : context.theme.appColors.primary.withAlpha(76),
+                onPressed: () => onConfirm?.call(),
+              ),
+            ),
+          ],
         ),
       ],
     );

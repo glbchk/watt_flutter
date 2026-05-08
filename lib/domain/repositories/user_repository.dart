@@ -33,10 +33,12 @@ abstract class UserRepository {
   );
   Future<void> deleteUpcomingReservation(ReservationModel booking);
   Future<List<ReservationModel>> fetchUpcomingReservations();
-  Future<List<ChargingStationModel>> fetchUpcomingReservedChargingStations();
+  Future<List<ReservationModel>> fetchPastReservations();
+  Future<List<ChargingStationModel>> fetchAllChargingStations();
   Future<ChargingStationModel> fetchOneUpcomingReservedChargingStation(
     String stationId,
   );
+
   Future<void> stopChargingOrCancelReservation(ReservationModel reservation);
   Future<void> deleteUser();
 }

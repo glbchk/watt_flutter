@@ -419,8 +419,24 @@ class UserRemoteDataSource {
 
     return reservationsJson
         .map(
-          (booking) =>
-              ReservationModel.fromJson(booking as Map<String, dynamic>),
+          (reservation) =>
+              ReservationModel.fromJson(reservation as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  Future<List<ReservationModel>> fetchPastReservations() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> reservationsJson =
+        doc.data()?['past_reservations'] ?? [];
+
+    return reservationsJson
+        .map(
+          (reservation) =>
+              ReservationModel.fromJson(reservation as Map<String, dynamic>),
         )
         .toList();
   }
@@ -479,26 +495,9 @@ class UserRemoteDataSource {
     });
   }
 
-  Future<List<ChargingStationModel>>
-  fetchUpcomingReservedChargingStations() async {
-    User? user = auth.currentUser;
-    if (user == null) return [];
-
-    final userDoc = await firestore.collection("users").doc(user.uid).get();
-    final List<dynamic> reservationsJson =
-        userDoc.data()?['upcoming_reservations'] ?? [];
-
-    final stationIds = reservationsJson
-        .map((b) => b['station_id'] as String?)
-        .whereType<String>()
-        .toSet()
-        .toList();
-
-    if (stationIds.isEmpty) return [];
-
+  Future<List<ChargingStationModel>> fetchAllChargingStations() async {
     final stationsSnapshot = await firestore
         .collection("app_charging_stations")
-        .where(FieldPath.documentId, whereIn: stationIds)
         .get();
 
     return stationsSnapshot.docs

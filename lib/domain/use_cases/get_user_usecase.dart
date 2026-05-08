@@ -157,9 +157,15 @@ class FetchUpcomingReservationsUseCase extends UserUseCase {
   }
 }
 
-class FetchUpcomingReservedChargingStationsUseCase extends UserUseCase {
+class FetchPastReservationsUseCase extends UserUseCase {
   Future execute() {
-    return userRepository.fetchUpcomingReservedChargingStations();
+    return userRepository.fetchPastReservations();
+  }
+}
+
+class FetchAllChargingStationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchAllChargingStations();
   }
 }
 

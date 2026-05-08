@@ -168,9 +168,13 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<List<ChargingStationModel>>
-  fetchUpcomingReservedChargingStations() async {
-    return await userRemoteDataSource.fetchUpcomingReservedChargingStations();
+  Future<List<ChargingStationModel>> fetchAllChargingStations() async {
+    return await userRemoteDataSource.fetchAllChargingStations();
+  }
+
+  @override
+  Future<List<ReservationModel>> fetchPastReservations() async {
+    return await userRemoteDataSource.fetchPastReservations();
   }
 
   @override

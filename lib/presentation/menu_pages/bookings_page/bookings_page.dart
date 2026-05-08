@@ -176,14 +176,14 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                                 padding: EdgeInsets.zero,
                                 itemCount: 1,
                                 itemBuilder: (context, index) {
-                                  return BookingCardWidget();
+                                  return ReservationCardWidget();
                                 },
                               ),
                               ListView.builder(
                                 padding: const EdgeInsets.only(top: 20),
                                 itemCount: 5,
                                 itemBuilder: (context, index) {
-                                  return PastBookingCardWidget(
+                                  return PastReservationCardWidget(
                                     onPressed: () {
                                       Navigator.push(
                                         context,
