@@ -1,4 +1,5 @@
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/timeslot_model.dart';
 
 enum ChargingStationAvailability {
@@ -38,6 +39,8 @@ class ChargingStationModel {
   final List<TimeSlotModel>? availableHours;
   final bool? everyoneCanAccess;
   final ChargingStationAvailability? stationStatus;
+  final List<SlotModel>? slots;
+  final String? ownerId;
 
   ChargingStationModel({
     this.type = ChargingStationType.private,
@@ -56,6 +59,8 @@ class ChargingStationModel {
     this.availableHours,
     this.everyoneCanAccess,
     this.stationStatus,
+    this.slots,
+    this.ownerId,
   });
 
   factory ChargingStationModel.fromJson(Map<String, dynamic> json) {
@@ -85,6 +90,10 @@ class ChargingStationModel {
         (s) => s.name == json['station_status'],
         orElse: () => ChargingStationAvailability.available,
       ),
+      slots: (json['slots'] as List<dynamic>?)
+          ?.map((s) => SlotModel.fromJson(s))
+          .toList(),
+      ownerId: json['owner_id'],
     );
   }
 
@@ -106,6 +115,8 @@ class ChargingStationModel {
       'available_hours': availableHours?.map((m) => m.toJson()).toList(),
       'everyone_can_access': everyoneCanAccess,
       'station_status': stationStatus?.name,
+      'slots': slots?.map((s) => s.toJson()).toList(),
+      'owner_id': ownerId,
     };
   }
 
@@ -126,6 +137,8 @@ class ChargingStationModel {
     List<TimeSlotModel>? availableHours,
     bool? everyoneCanAccess,
     ChargingStationAvailability? stationStatus,
+    List<SlotModel>? slots,
+    String? ownerId,
   }) {
     return ChargingStationModel(
       type: type ?? this.type,
@@ -144,6 +157,8 @@ class ChargingStationModel {
       availableHours: availableHours ?? this.availableHours,
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
       stationStatus: stationStatus ?? this.stationStatus,
+      slots: slots ?? this.slots,
+      ownerId: ownerId ?? this.ownerId,
     );
   }
 }

@@ -27,6 +27,12 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController forgotPasswordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    print(context.read<AuthBloc>().state);
+  }
+
+  @override
   void dispose() {
     controllerEmail.dispose();
     controllerPassword.dispose();
@@ -137,6 +143,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 ButtonsSectionWidget(
                   loginCallback: () {
+                    print(context.read<AuthBloc>().state);
                     context.read<AuthBloc>().add(
                       LoginRequestedEvent(
                         email: controllerEmail.text,

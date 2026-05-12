@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:watt/data/models/slot_model.dart';
-import 'package:watt/data/models/timeslot_model.dart';
-import 'package:watt/utils/global_methods/string_helper_methods.dart';
 
 class TimeSlotSelectorWidget extends StatefulWidget {
-  final List<TimeSlotModel>? slots;
-  final Set<String> selectedSlots;
+  final List<SlotModel> slots;
+  final List<SlotModel> selectedSlots;
   final Function(String timeSlot) onToggle;
 
   const TimeSlotSelectorWidget({
@@ -22,18 +20,6 @@ class TimeSlotSelectorWidget extends StatefulWidget {
 class _TimeSlotSelectorWidgetState extends State<TimeSlotSelectorWidget> {
   @override
   Widget build(BuildContext context) {
-    List<SlotModel>? convertedSlots = [];
-    for (final slot in widget.slots ?? []) {
-      final generated = StringHelperMethods.generate30MinuteSlots(
-        slot.startTime ?? '',
-        slot.endTime ?? '',
-      );
-
-      convertedSlots.addAll(generated);
-    }
-
-    final List<SlotModel> _slots = convertedSlots;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -55,19 +41,21 @@ class _TimeSlotSelectorWidgetState extends State<TimeSlotSelectorWidget> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(11),
             child: Column(
-              children: List.generate(_slots.length, (index) {
-                final slot = _slots[index];
+              children: List.generate(widget.slots.length, (index) {
+                final slot = widget.slots[index];
                 final isSelected = widget.selectedSlots.contains(
-                  slot.timeSlot,
+                  slot,
                 );
-                final isLast = index == _slots.length - 1;
+                final isLast = index == widget.slots.length - 1;
 
                 return Column(
                   children: [
                     Material(
                       color: slot.isBusy ? Colors.grey.shade100 : Colors.white,
                       child: InkWell(
-                        onTap: () => widget.onToggle(slot.timeSlot ?? ''),
+                        onTap: slot.isBusy
+                            ? null
+                            : () => widget.onToggle(slot.id),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16.0,
@@ -77,7 +65,7 @@ class _TimeSlotSelectorWidgetState extends State<TimeSlotSelectorWidget> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                slot.timeSlot ?? '',
+                                "${slot.startTime} - ${slot.endTime}",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

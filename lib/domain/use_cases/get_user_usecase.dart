@@ -2,6 +2,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/data/repositories/user_repository_impl.dart';
 import 'package:watt/domain/entities/user_entity.dart';
@@ -121,23 +122,88 @@ class GetUserDataUseCase extends UserUseCase {
   }
 }
 
-class AddBookingUseCase extends UserUseCase {
-  Future execute(BookingModel booking) {
-    return userRepository.addBooking(booking);
+class FetchOneChargingStationUseCase extends UserUseCase {
+  Future<ChargingStationModel> execute(String stationId) {
+    return userRepository.fetchOneChargingStation(stationId);
   }
 }
 
-class UpdateBookingUseCase extends UserUseCase {
-  Future execute(String bookingId, BookingStatus status) {
-    return userRepository.updateBookingStage(bookingId, status);
+class FetchOneUpcomingReservationUseCase extends UserUseCase {
+  Future execute(String stationId) {
+    return userRepository.fetchOneUpcomingReservation(stationId);
   }
 }
 
-class DeleteBookingUseCase extends UserUseCase {
-  Future execute(String bookingId) {
-    return userRepository.deleteBooking(bookingId);
+class ConfirmUpcomingReservationWithPaymentUseCase extends UserUseCase {
+  Future execute(
+    ReservationModel reservationToSave,
+    BookingModel bookingToSave,
+    String cardNumber,
+  ) {
+    return userRepository.confirmUpcomingReservationWithPayment(
+      reservationToSave,
+      bookingToSave,
+      cardNumber,
+    );
   }
 }
+
+class DeleteUpcomingReservationUseCase extends UserUseCase {
+  Future execute(ReservationModel reservation) {
+    return userRepository.deleteUpcomingReservation(reservation);
+  }
+}
+
+class FetchUpcomingReservationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchUpcomingReservations();
+  }
+}
+
+class FetchPastReservationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchPastReservations();
+  }
+}
+
+class FetchAllChargingStationsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchAllChargingStations();
+  }
+}
+
+class FetchOneUpcomingReservedChargingStationUseCase extends UserUseCase {
+  Future<ChargingStationModel> execute(String stationId) {
+    return userRepository.fetchOneUpcomingReservedChargingStation(stationId);
+  }
+}
+
+class StopChargingOrCancelReservationUseCase extends UserUseCase {
+  Future execute(ReservationModel reservation, BookingModel booking) {
+    return userRepository.stopChargingOrCancelReservation(
+      reservation,
+      booking,
+    );
+  }
+}
+
+class FetchUpcomingBookingsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchUpcomingBookings();
+  }
+}
+
+class FetchPastBookingsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchPastBookings();
+  }
+}
+
+// class CloseBookingUseCase extends UserUseCase {
+//   Future execute(BookingModel booking) {
+//     return userRepository.closeBooking(booking);
+//   }
+// }
 
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {

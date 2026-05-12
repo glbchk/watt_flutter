@@ -37,15 +37,15 @@ class FetchMockedPlugOptionsUseCase extends MockedDataUseCase {
   }
 }
 
-class FetchAddedByUsersMockedChargingStationsUseCase extends MockedDataUseCase {
-  Future<List<ChargingStationModel>> execute() {
-    return mockedDataRepository.getAddedByUsersMockedChargingStations();
+class SeedMockedChargingStationsUseCase extends MockedDataUseCase {
+  Future<void> execute(List<ChargingStationModel> mockedStations) {
+    return mockedDataRepository.seedChargingStations(mockedStations);
   }
 }
 
-class FetchPublicMockedChargingStationsUseCase extends MockedDataUseCase {
-  Future<List<ChargingStationModel>> execute() {
-    return mockedDataRepository.getPublicMockedChargingStations();
+class GetStationIdsForMapUseCase extends MockedDataUseCase {
+  Future<Map<String, Set<String>>> execute() {
+    return mockedDataRepository.getStationIdsForMap();
   }
 }
 

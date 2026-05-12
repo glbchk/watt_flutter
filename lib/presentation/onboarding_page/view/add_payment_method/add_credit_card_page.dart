@@ -53,7 +53,9 @@ class _AddCreditCardPageState extends State<AddCreditCardPage> {
             String cardType = StringHelperMethods.getCardType(
               cardNumberController.text,
             );
-            String assetPath = StringHelperMethods.getAssetPath(cardType);
+            String assetPath = StringHelperMethods.getNetworkLogoAssetPath(
+              cardType,
+            );
 
             return DefaultAppBar(
               resizeToAvoidBottomInset: false,

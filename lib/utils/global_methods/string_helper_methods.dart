@@ -82,7 +82,7 @@ class StringHelperMethods {
     return 'unknown';
   }
 
-  static String getAssetPath(String cardType) {
+  static String getNetworkLogoAssetPath(String cardType) {
     switch (cardType) {
       case 'visa':
         return KPaymentProvidersIcons.visa;
@@ -97,18 +97,53 @@ class StringHelperMethods {
     }
   }
 
+  static String getCreditCardBGAssetPath(String cardType) {
+    switch (cardType) {
+      case 'visa':
+        return KCreditCardBG.visa;
+      case 'mastercard':
+        return KCreditCardBG.mastercard;
+      case 'amex':
+        return KCreditCardBG.amex;
+      case 'discover':
+        return KCreditCardBG.discover;
+      default:
+        return KCreditCardBG.generic;
+    }
+  }
+
+  static String getBGAssetPath(String cardType) {
+    switch (cardType) {
+      case 'visa':
+        return KCreditCardBG.visa;
+      case 'mastercard':
+        return KPaymentProvidersIcons.mastercard;
+      case 'amex':
+        return KPaymentProvidersIcons.amex;
+      case 'discover':
+        return KPaymentProvidersIcons.discover;
+      default:
+        return KPaymentProvidersIcons.generic;
+    }
+  }
+
   static List<SlotModel> generate30MinuteSlots(
-    String startTime,
-    String endTime,
+    TimeSlotModel availability,
+    List<SlotModel> busySlots,
   ) {
     List<SlotModel> slots = [];
+
+    final busyTimeRanges = busySlots
+        .where((s) => s.isBusy)
+        .map((s) => '${s.startTime}-${s.endTime}')
+        .toSet();
 
     final DateFormat formatter = DateFormat('HH:mm');
     final DateTime now = DateTime.now();
 
     try {
-      DateTime start = formatter.parse(startTime);
-      DateTime end = formatter.parse(endTime);
+      DateTime start = formatter.parse(availability.startTime ?? '');
+      DateTime end = formatter.parse(availability.endTime ?? '');
 
       DateTime currentSlot = DateTime(
         now.year,
@@ -135,11 +170,16 @@ class StringHelperMethods {
 
         if (nextSlot.isAfter(endDateTime)) break;
 
+        final startStr = formatter.format(currentSlot);
+        final endStr = formatter.format(nextSlot);
+        final timeKey = '$startStr-$endStr';
+
         slots.add(
           SlotModel(
-            timeSlot:
-                '${formatter.format(currentSlot)} - ${formatter.format(nextSlot)}',
-            isBusy: false,
+            id: Uuid().v4(),
+            startTime: startStr,
+            endTime: endStr,
+            isBusy: busyTimeRanges.contains(timeKey),
           ),
         );
 
@@ -152,25 +192,152 @@ class StringHelperMethods {
     return slots;
   }
 
-  static List<TimeSlotModel> convertSelectedSlotsToTimeSlots(
-    Set<String> selectedSlots,
+  static String? convertToOneSlot(List<SlotModel> slots) {
+    if (slots.isEmpty) {
+      return 'No time slots exist';
+    } else {
+      List<String?> startTimes = slots.map((s) => s.startTime).toList();
+      List<String?> endTimes = slots.map((s) => s.endTime).toList();
+
+      startTimes.sort();
+      endTimes.sort();
+
+      final earliestStart = startTimes.first;
+      final latestEnd = endTimes.last;
+
+      return '$earliestStart - $latestEnd';
+    }
+  }
+
+  static String? convertToStartTime(String date, List<SlotModel> slots) {
+    if (slots.isEmpty) {
+      return 'No time slots exist';
+    } else {
+      List<String?> startTimes = slots.map((s) => s.startTime).toList();
+
+      startTimes.sort();
+      final formattedDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(DateTime.parse(date));
+
+      final earliestStart = '$formattedDate, ${startTimes.first}';
+      print('Earliest start time: $earliestStart');
+
+      return earliestStart;
+    }
+  }
+
+  static String? convertToEndTime(String date, List<SlotModel> slots) {
+    if (slots.isEmpty) {
+      return 'No time slots exist';
+    } else {
+      List<String?> endTimes = slots.map((s) => s.endTime).toList();
+
+      endTimes.sort();
+      final formattedDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(DateTime.parse(date));
+
+      final latestEnd = '$formattedDate, ${endTimes.last}';
+      print('Latest end time: $latestEnd');
+
+      return latestEnd;
+    }
+  }
+
+  static double calculateEnergyAmount(
+    DateTime date,
+    List<SlotModel> slots,
+    double powerKw,
   ) {
-    return selectedSlots.map((slot) {
-      final parts = slot.split('-');
+    if (slots.isEmpty) return 0;
 
-      if (parts.length != 2) {
-        return TimeSlotModel(
-          id: Uuid().v4(),
-          startTime: null,
-          endTime: null,
-        );
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+    double totalHours = 0;
+
+    for (final slot in slots) {
+      if (slot.startTime == null || slot.endTime == null) continue;
+
+      final start = DateFormat(
+        'yyyy-MM-dd HH:mm',
+      ).parse('$formattedDate ${slot.startTime}');
+      final end = DateFormat(
+        'yyyy-MM-dd HH:mm',
+      ).parse('$formattedDate ${slot.endTime}');
+
+      final minutes = end.difference(start).inMinutes;
+
+      if (minutes <= 0) continue;
+
+      totalHours += minutes / 60.0;
+    }
+
+    print("Total hours: $totalHours");
+    print("Power kW: $powerKw");
+
+    return totalHours * powerKw;
+  }
+
+  static double calculatePrice(
+    double powerKw,
+    double pricePerKwh,
+  ) {
+    if (powerKw == 0.0) return 0;
+
+    return powerKw * pricePerKwh;
+  }
+
+  static List<SlotModel> convertSelectedSlotsToTimeSlots(
+    List<SlotModel> selectedSlots,
+    List<SlotModel> allSlots,
+  ) {
+    return allSlots.where((slot) => selectedSlots.contains(slot)).toList();
+  }
+
+  static String? convertTimeSlotsToTimeRange(List<TimeSlotModel>? timeSlots) {
+    if (timeSlots == null || timeSlots.isEmpty) {
+      return 'No schedule set';
+    }
+
+    final firstSlot = timeSlots.first;
+
+    if (firstSlot.startTime == null || firstSlot.endTime == null) {
+      return 'Times not configured';
+    }
+
+    final start = firstSlot.startTime.toString();
+    final end = firstSlot.endTime.toString();
+
+    return '$start - $end';
+  }
+
+  static int calculateTotalBookingMinutes(List<SlotModel>? selectedSlots) {
+    if (selectedSlots == null || selectedSlots.isEmpty) return 0;
+
+    int totalMinutes = 0;
+
+    for (final slot in selectedSlots) {
+      if (slot.startTime != null && slot.endTime != null) {
+        final startParts = slot.startTime?.split(':');
+        final endParts = slot.endTime?.split(':');
+
+        if (startParts?.length == 2 && endParts?.length == 2) {
+          final startHour = int.tryParse(startParts![0]) ?? 0;
+          final startMin = int.tryParse(startParts[1]) ?? 0;
+          final endHour = int.tryParse(endParts![0]) ?? 0;
+          final endMin = int.tryParse(endParts[1]) ?? 0;
+
+          final startTotal = (startHour * 60) + startMin;
+          final endTotal = (endHour * 60) + endMin;
+
+          if (endTotal > startTotal) {
+            totalMinutes += (endTotal - startTotal);
+          }
+        }
       }
+    }
 
-      return TimeSlotModel(
-        id: Uuid().v4(),
-        startTime: parts[0].trim(),
-        endTime: parts[1].trim(),
-      );
-    }).toList();
+    return totalMinutes;
   }
 }

@@ -4,6 +4,8 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 import 'package:watt/data/models/user_model.dart';
 
 class UserRemoteDataSource {
@@ -106,7 +108,7 @@ class UserRemoteDataSource {
     await docRef.update({'cars': carsData});
   }
 
-  Future<void> addChargingStations(
+  Future<void> addStationsToUserData(
     List<ChargingStationModel> chargingStations,
   ) async {
     User? user = auth.currentUser;
@@ -122,6 +124,29 @@ class UserRemoteDataSource {
       }, SetOptions(merge: true));
 
       print("Full collection synced to Firebase!");
+
+      final collection = firestore.collection('app_charging_stations');
+
+      final snapshot = await collection.get();
+      final existingIds = snapshot.docs.map((doc) => doc.id).toSet();
+
+      final batch = firestore.batch();
+      int addedCount = 0;
+
+      for (final station in chargingStations) {
+        if (!existingIds.contains(station.id)) {
+          batch.set(collection.doc(station.id), station.toJson());
+          addedCount++;
+        }
+      }
+
+      if (addedCount == 0) {
+        print('All user stations already in global collection.');
+        return;
+      }
+
+      await batch.commit();
+      print('$addedCount user stations synced to global collection.');
     } catch (e) {
       print("Error syncing collection: $e");
     }
@@ -129,30 +154,66 @@ class UserRemoteDataSource {
 
   Future<void> deleteChargingStation(String stationId) async {
     User? user = auth.currentUser;
-    final docRef = firestore.collection("users").doc(user?.uid);
+    final userDocRef = firestore.collection("users").doc(user?.uid);
+    final globalDocRef = firestore
+        .collection("app_charging_stations")
+        .doc(stationId);
 
-    final currentUserData = await docRef.get();
+    final currentUserData = await userDocRef.get();
     final List<dynamic> chargingStationsData =
         currentUserData.data()?['charging_stations'] ?? [];
 
     chargingStationsData.removeWhere((station) => station['id'] == stationId);
 
-    await docRef.update({'charging_stations': chargingStationsData});
+    final batch = firestore.batch();
+
+    batch.update(userDocRef, {
+      'charging_stations': chargingStationsData,
+    });
+
+    batch.delete(globalDocRef);
+
+    await batch.commit();
   }
 
-  Future<List<ChargingStationModel>> fetchChargingStations() async {
+  Future<List<ChargingStationModel>> fetchUserChargingStations() async {
     User? user = auth.currentUser;
 
     final doc = await firestore.collection("users").doc(user?.uid).get();
     final data = doc.data();
     final List<dynamic> chargingStationsJson = data?['charging_stations'];
 
+    if (chargingStationsJson.isEmpty) return [];
+
+    final globalSnap = await firestore
+        .collection("app_charging_stations")
+        .get();
+    final existingGlobalIds = globalSnap.docs.map((d) => d.id).toSet();
+
+    final batch = firestore.batch();
+    int addedCount = 0;
+
+    for (final stationJson in chargingStationsJson) {
+      final stationId = stationJson['id'] as String?;
+      if (stationId != null && !existingGlobalIds.contains(stationId)) {
+        batch.set(
+          firestore.collection("app_charging_stations").doc(stationId),
+          stationJson as Map<String, dynamic>,
+          SetOptions(merge: true),
+        );
+        addedCount++;
+      }
+    }
+
+    if (addedCount > 0) {
+      await batch.commit();
+      print('$addedCount user stations synced to global collection.');
+    } else {
+      print('All user stations already in global collection.');
+    }
+
     return chargingStationsJson
-        .map(
-          (chargingStation) => ChargingStationModel.fromJson(
-            chargingStation as Map<String, dynamic>,
-          ),
-        )
+        .map((s) => ChargingStationModel.fromJson(s as Map<String, dynamic>))
         .toList();
   }
 
@@ -275,72 +336,284 @@ class UserRemoteDataSource {
     return null;
   }
 
-  Future<void> addBooking(BookingModel booking) async {
+  Future<ChargingStationModel> fetchOneChargingStation(String stationId) async {
     User? user = auth.currentUser;
 
-    await firestore.collection("users").doc(user?.uid).update({
-      'bookings': FieldValue.arrayUnion([booking.toJson()]),
+    final doc = await firestore.collection("users").doc(user?.uid).get();
+    final data = doc.data();
+    final List<dynamic> chargingStationsJson = data?['charging_stations'];
+
+    final station = chargingStationsJson
+        .map(
+          (json) => ChargingStationModel.fromJson(json as Map<String, dynamic>),
+        )
+        .firstWhere((item) => item.id == stationId);
+
+    return station;
+  }
+
+  Future<ReservationModel?> fetchOneUpcomingReservation(
+    String stationId,
+  ) async {
+    User? user = auth.currentUser;
+    if (user == null) return null;
+
+    final querySnapshot = await firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("upcoming_reservations")
+        .where("stationId", isEqualTo: stationId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      return null;
+    }
+
+    final data = querySnapshot.docs.first.data();
+
+    return ReservationModel.fromJson(data);
+  }
+
+  Future<void> confirmUpcomingReservationWithPayment(
+    ReservationModel reservation,
+    BookingModel booking,
+    String cardNumber,
+  ) async {
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final busySlots = (reservation.selectedTimes ?? [])
+        .map((s) => s.copyWith(isBusy: true))
+        .toList();
+
+    final confirmedReservation = reservation.copyWith(
+      selectedTimes: busySlots,
+      cardNumber: cardNumber,
+      status: ReservationStatus.confirmed,
+    );
+
+    final confirmedBooking = booking.copyWith(
+      selectedTimes: busySlots,
+      cardNumber: cardNumber,
+    );
+
+    await firestore.collection("users").doc(user.uid).update({
+      'upcoming_reservations': FieldValue.arrayUnion([
+        confirmedReservation.toJson(),
+      ]),
+    });
+
+    await firestore.collection("users").doc(user.uid).update({
+      'upcoming_bookings': FieldValue.arrayUnion([
+        confirmedBooking.toJson(),
+      ]),
+    });
+
+    final stationRef = firestore
+        .collection("app_charging_stations")
+        .doc(reservation.stationId);
+
+    final busySlotsJson = busySlots.map((s) => s.toJson()).toList();
+
+    await stationRef.set(
+      {'slots': FieldValue.arrayUnion(busySlotsJson)},
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<List<ReservationModel>> fetchUpcomingReservations() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> reservationsJson =
+        doc.data()?['upcoming_reservations'] ?? [];
+
+    final upcomingReservations = reservationsJson
+        .map(
+          (reservation) =>
+              ReservationModel.fromJson(reservation as Map<String, dynamic>),
+        )
+        .toList();
+
+    return upcomingReservations;
+  }
+
+  Future<List<ReservationModel>> fetchPastReservations() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> reservationsJson =
+        doc.data()?['past_reservations'] ?? [];
+
+    return reservationsJson
+        .map(
+          (reservation) =>
+              ReservationModel.fromJson(reservation as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  Future<ChargingStationModel> fetchOneUpcomingReservedChargingStation(
+    String stationId,
+  ) async {
+    final docRef = await firestore
+        .collection("app_charging_stations")
+        .doc(stationId)
+        .get();
+    if (!docRef.exists) {
+      throw Exception("Charging station not found in global directory");
+    }
+
+    return ChargingStationModel.fromJson(docRef.data() as Map<String, dynamic>);
+  }
+
+  Future<void> deleteUpcomingReservation(ReservationModel reservation) async {
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    final docRef = firestore.collection("users").doc(user.uid);
+
+    await docRef.update({
+      'upcoming_reservations': FieldValue.arrayRemove([reservation.toJson()]),
+    });
+
+    final stationRef = firestore
+        .collection("app_charging_stations")
+        .doc(reservation.stationId);
+
+    final stationDoc = await stationRef.get();
+    final data = stationDoc.data();
+
+    final List<dynamic> slotsJson = data?['slots'] ?? [];
+
+    final updatedSlots = slotsJson.map((json) {
+      final s = SlotModel.fromJson(json);
+
+      final isPartOfReservation =
+          reservation.selectedTimes?.any(
+            (r) => r.startTime == s.startTime && r.endTime == s.endTime,
+          ) ??
+          false;
+
+      if (isPartOfReservation) {
+        return s.copyWith(isBusy: false).toJson();
+      }
+
+      return json;
+    }).toList();
+
+    await stationRef.update({
+      'slots': updatedSlots,
     });
   }
 
-  Future<void> updateBookingStage(
-    String bookingId,
-    BookingStatus status,
-  ) async {
-    User? user = auth.currentUser;
-    final docRef = firestore.collection("users").doc(user?.uid);
+  Future<List<ChargingStationModel>> fetchAllChargingStations() async {
+    final stationsSnapshot = await firestore
+        .collection("app_charging_stations")
+        .get();
 
-    final currentUserData = await docRef.get();
-    final List<dynamic> bookingsData =
-        currentUserData.data()?['bookings'] ?? [];
-    List<BookingModel> bookingsList = bookingsData
-        .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
+    return stationsSnapshot.docs
+        .map((doc) => ChargingStationModel.fromJson(doc.data()))
         .toList();
-
-    int index = bookingsList.indexWhere(
-      (booking) => booking.id == bookingId,
-    );
-
-    if (index != -1) {
-      final neededBooking = bookingsList[index];
-
-      bookingsList[index] = neededBooking.copyWith(
-        status: status,
-      );
-
-      await docRef.update({
-        'bookings': bookingsList.map((booking) => booking.toJson()).toList(),
-      });
-    }
   }
 
-  Future<void> deleteBooking(String bookingId) async {
-    // print('Deleting booking $bookingId');
-    try {
-      User? user = auth.currentUser;
-      final docRef = firestore.collection("users").doc(user?.uid);
+  Future<void> stopChargingOrCancelReservation(
+    ReservationModel reservation,
+    BookingModel booking,
+  ) async {
+    final user = auth.currentUser;
+    if (user == null) return;
 
-      // final currentUserData = await docRef.get();
-      docRef.get().then(
-        (DocumentSnapshot doc) {
-          print("DEBUG: Firestore Data: $doc");
-          final data = doc.data() as Map<String, dynamic>;
-          print("DEBUG: Firestore Data: $data");
-        },
-        onError: (e) {
-          print("Error getting document: $e");
-        },
-      );
-      final List<dynamic> bookingsData = [];
-      // currentUserData.data()?['bookings'] ?? [];
+    final docRef = firestore.collection("users").doc(user.uid);
 
-      bookingsData.removeWhere((booking) => booking['id'] == bookingId);
+    await docRef.update({
+      'upcoming_reservations': FieldValue.arrayRemove([reservation.toJson()]),
+    });
 
-      await docRef.update({'bookings': bookingsData});
-    } catch (e) {
-      print('Error deleting booking: $e');
-    }
+    await firestore.collection("users").doc(user.uid).update({
+      'past_reservations': FieldValue.arrayUnion([reservation.toJson()]),
+    });
+
+    await docRef.update({
+      'upcoming_bookings': FieldValue.arrayRemove([booking.toJson()]),
+    });
+
+    await firestore.collection("users").doc(user.uid).update({
+      'past_bookings': FieldValue.arrayUnion([booking.toJson()]),
+    });
   }
+
+  Future<List<BookingModel>> fetchUpcomingBookings() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = doc.data()?['upcoming_bookings'] ?? [];
+
+    return bookingsJson
+        .map(
+          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  Future<List<BookingModel>> fetchPastBookings() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = doc.data()?['past_bookings'] ?? [];
+
+    return bookingsJson
+        .map(
+          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  // Future<void> closeBooking(BookingModel booking) async {
+  //   final user = auth.currentUser;
+  //   if (user == null) return;
+  //
+  //   final docRef = firestore.collection("users").doc(user.uid);
+  //
+  //   await docRef.update({
+  //     'upcoming_bookings': FieldValue.arrayRemove([booking.toJson()]),
+  //   });
+  //
+  //   await firestore.collection("users").doc(user.uid).update({
+  //     'past_bookings': FieldValue.arrayUnion([booking.toJson()]),
+  //   });
+  // }
+
+  // Future<void> placeUpcomingBooking(
+  //   BookingModel booking,
+  //   String stationId,
+  // ) async {
+  //   final docSnapshot = await firestore
+  //       .collection("app_charging_stations")
+  //       .doc(stationId)
+  //       .get();
+  //
+  //   final user = auth.currentUser;
+  //   if (user == null) return;
+  //
+  //   if (docSnapshot.exists && docSnapshot.data() != null) {
+  //     final station = ChargingStationModel.fromJson(docSnapshot.data()!);
+  //
+  //     print("Found station: ${station.chargingStationName}");
+  //     if (station.id == user.uid) {
+  //       await firestore.collection("users").doc(user.uid).update({
+  //         'bookings': FieldValue.arrayUnion([booking.toJson()]),
+  //       });
+  //     }
+  //   } else {
+  //     print("Station not found!");
+  //   }
+  // }
 
   Future<void> deleteUser() async {
     User? user = auth.currentUser;

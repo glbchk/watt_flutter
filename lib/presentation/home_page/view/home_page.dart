@@ -9,18 +9,19 @@ import 'package:watt/presentation/auth_page/view/auth_page.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
 import 'package:watt/presentation/home_page/view/components/app_drawer_widget.dart';
-import 'package:watt/presentation/home_page/view/sub_pages/stages/reservation_booking_page.dart';
-import 'package:watt/presentation/settings_pages/bookings_page/bookings_page.dart';
-import 'package:watt/presentation/settings_pages/cars_page/my_cars_page.dart';
-import 'package:watt/presentation/settings_pages/help_page/help_page.dart';
-import 'package:watt/presentation/settings_pages/my_charging_reservations_page/my_reservations_page.dart';
-import 'package:watt/presentation/settings_pages/my_charging_stations_page/my_charging_stations_page.dart';
-import 'package:watt/presentation/settings_pages/my_payment_methods_page/my_payment_methods_page.dart';
-import 'package:watt/presentation/settings_pages/profile_page/profile_page.dart';
+import 'package:watt/presentation/home_page/view/sub_pages/stages/reserve_station_page.dart';
+import 'package:watt/presentation/menu_pages/bookings_page/bookings_page.dart';
+import 'package:watt/presentation/menu_pages/cars_page/my_cars_page.dart';
+import 'package:watt/presentation/menu_pages/help_page/help_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/my_reservations_page.dart';
+import 'package:watt/presentation/menu_pages/my_charging_stations_page/my_charging_stations_page.dart';
+import 'package:watt/presentation/menu_pages/my_payment_methods_page/my_payment_methods_page.dart';
+import 'package:watt/presentation/menu_pages/profile_page/profile_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/map_popup_widget.dart';
 import 'package:watt/utils/global_components/search_bar_widget.dart';
+import 'package:watt/utils/global_methods/google_maps_helper_methods.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,19 +42,23 @@ class _HomePageState extends State<HomePage> {
 
   GoogleMapController? _mapController;
 
-  Set<Marker> _markers = {};
+  // Set<Marker> _markers = {};
+  //
+  // Future<void> generateMarkers(
+  //   List<ChargingStationModel> stations,
+  //   HomeState state,
+  // ) async {
+  //   final markers = buildMarkers(stations, state);
+  //
+  //   setState(() {
+  //     _markers = markers;
+  //   });
+  // }
 
-  Future<void> generateMarkers(
-    List<ChargingStationModel> stations,
-  ) async {
-    final markers = buildMarkers(stations);
-
-    setState(() {
-      _markers = markers;
-    });
-  }
-
-  Set<Marker> buildMarkers(List<ChargingStationModel> locations) {
+  Set<Marker> buildMarkers(
+    List<ChargingStationModel> locations,
+    HomeState state,
+  ) {
     final Set<Marker> markers = {};
 
     for (final location in locations) {
@@ -65,13 +70,13 @@ class _HomePageState extends State<HomePage> {
             location.addressLongitude ?? 0.0,
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            location.type == ChargingStationType.private
-                ? BitmapDescriptor.hueAzure
-                : BitmapDescriptor.hueGreen,
+            GoogleMapsHelperMethods.getMarkerHue(
+              stationId: location.id,
+              userIds: state.userStationIds,
+              type: location.type ?? ChargingStationType.private,
+            ),
           ),
           onTap: () async {
-            final state = context.read<HomeCubit>().state;
-
             await context.read<HomeCubit>().getDistanceToChargingStation(
               location.addressLatitude ?? 0.0,
               location.addressLongitude ?? 0.0,
@@ -95,8 +100,31 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            if (location.type == ChargingStationType.private) {
-              print(location.stationStatus?.label);
+            final bool isUserOwner = state.userStationIds.contains(location.id);
+            print(location.id);
+            print(location.stationStatus?.label);
+            print(isUserOwner);
+            if (isUserOwner) {
+              MapPopupWidget.show(
+                context: context,
+                station: location,
+                singleButtonLabel: 'Your stations',
+                onPressedMyStation: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MyChargingStationsPage(),
+                    ),
+                  );
+                },
+                distanceToChargingStation: distanceKm != null
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
+                    : 'Unknown',
+                stationStatus: location.stationStatus?.label,
+              );
+            } else if (location.type == ChargingStationType.private) {
               MapPopupWidget.show(
                 context: context,
                 station: location,
@@ -105,8 +133,8 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
-                        station: location,
+                      builder: (_) => ReserveStationPage(
+                        stationId: location.id,
                       ),
                     ),
                   );
@@ -116,14 +144,16 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
-                        station: location,
+                      builder: (_) => ReserveStationPage(
+                        stationId: location.id,
                       ),
                     ),
                   );
                 },
                 distanceToChargingStation: distanceKm != null
-                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
                     : 'Unknown',
                 stationStatus: location.stationStatus?.label,
               );
@@ -133,18 +163,19 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 station: location,
                 onPressedPublicCharger: () {
-                  context.read<HomeCubit>().publicChargerStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ReservationBookingPage(
-                        station: location,
+                      builder: (_) => ReserveStationPage(
+                        stationId: location.id,
                       ),
                     ),
                   );
                 },
                 distanceToChargingStation: distanceKm != null
-                    ? '${distanceKm.toStringAsFixed(2)} km'
+                    ? distanceKm > 100
+                          ? 'Too far'
+                          : '${distanceKm.toStringAsFixed(2)} km'
                     : 'Unknown',
                 stationStatus: location.stationStatus?.label,
               );
@@ -158,11 +189,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _initHome() async {
-    await Future.wait([
-      context.read<HomeCubit>().getLocationPermission(),
-      context.read<HomeCubit>().fetchMockedChargingStations(),
-      context.read<HomeCubit>().fetchUserData(),
-    ]);
+    await context.read<HomeCubit>().fetchUserData();
+    if (!mounted) return;
+    await context.read<HomeCubit>().getLocationPermission();
+    if (!mounted) return;
+    await context.read<HomeCubit>().seedMockedChargingStations();
   }
 
   @override
@@ -191,9 +222,9 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        if (state.chargingStationsOnMap != null) {
-          generateMarkers(state.chargingStationsOnMap ?? []);
-        }
+        // if (state.chargingStationsOnMap != null) {
+        //   buildMarkers(state.chargingStationsOnMap ?? [], state);
+        // }
 
         if (state.address != null) {
           final latLng = LatLng(
@@ -222,17 +253,6 @@ class _HomePageState extends State<HomePage> {
                 });
           }
         }
-
-        // if (state.myLocation != null && state.stationDistance != null) {
-        //   final latLng = LatLng(
-        //     state.myLocation!.latitude,
-        //     state.myLocation!.longitude,
-        //   );
-        //
-        //   _mapController?.animateCamera(
-        //     CameraUpdate.newLatLngZoom(latLng, 15),
-        //   );
-        // }
       },
       builder: (context, state) {
         final suggestions = state.locationSuggestions ?? [];
@@ -288,25 +308,18 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => MyCarsPage(
-                    // car: CarModel(
-                    //   id: '141',
-                    //   plateNumber: 'AAA111',
-                    //   brandName: KMockedData.cars[2].name,
-                    //   carModel: 'Model S',
-                    //   brandLogo: KMockedData.cars[2].logo,
-                    // ),
-                  ),
+                  builder: (_) => MyCarsPage(),
                 ),
               );
             },
             onPressedYourCharger: () {
+              Navigator.of(context).pop();
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => MyChargingStationsPage(),
-                ),
-              );
+                MaterialPageRoute(builder: (_) => MyChargingStationsPage()),
+              ).then((_) async {
+                await context.read<HomeCubit>().fetchChargingStationsForMap();
+              });
             },
             onPressedPaymentMethod: () {
               Navigator.push(
@@ -366,43 +379,9 @@ class _HomePageState extends State<HomePage> {
                     // );
                   }
                 },
-                markers: _markers,
-                // markers: state.addressPosition == null ? {} : _markers,
-
-                // Marker(
-                //   markerId: const MarkerId('selected_point'),
-                //   position: LatLng(
-                //     state.addressPosition?.latitude ?? 0.0,
-                //     state.addressPosition?.longitude ?? 0.0,
-                //   ),
-                //   infoWindow: InfoWindow(
-                //     title: state.address,
-                //   ),
-                //   icon: BitmapDescriptor.defaultMarkerWithHue(
-                //     BitmapDescriptor.hueAzure,
-                //   ),
-                // ),
+                markers: buildMarkers(state.chargingStationsOnMap ?? [], state),
               ),
 
-              // if (state.address != null)
-              // Positioned(
-              //   bottom: 0,
-              //   left: 0,
-              //   right: 0,
-              //   child: SafeArea(
-              //     child: Padding(
-              //       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              //       child: Row(
-              //         mainAxisAlignment: MainAxisAlignment.end,
-              //         children: [
-              //         ...stations.map((station) {
-              //           return MapPopupWidget.show(context: context, station: station),
-              //           );}).toList(),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
-              // ),
               Positioned(
                 bottom: 0,
                 left: 0,

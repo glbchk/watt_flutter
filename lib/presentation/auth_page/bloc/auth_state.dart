@@ -39,22 +39,28 @@ class AuthUnauthenticatedState extends AuthState {
   AuthUnauthenticatedState copyWith({
     bool? isRegisterMode,
     bool? isLoading,
-    String? errorMessage,
-    String? emailError,
-    String? passwordError,
-    String? retypePasswordError,
-    String? forgotPasswordError,
+    String? Function()? errorMessage,
+    String? Function()? emailError,
+    String? Function()? passwordError,
+    String? Function()? retypePasswordError,
+    String? Function()? forgotPasswordError,
     bool? isPasswordVisible,
     bool? isRetypePasswordVisible,
   }) {
     return AuthUnauthenticatedState(
       isRegisterMode: isRegisterMode ?? this.isRegisterMode,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
-      emailError: emailError ?? this.emailError,
-      passwordError: passwordError ?? this.passwordError,
-      retypePasswordError: retypePasswordError ?? this.retypePasswordError,
-      forgotPasswordError: forgotPasswordError ?? this.forgotPasswordError,
+      errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
+      emailError: emailError != null ? emailError() : this.emailError,
+      passwordError: passwordError != null
+          ? passwordError()
+          : this.passwordError,
+      retypePasswordError: retypePasswordError != null
+          ? retypePasswordError()
+          : this.retypePasswordError,
+      forgotPasswordError: forgotPasswordError != null
+          ? forgotPasswordError()
+          : this.forgotPasswordError,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
       isRetypePasswordVisible:
           isRetypePasswordVisible ?? this.isRetypePasswordVisible,

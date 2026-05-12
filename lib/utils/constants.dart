@@ -1,4 +1,3 @@
-import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -146,7 +145,7 @@ class KMockedData {
   static List<ChargingStationModel> mockedAddedByUsersChargingStations = [
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: Uuid().v4(),
+      id: '6f3b0e2a-1c8a-4d2b-9e4f-7a5b3c2d1e0f',
       chargingStationName: 'Alexander Karlsson’s charger',
       address: '103-610 Queen St, Saskatoon, SK S7K 0M8',
       addressLatitude: 52.13696,
@@ -157,7 +156,7 @@ class KMockedData {
       plug: 'Wall',
       pricePerKwh: '2.00',
       bankAccount: IbanModel(
-        id: Uuid().v4(),
+        id: '6f3b0e2a-1c8a-4d2b-9e4f-7a5b3c2d1e0f',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'EB78573815158371807501',
       ),
@@ -175,7 +174,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: const Uuid().v4(),
+      id: 'a8d1c5e9-3b7f-4a2c-8d1e-9f0a2b4c6e8d',
       chargingStationName: 'Peter’s Amp',
       address: '122 27 St W, Saskatoon, SK S7L 0J3',
       addressLatitude: 52.13555,
@@ -186,7 +185,7 @@ class KMockedData {
       plug: 'CCS',
       pricePerKwh: '5.50',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: 'a8d1c5e9-3b7f-4a2c-8d1e-9f0a2b4c6e8d',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE12345678901234567890',
       ),
@@ -204,7 +203,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: const Uuid().v4(),
+      id: '2c4e6a8b-0d2f-4c6e-8a0b-2d4f6a8b0d2f',
       chargingStationName: 'Södermalm Private Spot',
       address: '310 Circle Dr, Saskatoon, SK S7L 2Y5',
       addressLatitude: 52.15903,
@@ -215,25 +214,18 @@ class KMockedData {
       plug: 'Type 2',
       pricePerKwh: '3.25',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '2c4e6a8b-0d2f-4c6e-8a0b-2d4f6a8b0d2f',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE98765432109876543210',
       ),
       onlineCharger: true,
-      availableHours: [
-        TimeSlotModel(
-          id: '3',
-          availableDays: [6, 7],
-          startTime: '07:00',
-          endTime: '22:00',
-        ),
-      ],
+      availableHours: [],
       everyoneCanAccess: false,
       stationStatus: ChargingStationAvailability.outOfService,
     ),
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: const Uuid().v4(),
+      id: 'f1a3c5e7-9b2d-4f6a-8c0e-2a4d6f8b0c2e',
       chargingStationName: 'Solna Business Park',
       address: '1937 Ontario Ave, Saskatoon, SK S7K 1T5',
       addressLatitude: 52.15604,
@@ -244,7 +236,7 @@ class KMockedData {
       plug: 'Type 2',
       pricePerKwh: '4.00',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: 'f1a3c5e7-9b2d-4f6a-8c0e-2a4d6f8b0c2e',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE55443322110099887766',
       ),
@@ -262,7 +254,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: const Uuid().v4(),
+      id: '9e7a6c5b-4d3f-2a1e-8c0b-6f8a0d2c4e6f',
       chargingStationName: 'Lidingö Home Connect',
       address: '16 33 St E, Saskatoon, SK S7L 1C3',
       addressLatitude: 52.14420,
@@ -273,7 +265,7 @@ class KMockedData {
       plug: 'Wall',
       pricePerKwh: '2.50',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '9e7a6c5b-4d3f-2a1e-8c0b-6f8a0d2c4e6f',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE11223344556677889900',
       ),
@@ -291,7 +283,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.private,
-      id: const Uuid().v4(),
+      id: '3a5c7e9b-1d2f-4a6c-8b0e-2d4f6a8b0c2e',
       chargingStationName: 'Östermalm Boutique Charge',
       address: '1527A Idylwyld Dr N, Saskatoon, SK S7L 1A9',
       addressLatitude: 52.14991,
@@ -302,7 +294,7 @@ class KMockedData {
       plug: 'Type 2',
       pricePerKwh: '6.00',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '3a5c7e9b-1d2f-4a6c-8b0e-2d4f6a8b0c2e',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE99887766554433221100',
       ),
@@ -323,7 +315,7 @@ class KMockedData {
   static List<ChargingStationModel> mockedPublicChargingStations = [
     ChargingStationModel(
       type: ChargingStationType.public,
-      id: Uuid().v4(),
+      id: '7a6c5b4d-3f2e-1a0b-8c0d-6f8a0d2c4e6f',
       chargingStationName: 'Starbucks',
       address: '536 2nd Ave N #120, Saskatoon, SK S7K 2C5',
       addressLatitude: 52.13656,
@@ -334,7 +326,7 @@ class KMockedData {
       plug: 'Wall',
       pricePerKwh: '2.00',
       bankAccount: IbanModel(
-        id: Uuid().v4(),
+        id: '7a6c5b4d-3f2e-1a0b-8c0d-6f8a0d2c4e6f',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'EB78573815158371807501',
       ),
@@ -344,7 +336,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.public,
-      id: const Uuid().v4(),
+      id: '8b0e1a2c-4d3f-5a6c-7b8d-9f0a1b2c3d4e',
       chargingStationName: "Mc'Donalds",
       address: '714 2nd Ave N, Saskatoon, SK S7K 2E1',
       addressLatitude: 52.13849,
@@ -355,7 +347,7 @@ class KMockedData {
       plug: 'CCS',
       pricePerKwh: '5.50',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '8b0e1a2c-4d3f-5a6c-7b8d-9f0a1b2c3d4e',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE12345678901234567890',
       ),
@@ -365,7 +357,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.public,
-      id: const Uuid().v4(),
+      id: '9c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f',
       chargingStationName: 'Government Spot 1',
       address: '2115 Faithfull Ave, Saskatoon, SK S7K 1T8',
       addressLatitude: 52.15903,
@@ -376,7 +368,7 @@ class KMockedData {
       plug: 'Type 2',
       pricePerKwh: '3.25',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '9c1d2e3f-4a5b-6c7d-8e9f-0a1b2c3d4e5f',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE98765432109876543210',
       ),
@@ -386,7 +378,7 @@ class KMockedData {
     ),
     ChargingStationModel(
       type: ChargingStationType.public,
-      id: const Uuid().v4(),
+      id: '0d2e3f4a-5b6c-7d8e-9f0a-1b2c3d4e5f6a',
       chargingStationName: 'Hospital',
       address: '701 Queen St, Saskatoon, SK S7K 0M7',
       addressLatitude: 52.13590,
@@ -397,7 +389,7 @@ class KMockedData {
       plug: 'Type 2',
       pricePerKwh: '4.00',
       bankAccount: IbanModel(
-        id: const Uuid().v4(),
+        id: '0d2e3f4a-5b6c-7d8e-9f0a-1b2c3d4e5f6a',
         isUsedForReceivingEarnings: true,
         ibanNumber: 'SE55443322110099887766',
       ),
@@ -445,4 +437,12 @@ class KPaymentProvidersIcons {
   static const String visa = 'assets/payment_methods/ic_visa.svg';
   static const String discover = 'assets/payment_methods/ic_discover.svg';
   static const String generic = 'assets/payment_methods/ic_generic.svg';
+}
+
+class KCreditCardBG {
+  static const String amex = 'assets/credit_card_bg/ocean_blue.png';
+  static const String mastercard = 'assets/credit_card_bg/peach_orange.png';
+  static const String visa = 'assets/credit_card_bg/dark_crystal.png';
+  static const String discover = 'assets/credit_card_bg/hot_ion.png';
+  static const String generic = 'assets/credit_card_bg/rosey_rose.png';
 }

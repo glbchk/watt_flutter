@@ -28,15 +28,4 @@ class TextfieldHelperMethods {
       selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
-
-  // static void onSearchChanged({
-  //   required String? value,
-  //   required Timer? debounce,
-  //   required Function(String?)? onChanged,
-  // }) {
-  //   if (debounce?.isActive ?? false) debounce!.cancel();
-  //   debounce = Timer(const Duration(milliseconds: 500), () {
-  //     onChanged?.call(value);
-  //   });
-  // }
 }

@@ -50,6 +50,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                 context.read<OnboardingBloc>().add(
                   AddedChargingStationsEvent(
                     chargingStations: state.chargingStations ?? [],
+                    stationId: state.chargingStation?.id ?? '',
                   ),
                 );
               }
@@ -227,18 +228,19 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                                                             ChargingStationBloc
                                                           >()
                                                           .state;
-                                                      context
-                                                          .read<
-                                                            OnboardingBloc
-                                                          >()
-                                                          .add(
-                                                            AddedChargingStationsEvent(
-                                                              chargingStations:
-                                                                  updatedState
-                                                                      .chargingStations ??
-                                                                  [],
-                                                            ),
-                                                          );
+                                                      context.read<OnboardingBloc>().add(
+                                                        AddedChargingStationsEvent(
+                                                          chargingStations:
+                                                              updatedState
+                                                                  .chargingStations ??
+                                                              [],
+                                                          stationId:
+                                                              updatedState
+                                                                  .chargingStation
+                                                                  ?.id ??
+                                                              '',
+                                                        ),
+                                                      );
                                                     }
                                                   },
                                                 );
@@ -289,6 +291,7 @@ class _AddChargingStationPageState extends State<AddChargingStationPage> {
                           context.read<OnboardingBloc>().add(
                             AddedChargingStationsEvent(
                               chargingStations: stations,
+                              stationId: state.chargingStation?.id ?? '',
                             ),
                           );
                           Navigator.pop(

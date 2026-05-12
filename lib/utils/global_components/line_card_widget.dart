@@ -5,6 +5,8 @@ class LineCardWidget extends StatelessWidget {
   final String? label;
   final String? startTime;
   final String? endTime;
+  final String? energy;
+  final String? price;
   final bool isApproved;
 
   const LineCardWidget({
@@ -12,6 +14,8 @@ class LineCardWidget extends StatelessWidget {
     required this.label,
     this.startTime,
     this.endTime,
+    this.energy,
+    this.price,
     this.isApproved = true,
   });
 
@@ -117,6 +121,52 @@ class LineCardWidget extends StatelessWidget {
                             ],
                           )
                         : SizedBox(height: 0),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Energy',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          energy ?? '23 kWh',
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    height: 1,
+                    color: context.theme.appColors.grey3,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Price',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          price ?? '46 SEK',
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

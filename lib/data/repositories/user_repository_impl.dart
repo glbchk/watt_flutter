@@ -4,6 +4,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/user_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 import 'package:watt/domain/repositories/user_repository.dart';
@@ -79,7 +80,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> addChargingStations(
     List<ChargingStationModel> chargingStations,
   ) async {
-    return await userRemoteDataSource.addChargingStations(chargingStations);
+    return await userRemoteDataSource.addStationsToUserData(chargingStations);
   }
 
   @override
@@ -89,7 +90,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<List<ChargingStationModel>> fetchChargingStations() async {
-    return await userRemoteDataSource.fetchChargingStations();
+    return await userRemoteDataSource.fetchUserChargingStations();
   }
 
   @override
@@ -135,22 +136,84 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> addBooking(BookingModel booking) async {
-    return await userRemoteDataSource.addBooking(booking);
+  Future<ChargingStationModel> fetchOneChargingStation(String stationId) async {
+    return await userRemoteDataSource.fetchOneChargingStation(stationId);
   }
 
   @override
-  Future<void> updateBookingStage(
-    String bookingId,
-    BookingStatus status,
+  Future<ReservationModel?> fetchOneUpcomingReservation(
+    String stationId,
   ) async {
-    return await userRemoteDataSource.updateBookingStage(bookingId, status);
+    return await userRemoteDataSource.fetchOneUpcomingReservation(stationId);
   }
 
   @override
-  Future<void> deleteBooking(String bookingId) async {
-    return await userRemoteDataSource.deleteBooking(bookingId);
+  Future<void> confirmUpcomingReservationWithPayment(
+    ReservationModel reservationToSave,
+    BookingModel bookingToSave,
+    String cardNumber,
+  ) async {
+    return await userRemoteDataSource.confirmUpcomingReservationWithPayment(
+      reservationToSave,
+      bookingToSave,
+      cardNumber,
+    );
   }
+
+  @override
+  Future<void> deleteUpcomingReservation(ReservationModel booking) async {
+    return await userRemoteDataSource.deleteUpcomingReservation(booking);
+  }
+
+  @override
+  Future<List<ReservationModel>> fetchUpcomingReservations() async {
+    return await userRemoteDataSource.fetchUpcomingReservations();
+  }
+
+  @override
+  Future<List<ChargingStationModel>> fetchAllChargingStations() async {
+    return await userRemoteDataSource.fetchAllChargingStations();
+  }
+
+  @override
+  Future<List<ReservationModel>> fetchPastReservations() async {
+    return await userRemoteDataSource.fetchPastReservations();
+  }
+
+  @override
+  Future<ChargingStationModel> fetchOneUpcomingReservedChargingStation(
+    String stationId,
+  ) async {
+    return await userRemoteDataSource.fetchOneUpcomingReservedChargingStation(
+      stationId,
+    );
+  }
+
+  @override
+  Future<void> stopChargingOrCancelReservation(
+    ReservationModel reservation,
+    BookingModel booking,
+  ) async {
+    await userRemoteDataSource.stopChargingOrCancelReservation(
+      reservation,
+      booking,
+    );
+  }
+
+  @override
+  Future<List<BookingModel>> fetchUpcomingBookings() async {
+    return await userRemoteDataSource.fetchUpcomingBookings();
+  }
+
+  @override
+  Future<List<BookingModel>> fetchPastBookings() async {
+    return await userRemoteDataSource.fetchPastBookings();
+  }
+
+  // @override
+  // Future<void> closeBooking(BookingModel booking) async {
+  //   await userRemoteDataSource.closeBooking(booking);
+  // }
 
   @override
   Future<void> deleteUser() async {

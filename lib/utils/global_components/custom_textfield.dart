@@ -26,10 +26,12 @@ class CustomTextField extends StatelessWidget {
   final bool? showPassword;
   final FormFieldValidator<String>? validator;
   final bool? autofocus;
+  final bool? readOnly;
+  final String? initialValue;
 
   const CustomTextField({
     super.key,
-    required this.controller,
+    this.controller,
     this.focusNode,
     this.onFocusChange,
     this.label,
@@ -52,6 +54,8 @@ class CustomTextField extends StatelessWidget {
     this.textCapitalization,
     this.validator,
     this.autofocus,
+    this.readOnly = false,
+    this.initialValue,
   });
 
   @override
@@ -71,8 +75,11 @@ class CustomTextField extends StatelessWidget {
         SizedBox(height: spaceLabel ?? 8.0),
         Focus(
           onFocusChange: onFocusChange,
+          canRequestFocus: !(readOnly ?? false),
           child: TextFormField(
             controller: controller,
+            readOnly: readOnly ?? false,
+            initialValue: initialValue,
             focusNode: focusNode,
             autofocus: autofocus ?? true,
             obscureText: isPassword == true ? !(showPassword ?? false) : false,
@@ -138,13 +145,20 @@ class CustomTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: context.theme.appColors.grey3),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: context.theme.appColors.primary,
-                  width: 1,
-                ),
-              ),
+              focusedBorder: readOnly == true
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: context.theme.appColors.grey3,
+                      ),
+                    )
+                  : OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: context.theme.appColors.primary,
+                        width: 1,
+                      ),
+                    ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(

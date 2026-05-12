@@ -1,5 +1,4 @@
-import 'package:watt/data/models/charging_station_model.dart';
-import 'package:watt/data/models/timeslot_model.dart';
+import 'package:watt/data/models/slot_model.dart';
 
 enum BookingStatus {
   available,
@@ -12,18 +11,22 @@ enum BookingStatus {
 class BookingModel {
   final String id;
   final BookingStatus status;
-  final ChargingStationModel? station;
+  final String? stationId;
   final String? date;
-  final List<TimeSlotModel>? selectedTimes;
+  final List<SlotModel>? selectedTimes;
+  final double? energyAmount;
   final double? price;
+  final String? cardNumber;
 
   BookingModel({
     required this.id,
     this.status = BookingStatus.pending,
-    this.station,
+    this.stationId,
     this.date,
     this.selectedTimes,
+    this.energyAmount,
     this.price,
+    this.cardNumber,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -33,20 +36,14 @@ class BookingModel {
         (e) => e.name == json['status'],
         orElse: () => BookingStatus.available,
       ),
-      station: json['station'] != null
-          ? ChargingStationModel.fromJson(
-              json['station'] as Map<String, dynamic>,
-            )
-          : null,
+      stationId: json['station_id'],
       date: json['date'],
-      selectedTimes:
-          (json['selected_time'] as List<dynamic>?)
-              ?.map(
-                (item) => TimeSlotModel.fromJson(item as Map<String, dynamic>),
-              )
-              .toList() ??
-          [],
+      selectedTimes: (json['selected_times'] as List<dynamic>?)
+          ?.map((m) => SlotModel.fromJson(m))
+          .toList(),
+      energyAmount: json['energy_amount'],
       price: json['price'],
+      cardNumber: json['card_number'],
     );
   }
 
@@ -54,29 +51,34 @@ class BookingModel {
     return {
       'id': id,
       'status': status.name,
-      'station': station?.toJson(),
+      'station_id': stationId,
       'date': date,
-      'selected_time':
-          selectedTimes?.map((item) => item.toJson()).toList() ?? [],
+      'selected_times': selectedTimes?.map((m) => m.toJson()).toList(),
+      'energy_amount': energyAmount,
       'price': price,
+      'card_number': cardNumber,
     };
   }
 
   BookingModel copyWith({
     String? id,
     BookingStatus? status,
-    ChargingStationModel? station,
+    String? stationId,
     String? date,
-    List<TimeSlotModel>? selectedTime,
+    List<SlotModel>? selectedTimes,
+    double? energyAmount,
     double? price,
+    String? cardNumber,
   }) {
     return BookingModel(
       id: id ?? this.id,
       status: status ?? this.status,
-      station: station ?? this.station,
+      stationId: stationId ?? this.stationId,
       date: date ?? this.date,
-      selectedTimes: selectedTime ?? this.selectedTimes,
+      selectedTimes: selectedTimes ?? this.selectedTimes,
+      energyAmount: energyAmount ?? this.energyAmount,
       price: price ?? this.price,
+      cardNumber: cardNumber ?? this.cardNumber,
     );
   }
 }

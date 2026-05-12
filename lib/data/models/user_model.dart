@@ -2,6 +2,7 @@ import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
+import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/domain/entities/user_entity.dart';
 
 class UserModel {
@@ -15,7 +16,9 @@ class UserModel {
   final List<CarModel>? cars;
   final List<ChargingStationModel>? chargingStations;
   final List<CreditCardModel>? paymentMethods;
-  final List<BookingModel>? bookings;
+  final List<ReservationModel>? upcomingReservations;
+  final List<ReservationModel>? pastReservations;
+  final List<BookingModel>? upcomingBookings;
 
   UserModel({
     this.isAnonymous,
@@ -28,7 +31,9 @@ class UserModel {
     this.cars,
     this.chargingStations,
     this.paymentMethods,
-    this.bookings,
+    this.upcomingReservations,
+    this.pastReservations,
+    this.upcomingBookings,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -61,8 +66,24 @@ class UserModel {
               )
               .toList() ??
           [],
-      bookings:
-          (json['bookings'] as List<dynamic>?)
+      upcomingReservations:
+          (json['upcoming_reservations'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    ReservationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      pastReservations:
+          (json['past_reservations'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    ReservationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      upcomingBookings:
+          (json['upcoming_bookings'] as List<dynamic>?)
               ?.map(
                 (item) => BookingModel.fromJson(item as Map<String, dynamic>),
               )
@@ -83,7 +104,11 @@ class UserModel {
       'cars': cars?.map((c) => c.toJson()).toList(),
       'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
       'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
-      'bookings': bookings?.map((b) => b.toJson()).toList(),
+      'upcoming_reservations': upcomingReservations
+          ?.map((r) => r.toJson())
+          .toList(),
+      'past_reservations': pastReservations?.map((r) => r.toJson()).toList(),
+      'upcoming_bookings': upcomingBookings?.map((b) => b.toJson()).toList(),
     };
   }
 
@@ -99,7 +124,9 @@ class UserModel {
       cars: entity.cars ?? [],
       chargingStations: entity.chargingStations ?? [],
       paymentMethods: entity.paymentMethods ?? [],
-      bookings: entity.bookings ?? [],
+      upcomingReservations: entity.upcomingReservations ?? [],
+      pastReservations: entity.pastReservations ?? [],
+      upcomingBookings: entity.upcomingBookings ?? [],
     );
   }
 
@@ -114,7 +141,9 @@ class UserModel {
     List<CarModel>? cars,
     List<ChargingStationModel>? chargingStations,
     List<CreditCardModel>? paymentMethods,
-    List<BookingModel>? bookings,
+    List<ReservationModel>? upcomingReservations,
+    List<ReservationModel>? pastReservations,
+    List<BookingModel>? upcomingBookings,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -128,7 +157,9 @@ class UserModel {
       cars: cars ?? this.cars,
       chargingStations: chargingStations ?? this.chargingStations,
       paymentMethods: paymentMethods ?? this.paymentMethods,
-      bookings: bookings ?? this.bookings,
+      upcomingReservations: upcomingReservations ?? this.upcomingReservations,
+      pastReservations: pastReservations ?? this.pastReservations,
+      upcomingBookings: upcomingBookings ?? this.upcomingBookings,
     );
   }
 }

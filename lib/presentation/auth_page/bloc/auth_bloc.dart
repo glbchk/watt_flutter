@@ -74,9 +74,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             retypePasswordError != null) {
           emit(
             s.copyWith(
-              emailError: emailError ?? "",
-              passwordError: passwordError ?? "",
-              retypePasswordError: retypePasswordError ?? "",
+              emailError: () => emailError ?? "",
+              passwordError: () => passwordError ?? "",
+              retypePasswordError: () => retypePasswordError ?? "",
             ),
           );
           return;
@@ -119,30 +119,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (emailError != null || passwordError != null) {
           emit(
             s.copyWith(
-              emailError: emailError ?? "",
-              passwordError: passwordError ?? "",
+              emailError: () => emailError ?? "",
+              passwordError: () => passwordError ?? "",
             ),
           );
-
-          return;
-        }
-
-        emit(s.copyWith(isLoading: true));
-
-        try {
-          await loginUserUseCase.execute(
-            event.email,
-            event.password,
+        } else {
+          emit(
+            s.copyWith(
+              emailError: null,
+              passwordError: null,
+            ),
           );
-
-          emit(AuthSuccessState());
-        } catch (e) {
-          final s = state;
-          if (s is AuthUnauthenticatedState) {
-            add(AuthSnackBarErrorMessageEvent(e.toString()));
-            emit(s.copyWith(isLoading: false));
-          }
         }
+      }
+
+      try {
+        await loginUserUseCase.execute(
+          event.email,
+          event.password,
+        );
+        emit(AuthSuccessState());
+      } catch (e) {
+        add(AuthSnackBarErrorMessageEvent(e.toString()));
       }
     });
 
@@ -220,7 +218,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (s is AuthUnauthenticatedState) {
         emit(
           s.copyWith(
-            errorMessage: event.message.isEmpty ? null : event.message,
+            errorMessage: () => event.message.isEmpty ? null : event.message,
           ),
         );
       }
@@ -233,7 +231,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         emit(
           s.copyWith(
-            forgotPasswordError: error,
+            forgotPasswordError: () => error,
           ),
         );
       }
