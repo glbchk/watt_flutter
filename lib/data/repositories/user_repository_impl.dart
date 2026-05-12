@@ -1,5 +1,6 @@
 import 'package:watt/data/data_sources/auth_remote_data_source.dart';
 import 'package:watt/data/data_sources/user_remote_data_source.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -149,10 +150,12 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> confirmUpcomingReservationWithPayment(
     ReservationModel reservationToSave,
+    BookingModel bookingToSave,
     String cardNumber,
   ) async {
     return await userRemoteDataSource.confirmUpcomingReservationWithPayment(
       reservationToSave,
+      bookingToSave,
       cardNumber,
     );
   }
@@ -189,9 +192,28 @@ class UserRepositoryImpl implements UserRepository {
   @override
   Future<void> stopChargingOrCancelReservation(
     ReservationModel reservation,
+    BookingModel booking,
   ) async {
-    await userRemoteDataSource.stopChargingOrCancelReservation(reservation);
+    await userRemoteDataSource.stopChargingOrCancelReservation(
+      reservation,
+      booking,
+    );
   }
+
+  @override
+  Future<List<BookingModel>> fetchUpcomingBookings() async {
+    return await userRemoteDataSource.fetchUpcomingBookings();
+  }
+
+  @override
+  Future<List<BookingModel>> fetchPastBookings() async {
+    return await userRemoteDataSource.fetchPastBookings();
+  }
+
+  // @override
+  // Future<void> closeBooking(BookingModel booking) async {
+  //   await userRemoteDataSource.closeBooking(booking);
+  // }
 
   @override
   Future<void> deleteUser() async {

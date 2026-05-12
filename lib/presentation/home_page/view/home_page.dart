@@ -42,18 +42,18 @@ class _HomePageState extends State<HomePage> {
 
   GoogleMapController? _mapController;
 
-  Set<Marker> _markers = {};
-
-  Future<void> generateMarkers(
-    List<ChargingStationModel> stations,
-    HomeState state,
-  ) async {
-    final markers = buildMarkers(stations, state);
-
-    setState(() {
-      _markers = markers;
-    });
-  }
+  // Set<Marker> _markers = {};
+  //
+  // Future<void> generateMarkers(
+  //   List<ChargingStationModel> stations,
+  //   HomeState state,
+  // ) async {
+  //   final markers = buildMarkers(stations, state);
+  //
+  //   setState(() {
+  //     _markers = markers;
+  //   });
+  // }
 
   Set<Marker> buildMarkers(
     List<ChargingStationModel> locations,
@@ -222,9 +222,9 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        if (state.chargingStationsOnMap != null) {
-          generateMarkers(state.chargingStationsOnMap ?? [], state);
-        }
+        // if (state.chargingStationsOnMap != null) {
+        //   buildMarkers(state.chargingStationsOnMap ?? [], state);
+        // }
 
         if (state.address != null) {
           final latLng = LatLng(
@@ -313,12 +313,13 @@ class _HomePageState extends State<HomePage> {
               );
             },
             onPressedYourCharger: () {
+              Navigator.of(context).pop();
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => MyChargingStationsPage(),
-                ),
-              );
+                MaterialPageRoute(builder: (_) => MyChargingStationsPage()),
+              ).then((_) async {
+                await context.read<HomeCubit>().fetchChargingStationsForMap();
+              });
             },
             onPressedPaymentMethod: () {
               Navigator.push(
@@ -378,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                     // );
                   }
                 },
-                markers: _markers,
+                markers: buildMarkers(state.chargingStationsOnMap ?? [], state),
               ),
 
               Positioned(

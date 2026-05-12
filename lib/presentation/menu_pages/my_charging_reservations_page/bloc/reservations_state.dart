@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/reservation_model.dart';
 
@@ -15,6 +16,8 @@ class ReservationsState {
   final List<ReservationModel>? upcomingReservations;
   final List<ReservationModel>? pastReservations;
   final List<ChargingStationModel>? reservedChargingStations;
+  final List<BookingModel>? upcomingBookings;
+  final List<BookingModel>? pastBookings;
 
   ReservationsState({
     required this.isUserAuthenticated,
@@ -30,6 +33,8 @@ class ReservationsState {
     this.upcomingReservations,
     this.pastReservations,
     this.reservedChargingStations,
+    this.upcomingBookings,
+    this.pastBookings,
   });
 
   ReservationsState copyWith({
@@ -47,6 +52,8 @@ class ReservationsState {
     List<ReservationModel>? upcomingReservations,
     List<ReservationModel>? pastReservations,
     List<ChargingStationModel>? reservedChargingStations,
+    List<BookingModel>? upcomingBookings,
+    List<BookingModel>? pastBookings,
   }) {
     return ReservationsState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -71,6 +78,8 @@ class ReservationsState {
       pastReservations: pastReservations ?? this.pastReservations,
       reservedChargingStations:
           reservedChargingStations ?? this.reservedChargingStations,
+      upcomingBookings: upcomingBookings ?? this.upcomingBookings,
+      pastBookings: pastBookings ?? this.pastBookings,
     );
   }
 }

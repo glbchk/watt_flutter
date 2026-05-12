@@ -40,6 +40,7 @@ class ChargingStationModel {
   final bool? everyoneCanAccess;
   final ChargingStationAvailability? stationStatus;
   final List<SlotModel>? slots;
+  final String? ownerId;
 
   ChargingStationModel({
     this.type = ChargingStationType.private,
@@ -59,6 +60,7 @@ class ChargingStationModel {
     this.everyoneCanAccess,
     this.stationStatus,
     this.slots,
+    this.ownerId,
   });
 
   factory ChargingStationModel.fromJson(Map<String, dynamic> json) {
@@ -91,6 +93,7 @@ class ChargingStationModel {
       slots: (json['slots'] as List<dynamic>?)
           ?.map((s) => SlotModel.fromJson(s))
           .toList(),
+      ownerId: json['owner_id'],
     );
   }
 
@@ -113,6 +116,7 @@ class ChargingStationModel {
       'everyone_can_access': everyoneCanAccess,
       'station_status': stationStatus?.name,
       'slots': slots?.map((s) => s.toJson()).toList(),
+      'owner_id': ownerId,
     };
   }
 
@@ -134,6 +138,7 @@ class ChargingStationModel {
     bool? everyoneCanAccess,
     ChargingStationAvailability? stationStatus,
     List<SlotModel>? slots,
+    String? ownerId,
   }) {
     return ChargingStationModel(
       type: type ?? this.type,
@@ -153,6 +158,7 @@ class ChargingStationModel {
       everyoneCanAccess: everyoneCanAccess ?? this.everyoneCanAccess,
       stationStatus: stationStatus ?? this.stationStatus,
       slots: slots ?? this.slots,
+      ownerId: ownerId ?? this.ownerId,
     );
   }
 }

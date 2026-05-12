@@ -437,7 +437,6 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
         ...?state.userChargingStations,
         chargingStation,
       ];
-      await addChargingStationsUseCase.execute(chargingStationsUpdated);
 
       emit(
         state.copyWith(
@@ -445,6 +444,8 @@ class MyChargingStationsCubit extends Cubit<MyChargingStationsState> {
           isLoading: false,
         ),
       );
+
+      await addChargingStationsUseCase.execute(chargingStationsUpdated);
     } catch (e) {
       print('Error adding charging station: $e');
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));

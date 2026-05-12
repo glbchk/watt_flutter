@@ -1,13 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/domain/use_cases/get_user_usecase.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_bloc.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
-import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_generic_test_page.dart';
+
+abstract class ChargingActionInterface {
+  void stopChargingOrCancelReservation(
+    ReservationModel reservation,
+    BookingModel booking,
+  );
+}
 
 class ReservationsCubit extends Cubit<ReservationsState>
     implements ChargingActionInterface {
@@ -30,6 +37,10 @@ class ReservationsCubit extends Cubit<ReservationsState>
       FetchOneUpcomingReservedChargingStationUseCase();
   final StopChargingOrCancelReservationUseCase stopChargingUseCase =
       StopChargingOrCancelReservationUseCase();
+  final FetchUpcomingBookingsUseCase fetchUpcomingBookingsUseCase =
+      FetchUpcomingBookingsUseCase();
+  final FetchPastBookingsUseCase fetchPastBookingsUseCase =
+      FetchPastBookingsUseCase();
 
   ReservationsCubit({required this.authBloc})
     : super(ReservationsState(isUserAuthenticated: true, isLoading: true)) {
@@ -42,13 +53,15 @@ class ReservationsCubit extends Cubit<ReservationsState>
     });
   }
 
-  Future<void> fetchUpcomingAndPastReservationsData() async {
+  Future<void> fetchUpcomingPastReservationsAndBookingsData() async {
     emit(state.copyWith(isLoading: true));
     try {
       final results = await Future.wait([
         fetchUpcomingReservationsUseCase.execute(),
         fetchPastReservationsUseCase.execute(),
         fetchAllChargingStationsUseCase.execute(),
+        fetchUpcomingBookingsUseCase.execute(),
+        fetchPastBookingsUseCase.execute(),
       ]);
 
       emit(
@@ -56,6 +69,8 @@ class ReservationsCubit extends Cubit<ReservationsState>
           upcomingReservations: results[0] as List<ReservationModel>,
           pastReservations: results[1] as List<ReservationModel>,
           reservedChargingStations: results[2] as List<ChargingStationModel>,
+          upcomingBookings: results[3] as List<BookingModel>,
+          pastBookings: results[4] as List<BookingModel>,
           isLoading: false,
         ),
       );
@@ -66,6 +81,8 @@ class ReservationsCubit extends Cubit<ReservationsState>
           upcomingReservations: [],
           pastReservations: [],
           reservedChargingStations: [],
+          upcomingBookings: [],
+          pastBookings: [],
           isLoading: false,
         ),
       );
@@ -126,15 +143,11 @@ class ReservationsCubit extends Cubit<ReservationsState>
   @override
   Future<void> stopChargingOrCancelReservation(
     ReservationModel reservation,
+    BookingModel booking,
   ) async {
     try {
-      // final reservationToDelete = state.upcomingReservations?.firstWhere(
-      //   (b) => b.id == reservation.id,
-      // );
-      // if (reservationToDelete == null) return;
-
       final updatedUpcomingReservations = (state.upcomingReservations ?? [])
-          .where((b) => b.id != reservation.id)
+          .where((r) => r.id != reservation.id)
           .toList();
 
       final updatedPastReservations = <ReservationModel>[
@@ -142,14 +155,26 @@ class ReservationsCubit extends Cubit<ReservationsState>
         reservation,
       ];
 
+      final updatedUpcomingBookings = (state.upcomingBookings ?? [])
+          .where((b) => b.id != booking.id)
+          .toList();
+
+      final updatedPastBookings = <BookingModel>[
+        ...(state.pastBookings ?? []),
+        booking,
+      ];
+
       emit(
         state.copyWith(
           upcomingReservations: updatedUpcomingReservations,
+          upcomingBookings: updatedUpcomingBookings,
           pastReservations: updatedPastReservations,
+          pastBookings: updatedPastBookings,
         ),
       );
 
-      await stopChargingUseCase.execute(reservation);
+      await stopChargingUseCase.execute(reservation, booking);
+      // await closeBookingUseCase.execute(booking);
     } catch (e) {
       print('Error deleting upcoming reservation $e');
     }

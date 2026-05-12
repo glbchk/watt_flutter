@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:watt/presentation/menu_pages/bookings_page/components/booking_card_widget.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/components/past_booking_card_widget.dart';
 import 'package:watt/presentation/menu_pages/bookings_page/sub_pages/past_booking_details_page.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
+import 'package:watt/presentation/menu_pages/my_charging_reservations_page/components/reservation_card_widget.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/sub_pages/charging_generic_test_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
@@ -24,7 +24,9 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
   void initState() {
     super.initState();
 
-    context.read<ReservationsCubit>().fetchUpcomingAndPastReservationsData();
+    context
+        .read<ReservationsCubit>()
+        .fetchUpcomingPastReservationsAndBookingsData();
   }
 
   @override
@@ -38,6 +40,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
       builder: (context, state) {
         final upcomingReservations = state.upcomingReservations;
         final pastReservations = state.pastReservations;
+        final upcomingBookings = state.upcomingBookings;
 
         if (state.isLoading) {
           return const Scaffold(
@@ -110,12 +113,21 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                           right: 20.0,
                         ),
                         child: TabBar(
-                          indicatorSize: TabBarIndicatorSize.tab,
-
-                          indicatorWeight: 2.0,
-                          indicatorColor: context.theme.appColors.primary,
+                          tabAlignment: TabAlignment.fill,
                           labelColor: context.theme.appColors.primary,
                           unselectedLabelColor: context.theme.appColors.grey1,
+                          indicatorColor: const Color(0xFF007AFF),
+                          indicatorWeight: 2.0,
+                          dividerColor: context.theme.appColors.grey1,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                          unselectedLabelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                           tabs: const [
                             Tab(text: 'Upcoming'),
                             Tab(text: 'Past'),
@@ -137,6 +149,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                       itemBuilder: (context, index) {
                         final upcomingReservation =
                             upcomingReservations![index];
+                        final upcomingBooking = upcomingBookings![index];
 
                         String stationName = "Loading...";
                         String stationAddress = "Loading...";
@@ -184,6 +197,7 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                                 .read<ReservationsCubit>()
                                 .stopChargingOrCancelReservation(
                                   upcomingReservation,
+                                  upcomingBooking,
                                 );
                           },
                           positiveLabel: 'Start charging',
@@ -200,16 +214,22 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                                         ReservationsState
                                       >(
                                         reservation: upcomingReservation,
+                                        booking: upcomingBooking,
                                         duration: Duration(minutes: time),
                                         onInit: (cubit) => cubit
                                             .fetchOneUpcomingReservedChargingStation(
                                               upcomingReservation.stationId ??
                                                   '',
                                             ),
-                                        onStopCharging: (cubit, reservation) =>
-                                            cubit
+                                        onStopCharging:
+                                            (
+                                              cubit,
+                                              reservation,
+                                              booking,
+                                            ) => cubit
                                                 .stopChargingOrCancelReservation(
                                                   reservation,
+                                                  booking,
                                                 ),
                                       ),
                                 ),

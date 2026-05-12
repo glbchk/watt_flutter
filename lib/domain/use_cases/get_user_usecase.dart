@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -136,10 +137,12 @@ class FetchOneUpcomingReservationUseCase extends UserUseCase {
 class ConfirmUpcomingReservationWithPaymentUseCase extends UserUseCase {
   Future execute(
     ReservationModel reservationToSave,
+    BookingModel bookingToSave,
     String cardNumber,
   ) {
     return userRepository.confirmUpcomingReservationWithPayment(
       reservationToSave,
+      bookingToSave,
       cardNumber,
     );
   }
@@ -176,10 +179,31 @@ class FetchOneUpcomingReservedChargingStationUseCase extends UserUseCase {
 }
 
 class StopChargingOrCancelReservationUseCase extends UserUseCase {
-  Future execute(ReservationModel reservation) {
-    return userRepository.stopChargingOrCancelReservation(reservation);
+  Future execute(ReservationModel reservation, BookingModel booking) {
+    return userRepository.stopChargingOrCancelReservation(
+      reservation,
+      booking,
+    );
   }
 }
+
+class FetchUpcomingBookingsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchUpcomingBookings();
+  }
+}
+
+class FetchPastBookingsUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.fetchPastBookings();
+  }
+}
+
+// class CloseBookingUseCase extends UserUseCase {
+//   Future execute(BookingModel booking) {
+//     return userRepository.closeBooking(booking);
+//   }
+// }
 
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {

@@ -38,7 +38,6 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
           scaffoldBackgroundColor: context.theme.appColors.primary,
           leading: BackButton(
             onPressed: () {
-              context.read<HomeCubit>().fetchUserData();
               Navigator.of(context).pop();
             },
           ),
@@ -165,6 +164,9 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
                         await context
                             .read<MyChargingStationsCubit>()
                             .fetchChargingStations();
+                        await context
+                            .read<HomeCubit>()
+                            .fetchChargingStationsForMap();
                       }
                     });
                   },

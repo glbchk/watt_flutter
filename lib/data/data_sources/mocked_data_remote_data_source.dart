@@ -65,7 +65,7 @@ class MockedDataRemoteDataSource {
       if (stationsData != null) {
         for (final stationJson in stationsData) {
           final stationId = stationJson['id'] as String?;
-          if (stationId != null && !existingIds.contains(stationId)) {
+          if (stationId != null) {
             batch.set(
               collection.doc(stationId),
               stationJson as Map<String, dynamic>,

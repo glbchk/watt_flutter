@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -376,6 +377,7 @@ class UserRemoteDataSource {
 
   Future<void> confirmUpcomingReservationWithPayment(
     ReservationModel reservation,
+    BookingModel booking,
     String cardNumber,
   ) async {
     final user = auth.currentUser;
@@ -391,9 +393,20 @@ class UserRemoteDataSource {
       status: ReservationStatus.confirmed,
     );
 
+    final confirmedBooking = booking.copyWith(
+      selectedTimes: busySlots,
+      cardNumber: cardNumber,
+    );
+
     await firestore.collection("users").doc(user.uid).update({
       'upcoming_reservations': FieldValue.arrayUnion([
         confirmedReservation.toJson(),
+      ]),
+    });
+
+    await firestore.collection("users").doc(user.uid).update({
+      'upcoming_bookings': FieldValue.arrayUnion([
+        confirmedBooking.toJson(),
       ]),
     });
 
@@ -417,12 +430,14 @@ class UserRemoteDataSource {
     final List<dynamic> reservationsJson =
         doc.data()?['upcoming_reservations'] ?? [];
 
-    return reservationsJson
+    final upcomingReservations = reservationsJson
         .map(
           (reservation) =>
               ReservationModel.fromJson(reservation as Map<String, dynamic>),
         )
         .toList();
+
+    return upcomingReservations;
   }
 
   Future<List<ReservationModel>> fetchPastReservations() async {
@@ -479,7 +494,7 @@ class UserRemoteDataSource {
 
       final isPartOfReservation =
           reservation.selectedTimes?.any(
-            (b) => b.startTime == s.startTime && b.endTime == s.endTime,
+            (r) => r.startTime == s.startTime && r.endTime == s.endTime,
           ) ??
           false;
 
@@ -507,6 +522,7 @@ class UserRemoteDataSource {
 
   Future<void> stopChargingOrCancelReservation(
     ReservationModel reservation,
+    BookingModel booking,
   ) async {
     final user = auth.currentUser;
     if (user == null) return;
@@ -520,7 +536,84 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user.uid).update({
       'past_reservations': FieldValue.arrayUnion([reservation.toJson()]),
     });
+
+    await docRef.update({
+      'upcoming_bookings': FieldValue.arrayRemove([booking.toJson()]),
+    });
+
+    await firestore.collection("users").doc(user.uid).update({
+      'past_bookings': FieldValue.arrayUnion([booking.toJson()]),
+    });
   }
+
+  Future<List<BookingModel>> fetchUpcomingBookings() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = doc.data()?['upcoming_bookings'] ?? [];
+
+    return bookingsJson
+        .map(
+          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  Future<List<BookingModel>> fetchPastBookings() async {
+    User? user = auth.currentUser;
+    if (user == null) return [];
+
+    final doc = await firestore.collection("users").doc(user.uid).get();
+    final List<dynamic> bookingsJson = doc.data()?['past_bookings'] ?? [];
+
+    return bookingsJson
+        .map(
+          (booking) => BookingModel.fromJson(booking as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
+  // Future<void> closeBooking(BookingModel booking) async {
+  //   final user = auth.currentUser;
+  //   if (user == null) return;
+  //
+  //   final docRef = firestore.collection("users").doc(user.uid);
+  //
+  //   await docRef.update({
+  //     'upcoming_bookings': FieldValue.arrayRemove([booking.toJson()]),
+  //   });
+  //
+  //   await firestore.collection("users").doc(user.uid).update({
+  //     'past_bookings': FieldValue.arrayUnion([booking.toJson()]),
+  //   });
+  // }
+
+  // Future<void> placeUpcomingBooking(
+  //   BookingModel booking,
+  //   String stationId,
+  // ) async {
+  //   final docSnapshot = await firestore
+  //       .collection("app_charging_stations")
+  //       .doc(stationId)
+  //       .get();
+  //
+  //   final user = auth.currentUser;
+  //   if (user == null) return;
+  //
+  //   if (docSnapshot.exists && docSnapshot.data() != null) {
+  //     final station = ChargingStationModel.fromJson(docSnapshot.data()!);
+  //
+  //     print("Found station: ${station.chargingStationName}");
+  //     if (station.id == user.uid) {
+  //       await firestore.collection("users").doc(user.uid).update({
+  //         'bookings': FieldValue.arrayUnion([booking.toJson()]),
+  //       });
+  //     }
+  //   } else {
+  //     print("Station not found!");
+  //   }
+  // }
 
   Future<void> deleteUser() async {
     User? user = auth.currentUser;

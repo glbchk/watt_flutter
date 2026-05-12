@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:watt/data/models/charging_station_model.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/slot_model.dart';
@@ -37,6 +37,8 @@ class HomeCubit extends Cubit<HomeState> {
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
   final FetchOneChargingStationUseCase fetchOneChargingStationUseCase =
       FetchOneChargingStationUseCase();
+  final FetchAllChargingStationsUseCase fetchAllChargingStationsUseCase =
+      FetchAllChargingStationsUseCase();
   final FetchOneUpcomingReservationUseCase fetchOneReservationUseCase =
       FetchOneUpcomingReservationUseCase();
   final ConfirmUpcomingReservationWithPaymentUseCase
@@ -44,6 +46,8 @@ class HomeCubit extends Cubit<HomeState> {
       ConfirmUpcomingReservationWithPaymentUseCase();
   final DeleteUpcomingReservationUseCase deleteReservationUseCase =
       DeleteUpcomingReservationUseCase();
+  // final PlaceUpcomingBookingUseCase placeUpcomingBookingUseCase =
+  //     PlaceUpcomingBookingUseCase();
   final FetchFaqUseCase fetchFaqUseCase = FetchFaqUseCase();
 
   HomeCubit({required this.authBloc, required this.profileCubit})
@@ -130,29 +134,22 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> seedMockedChargingStations() async {
     try {
-      // await syncStationToGlobalUseCase.execute();
       await seedMockedChargingStationsUseCase.execute(
         KMockedData.mockedAddedByUsersChargingStations,
       );
       await seedMockedChargingStationsUseCase.execute(
         KMockedData.mockedPublicChargingStations,
       );
-      final List<ChargingStationModel> chargingStationsOnMap = [];
-      chargingStationsOnMap.addAll(
-        KMockedData.mockedAddedByUsersChargingStations,
-      );
-      chargingStationsOnMap.addAll(KMockedData.mockedPublicChargingStations);
-      chargingStationsOnMap.addAll(state.userData?.chargingStations ?? []);
+      final allStations = await fetchAllChargingStationsUseCase.execute();
       final result = await getStationIdsForMap.execute();
 
       emit(
         state.copyWith(
           isLoading: false,
-          chargingStationsOnMap: chargingStationsOnMap,
+          chargingStationsOnMap: allStations,
           userStationIds: result['user'],
           globalStationIds: result['global'],
-          errorMessage: () =>
-              chargingStationsOnMap.isEmpty ? 'No stations found' : null,
+          errorMessage: () => allStations.isEmpty ? 'No stations found' : null,
         ),
       );
     } catch (e) {
@@ -178,6 +175,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> confirmUpcomingReservationWithPayment(
     ReservationModel upcomingReservation,
+    BookingModel upcomingBooking,
     String cardNumber,
   ) async {
     try {
@@ -194,6 +192,16 @@ class HomeCubit extends Cubit<HomeState> {
         ...(state.upcomingReservations ?? []),
         confirmedReservation,
       ];
+
+      final confirmedBooking = upcomingBooking.copyWith(
+        selectedTimes: busySlots,
+        cardNumber: cardNumber,
+      );
+
+      final updatedBookings = <BookingModel>[
+        ...(state.upcomingBookings ?? []),
+        confirmedBooking,
+      ];
       final updatedTimeSlots = state.timeSlots?.map((slot) {
         final isSelected = busySlots.any(
           (s) => s.startTime == slot.startTime && s.endTime == slot.endTime,
@@ -204,12 +212,14 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           upcomingReservations: updatedReservations,
+          upcomingBookings: updatedBookings,
           timeSlots: updatedTimeSlots,
         ),
       );
 
       await confirmUpcomingReservationWithPaymentUseCase.execute(
         confirmedReservation,
+        confirmedBooking,
         cardNumber,
       );
     } catch (e) {
@@ -478,6 +488,30 @@ class HomeCubit extends Cubit<HomeState> {
       );
     } catch (e) {
       print("Can't be cleared $e");
+    }
+  }
+
+  Future<void> fetchChargingStationsForMap() async {
+    try {
+      final allStations = await fetchAllChargingStationsUseCase.execute();
+
+      final result = await getStationIdsForMap.execute();
+
+      emit(
+        state.copyWith(
+          chargingStationsOnMap: allStations,
+          userStationIds: result['user'],
+          globalStationIds: result['global'],
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          isLoading: false,
+        ),
+      );
     }
   }
 

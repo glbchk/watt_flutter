@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -17,6 +18,7 @@ class UserEntity {
   final List<CreditCardModel>? paymentMethods;
   final List<ReservationModel>? upcomingReservations;
   final List<ReservationModel>? pastReservations;
+  final List<BookingModel>? upcomingBookings;
 
   UserEntity({
     this.isAnonymous,
@@ -32,5 +34,6 @@ class UserEntity {
     this.chargingStations,
     this.upcomingReservations,
     this.pastReservations,
+    this.upcomingBookings,
   });
 }

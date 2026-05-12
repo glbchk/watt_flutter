@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/home_page/bloc/home_state.dart';
@@ -180,12 +182,24 @@ class _PayWithCreditCardPageState extends State<PayWithCreditCardPage> {
                     label: 'Select Method',
                     onPressed: () {
                       final cardNumber = currentCard.cardNumber ?? '';
+                      final bookingToSave = BookingModel(
+                        id: Uuid().v4(),
+                        stationId: widget.reservation.stationId,
+                        date: widget.reservation.date,
+                        selectedTimes: widget.reservation.selectedTimes,
+                        energyAmount: widget.reservation.energyAmount,
+                        price: widget.reservation.price,
+                        cardNumber: widget.reservation.cardNumber,
+                      );
+
                       context
                           .read<HomeCubit>()
                           .confirmUpcomingReservationWithPayment(
                             widget.reservation,
+                            bookingToSave,
                             cardNumber,
                           );
+
                       Navigator.of(context)
                         ..pop()
                         ..pop();

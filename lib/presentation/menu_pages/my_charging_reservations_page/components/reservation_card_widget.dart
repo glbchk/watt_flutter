@@ -4,7 +4,7 @@ import 'package:watt/utils/global_components/text_icon_button.dart';
 import 'package:watt/utils/global_components/watt_main_button.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
-class BookingCardWidget extends StatelessWidget {
+class ReservationCardWidget extends StatelessWidget {
   final String? chargingStationName;
   final String? dateOfReservation;
   final String? chargingStationTimeSlot;
@@ -16,7 +16,7 @@ class BookingCardWidget extends StatelessWidget {
   final String? positiveLabel;
   final Color? positiveButtonColor;
 
-  const BookingCardWidget({
+  const ReservationCardWidget({
     super.key,
     this.chargingStationName,
     this.dateOfReservation,

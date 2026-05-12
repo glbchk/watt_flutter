@@ -511,7 +511,7 @@ class _ReserveStationPageState extends State<ReserveStationPage> {
                                     );
 
                                 final ReservationModel
-                                bookingToSave = ReservationModel(
+                                reservationToSave = ReservationModel(
                                   id: Uuid().v4(),
                                   status: ReservationStatus.pending,
                                   stationId: state.chargingStation?.id,
@@ -527,7 +527,7 @@ class _ReserveStationPageState extends State<ReserveStationPage> {
                                         0,
                                   ),
                                 );
-                                print(bookingToSave.id);
+                                print(reservationToSave.id);
 
                                 if (state.selectedSlots?.isEmpty ?? false) {
                                   context.read<HomeCubit>().timeIsNotChosen();
@@ -535,14 +535,14 @@ class _ReserveStationPageState extends State<ReserveStationPage> {
                                   context
                                       .read<HomeCubit>()
                                       .reservationRequestedStage(
-                                        bookingToSave,
+                                        reservationToSave,
                                       );
 
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => PayDetailsPage(
-                                        reservation: bookingToSave,
+                                        reservation: reservationToSave,
                                       ),
                                     ),
                                   ).then((_) async {

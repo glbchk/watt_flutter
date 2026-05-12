@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/menu_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
@@ -227,6 +228,7 @@ class _ChargingStationDetailsPageState
               label: 'Save',
               onPressed: () {
                 final updatedStation = station?.copyChargingStationWith(
+                  ownerId: Uuid().v4(),
                   onlineCharger: isOnlineChargerOn,
                   everyoneCanAccess: isEveryoneCanAccess,
                   stationStatus: ChargingStationAvailability.available,
@@ -246,7 +248,9 @@ class _ChargingStationDetailsPageState
                   final value = iterator.current.value;
 
                   if (value == null || value.toString().isEmpty) {
-                    if (key == 'bank_account' || key == 'bankAccount') {
+                    if (key == 'bank_account' ||
+                        key == 'bankAccount' ||
+                        key == 'slots') {
                       continue;
                     }
                     missingProperties.add(key);

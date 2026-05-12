@@ -1,3 +1,4 @@
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/car_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -17,6 +18,7 @@ class UserModel {
   final List<CreditCardModel>? paymentMethods;
   final List<ReservationModel>? upcomingReservations;
   final List<ReservationModel>? pastReservations;
+  final List<BookingModel>? upcomingBookings;
 
   UserModel({
     this.isAnonymous,
@@ -31,6 +33,7 @@ class UserModel {
     this.paymentMethods,
     this.upcomingReservations,
     this.pastReservations,
+    this.upcomingBookings,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -79,6 +82,13 @@ class UserModel {
               )
               .toList() ??
           [],
+      upcomingBookings:
+          (json['upcoming_bookings'] as List<dynamic>?)
+              ?.map(
+                (item) => BookingModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -95,9 +105,10 @@ class UserModel {
       'charging_stations': chargingStations?.map((c) => c.toJson()).toList(),
       'payment_methods': paymentMethods?.map((m) => m.toJson()).toList(),
       'upcoming_reservations': upcomingReservations
-          ?.map((b) => b.toJson())
+          ?.map((r) => r.toJson())
           .toList(),
-      'past_reservations': pastReservations?.map((b) => b.toJson()).toList(),
+      'past_reservations': pastReservations?.map((r) => r.toJson()).toList(),
+      'upcoming_bookings': upcomingBookings?.map((b) => b.toJson()).toList(),
     };
   }
 
@@ -115,6 +126,7 @@ class UserModel {
       paymentMethods: entity.paymentMethods ?? [],
       upcomingReservations: entity.upcomingReservations ?? [],
       pastReservations: entity.pastReservations ?? [],
+      upcomingBookings: entity.upcomingBookings ?? [],
     );
   }
 
@@ -131,6 +143,7 @@ class UserModel {
     List<CreditCardModel>? paymentMethods,
     List<ReservationModel>? upcomingReservations,
     List<ReservationModel>? pastReservations,
+    List<BookingModel>? upcomingBookings,
   }) {
     return UserModel(
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -146,6 +159,7 @@ class UserModel {
       paymentMethods: paymentMethods ?? this.paymentMethods,
       upcomingReservations: upcomingReservations ?? this.upcomingReservations,
       pastReservations: pastReservations ?? this.pastReservations,
+      upcomingBookings: upcomingBookings ?? this.upcomingBookings,
     );
   }
 }

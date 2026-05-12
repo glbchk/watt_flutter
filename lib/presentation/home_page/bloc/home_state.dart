@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/payment_method_model.dart';
@@ -28,6 +29,7 @@ class HomeState {
   final String? errorTimeIsNotChosen;
   final ReservationModel? reservation;
   final List<ReservationModel>? upcomingReservations;
+  final List<BookingModel>? upcomingBookings;
   final List<MockedFaq>? faq;
   final List<CreditCardModel>? paymentMethods;
   final String? availableTime;
@@ -54,6 +56,7 @@ class HomeState {
     this.errorTimeIsNotChosen,
     this.reservation,
     this.upcomingReservations,
+    this.upcomingBookings,
     this.faq,
     this.paymentMethods,
     this.availableTime,
@@ -81,6 +84,7 @@ class HomeState {
     String? Function()? errorTimeIsNotChosen,
     ReservationModel? Function()? reservation,
     List<ReservationModel>? upcomingReservations,
+    List<BookingModel>? upcomingBookings,
     List<MockedFaq>? faq,
     List<CreditCardModel>? paymentMethods,
     String? availableTime,
@@ -114,6 +118,7 @@ class HomeState {
           : this.errorTimeIsNotChosen,
       reservation: reservation != null ? reservation() : this.reservation,
       upcomingReservations: upcomingReservations ?? this.upcomingReservations,
+      upcomingBookings: upcomingBookings ?? this.upcomingBookings,
       faq: faq ?? this.faq,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       availableTime: availableTime ?? this.availableTime,

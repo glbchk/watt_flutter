@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
 import 'package:watt/utils/colors.dart';
@@ -11,19 +12,17 @@ import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_alert.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
-abstract class ChargingActionInterface {
-  void stopChargingOrCancelReservation(ReservationModel reservation);
-}
-
 class ChargingTestPage<T extends Cubit<S>, S> extends StatefulWidget {
   final ReservationModel reservation;
+  final BookingModel booking;
   final Duration duration;
   final Function(T) onInit;
-  final Function(T, ReservationModel) onStopCharging;
+  final Function(T, ReservationModel, BookingModel) onStopCharging;
 
   const ChargingTestPage({
     super.key,
     required this.reservation,
+    required this.booking,
     required this.duration,
     required this.onInit,
     required this.onStopCharging,
@@ -380,6 +379,7 @@ class _ChargingTestPageState<T extends Cubit<S>, S>
                         widget.onStopCharging(
                           context.read<T>(),
                           widget.reservation,
+                          widget.booking,
                         );
                         Navigator.pop(context);
                       },
@@ -388,6 +388,7 @@ class _ChargingTestPageState<T extends Cubit<S>, S>
                         widget.onStopCharging(
                           context.read<T>(),
                           widget.reservation,
+                          widget.booking,
                         );
                         Navigator.pop(context);
                       },

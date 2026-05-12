@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/booking_model.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_reservations_page/bloc/reservations_state.dart';
@@ -13,11 +14,13 @@ import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class ChargingPage extends StatefulWidget {
   final ReservationModel reservation;
+  final BookingModel booking;
   final Duration duration;
 
   const ChargingPage({
     super.key,
     required this.reservation,
+    required this.booking,
     required this.duration,
   });
 
@@ -387,6 +390,7 @@ class _ChargingPageState extends State<ChargingPage> {
                         .read<ReservationsCubit>()
                         .stopChargingOrCancelReservation(
                           widget.reservation,
+                          widget.booking,
                         );
                     Navigator.pop(context);
                   },
