@@ -21,20 +21,54 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user?.uid).get();
   }
 
-  Future<void> reauthenticateUser(String password) async {
+  Future<bool> reauthenticateUser(
+    String currentPassword,
+    String newEmail,
+  ) async {
     User? user = auth.currentUser;
-    final email = user?.email;
 
-    if (user == null || email == null) {
+    if (user == null || user.email == null) {
       print('No user found to reauthenticate');
+      return false;
     }
 
-    AuthCredential credential = EmailAuthProvider.credential(
-      email: email ?? '',
-      password: password,
+    final credential = EmailAuthProvider.credential(
+      email: user.email ?? '',
+      password: currentPassword,
     );
 
-    await user?.reauthenticateWithCredential(credential);
+    await user.reauthenticateWithCredential(credential);
+    await user.verifyBeforeUpdateEmail(newEmail);
+
+    await firestore.collection("users").doc(user.uid).update({
+      'email': newEmail,
+      'is_email_verified': true,
+    });
+
+    return false;
+  }
+
+  Future<bool> verifyEmail() async {
+    User? user = auth.currentUser;
+
+    if (user == null || user.email == null) {
+      print('No user found to reauthenticate');
+      return false;
+    }
+
+    await user.reload();
+    user = auth.currentUser;
+
+    if (user?.emailVerified ?? false) {
+      print("Email is verified!");
+      await firestore.collection("users").doc(user?.uid).update({
+        'is_email_verified': true,
+      });
+      return true;
+    }
+
+    await user?.sendEmailVerification();
+    return false;
   }
 
   Future<void> updateUserEmail(String email) async {
@@ -51,7 +85,6 @@ class UserRemoteDataSource {
 
   Future<void> updatePhoneNumber(String phoneNumber) async {
     User? user = auth.currentUser;
-    //await user?.updatePhoneNumber(phoneNumber); //Need PhoneAuthCredential
     await firestore.collection("users").doc(user?.uid).update({
       'phone_number': phoneNumber,
     });

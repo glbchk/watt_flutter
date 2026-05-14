@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
@@ -14,6 +15,7 @@ class EditProfileDataPage extends StatefulWidget {
   final Function(String) onPressed;
   final String? error;
   final Function(String?)? onChanged;
+  final VoidCallback? onLinkTap;
 
   const EditProfileDataPage({
     super.key,
@@ -22,6 +24,7 @@ class EditProfileDataPage extends StatefulWidget {
     required this.onPressed,
     this.error,
     this.onChanged,
+    this.onLinkTap,
   });
 
   @override
@@ -30,7 +33,6 @@ class EditProfileDataPage extends StatefulWidget {
 
 class _EditProfileDataPageState extends State<EditProfileDataPage> {
   TextEditingController controller = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -42,7 +44,6 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
   @override
   void dispose() {
     controller.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -73,30 +74,37 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
         if (state.errorMessage?.contains('reauth-required') ?? false) {
+          context.read<ProfileCubit>().clearError();
+
+          final cubit = context.read<ProfileCubit>();
+          final emailToUpdate = controller.text;
+
           LoginAlertWidget.show(
             context: context,
             title: "Confirm Identity",
             message: "Please enter your password to change your email.",
-            passwordController: passwordController,
-            passwordError: state.passwordError,
             buttonLabel: 'Confirm',
-            onConfirm: () {
-              if (state.passwordError != null) {
-                context.read<ProfileCubit>().verifyPasswordUserData(
-                  passwordController.text,
-                );
-              } else {
-                context.read<ProfileCubit>().reauthenticateUser(
-                  passwordController.text,
-                  ProfileDataType.editEmail,
-                  controller.text,
-                );
-                Navigator.pop(context);
-              }
+            onConfirm: (String password) async {
+              await cubit.reauthenticateUser(
+                password,
+                ProfileDataType.editEmail,
+                emailToUpdate,
+              );
             },
           );
+
+          if (state.email != null &&
+              state.passwordError == null &&
+              !state.isLoading) {
+            Navigator.of(context).pop();
+          }
         }
       },
+      buildWhen: (previous, current) =>
+          previous.nameError != current.nameError ||
+          previous.emailError != current.emailError ||
+          previous.phoneNumberError != current.phoneNumberError ||
+          previous.isEmailVerified != current.isEmailVerified,
       builder: (context, state) {
         String? error;
         switch (widget.type) {
@@ -124,6 +132,46 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
                   error: error,
                   onChanged: (String? value) => widget.onChanged?.call(value),
                 ),
+                if (widget.type == ProfileDataType.editEmail &&
+                    (state.isEmailVerified == null ||
+                        state.isEmailVerified == false))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: context.theme.appColors.grey4,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Email is not verified, ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.theme.appColors.primary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'CLICK TO SEND VERIFICATION EMAIL',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.theme.appColors.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = widget.onLinkTap,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

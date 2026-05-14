@@ -18,6 +18,7 @@ class WattAlertWidget extends StatelessWidget {
   final String? errorMessage;
   final String? buttonLabel;
   final VoidCallback? onConfirm;
+  final Color? buttonColor;
   final String? cancelLabel;
   final VoidCallback? onCancelConfirm;
 
@@ -32,6 +33,7 @@ class WattAlertWidget extends StatelessWidget {
     this.errorMessage,
     this.buttonLabel,
     this.onConfirm,
+    this.buttonColor,
     this.cancelLabel,
     this.onCancelConfirm,
   });
@@ -47,6 +49,7 @@ class WattAlertWidget extends StatelessWidget {
     String? emailError,
     String? buttonLabel,
     VoidCallback? onConfirm,
+    Color? buttonColor,
     String? cancelLabel,
     VoidCallback? onCancelConfirm,
   }) {
@@ -148,7 +151,8 @@ class WattAlertWidget extends StatelessWidget {
               child: WattMainButton(
                 label: buttonLabel ?? '',
                 textColor: context.theme.appColors.error,
-                backgroundColor: context.theme.appColors.background,
+                backgroundColor:
+                    buttonColor ?? context.theme.appColors.background,
                 buttonShadow: cancelLabel != null
                     ? context.theme.appColors.onSecondary.withAlpha(38)
                     : context.theme.appColors.primary.withAlpha(76),

@@ -37,8 +37,19 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> reauthenticateUser(String password) async {
-    await userRemoteDataSource.reauthenticateUser(password);
+  Future<bool> reauthenticateUser(
+    String currentPassword,
+    String newEmail,
+  ) async {
+    return await userRemoteDataSource.reauthenticateUser(
+      currentPassword,
+      newEmail,
+    );
+  }
+
+  @override
+  Future<bool> verifyEmail() async {
+    return await userRemoteDataSource.verifyEmail();
   }
 
   @override

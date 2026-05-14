@@ -18,8 +18,14 @@ class CreateUserUseCase extends UserUseCase {
 }
 
 class ReauthenticateUserUseCase extends UserUseCase {
-  Future execute(String password) {
-    return userRepository.reauthenticateUser(password);
+  Future execute(String currentPassword, String newEmail) {
+    return userRepository.reauthenticateUser(currentPassword, newEmail);
+  }
+}
+
+class VerifyEmailUserUseCase extends UserUseCase {
+  Future execute() {
+    return userRepository.verifyEmail();
   }
 }
 

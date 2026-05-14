@@ -15,6 +15,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
   final ReauthenticateUserUseCase reauthenticateUserUseCase =
       ReauthenticateUserUseCase();
+  final VerifyEmailUserUseCase verifyEmailUserUseCase =
+      VerifyEmailUserUseCase();
   final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
   final UpdateUserEmailUseCase updateUserEmailUseCase =
       UpdateUserEmailUseCase();
@@ -42,6 +44,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(
           state.copyWith(
             userData: user,
+            isEmailVerified: user.isEmailVerified,
             isLoading: false,
             isUserAuthenticated: true,
           ),
@@ -69,16 +72,15 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<void> editNameUserData(String name) async {
-    state.copyWith(isLoading: true);
-
+    // emit(state.copyWith(isLoading: true));
     try {
+      print('User name updated!');
       await updateUserNameUseCase.execute(name);
 
-      print('User name updated!');
       emit(
         state.copyWith(
-          userData: state.userData?.copyUserWith(name: name),
-          isLoading: false,
+          name: name,
+          // isLoading: false,
         ),
       );
     } catch (e) {
@@ -86,23 +88,22 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          isLoading: false,
+          // isLoading: false,
         ),
       );
     }
   }
 
   Future<void> editEmailUserData(String email) async {
-    state.copyWith(isLoading: true);
-
+    // emit(state.copyWith(isLoading: true));
     try {
+      print('User email updated!');
       await updateUserEmailUseCase.execute(email);
 
-      print('User email updated!');
       emit(
         state.copyWith(
-          userData: state.userData?.copyUserWith(email: email),
-          isLoading: false,
+          email: email,
+          // isLoading: false,
         ),
       );
     } catch (e) {
@@ -110,7 +111,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(
           state.copyWith(
             errorMessage: () => 'reauth-required',
-            isLoading: false,
+            // isLoading: false,
           ),
         );
         return;
@@ -120,23 +121,34 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          isLoading: false,
+          // isLoading: false,
         ),
       );
     }
   }
 
-  Future<void> editPhoneNumberUserData(String phoneNumber) async {
-    state.copyWith(isLoading: true);
+  void clearError() {
+    emit(
+      state.copyWith(
+        errorMessage: () => null,
+        nameError: () => null,
+        emailError: () => null,
+        phoneNumberError: () => null,
+        passwordError: () => null,
+      ),
+    );
+  }
 
+  Future<void> editPhoneNumberUserData(String phoneNumber) async {
+    // emit(state.copyWith(isLoading: true));
     try {
+      print('User phone number updated!');
       await updateUserPhoneNumberUseCase.execute(phoneNumber);
 
-      print('User phone number updated!');
       emit(
         state.copyWith(
-          userData: state.userData?.copyUserWith(phoneNumber: phoneNumber),
-          isLoading: false,
+          phoneNumber: phoneNumber,
+          // isLoading: false,
         ),
       );
     } catch (e) {
@@ -144,26 +156,25 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          isLoading: false,
+          // isLoading: false,
         ),
       );
     }
   }
 
   Future<void> reauthenticateUser(
-    String password,
+    String currentPassword,
     ProfileDataType type,
-    String newValue,
+    String newEmail,
   ) async {
     try {
-      await reauthenticateUserUseCase.execute(password);
-
-      await editEmailUserData(newValue);
+      await reauthenticateUserUseCase.execute(currentPassword, newEmail);
 
       emit(
         state.copyWith(
           isLoading: false,
-          userData: state.userData?.copyUserWith(email: newValue),
+          email: newEmail,
+          isEmailVerified: false,
           passwordError: () => null,
           errorMessage: () => null,
         ),
@@ -173,6 +184,27 @@ class ProfileCubit extends Cubit<ProfileState> {
         state.copyWith(
           isLoading: false,
           errorMessage: () => "Wrong password. Please try again.",
+        ),
+      );
+    }
+  }
+
+  Future<void> verifyEmail() async {
+    try {
+      await verifyEmailUserUseCase.execute();
+
+      final updatedUser = await getUserDataUseCase.execute();
+
+      emit(
+        state.copyWith(
+          isEmailVerified: updatedUser?.isEmailVerified ?? false,
+          userData: updatedUser,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          errorMessage: () => "Failed to verify email",
         ),
       );
     }
