@@ -36,20 +36,30 @@ class UserRepositoryImpl implements UserRepository {
     await userRemoteDataSource.getCurrentUser();
   }
 
+  // @override
+  // Stream<bool> listenForEmailVerification(String pendingEmail) {
+  //   return userRemoteDataSource.listenForEmailVerification(pendingEmail);
+  // }
+
   @override
-  Future<bool> reauthenticateUser(
+  Future<void> updateEmail(String newEmail) async {
+    await userRemoteDataSource.updateEmail(newEmail);
+  }
+
+  @override
+  Future<void> reauthenticateUser(
     String currentPassword,
     String newEmail,
   ) async {
-    return await userRemoteDataSource.reauthenticateUser(
+    await userRemoteDataSource.reauthenticateUser(
       currentPassword,
       newEmail,
     );
   }
 
   @override
-  Future<bool> verifyEmail() async {
-    return await userRemoteDataSource.verifyEmail();
+  Future<void> sendVerificationEmail() async {
+    await userRemoteDataSource.sendVerificationEmail();
   }
 
   @override
@@ -58,8 +68,8 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> updateUserEmail(String email) async {
-    await userRemoteDataSource.updateUserEmail(email);
+  Future<bool> checkVerificationAndUpdate(String pendingEmail) async {
+    return await userRemoteDataSource.checkVerificationAndUpdate(pendingEmail);
   }
 
   @override
@@ -221,10 +231,12 @@ class UserRepositoryImpl implements UserRepository {
     return await userRemoteDataSource.fetchPastBookings();
   }
 
-  // @override
-  // Future<void> closeBooking(BookingModel booking) async {
-  //   await userRemoteDataSource.closeBooking(booking);
-  // }
+  @override
+  Future<List<ChargingStationModel>> updateChargingStationsOnMap(
+    List<ChargingStationModel> stations,
+  ) async {
+    return await userRemoteDataSource.updateChargingStationsOnMap(stations);
+  }
 
   @override
   Future<void> deleteUser() async {

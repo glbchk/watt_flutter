@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watt/data/models/booking_model.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/data/models/mock_data_models.dart';
 import 'package:watt/data/models/reservation_model.dart';
 import 'package:watt/data/models/slot_model.dart';
@@ -46,8 +47,8 @@ class HomeCubit extends Cubit<HomeState> {
       ConfirmUpcomingReservationWithPaymentUseCase();
   final DeleteUpcomingReservationUseCase deleteReservationUseCase =
       DeleteUpcomingReservationUseCase();
-  // final PlaceUpcomingBookingUseCase placeUpcomingBookingUseCase =
-  //     PlaceUpcomingBookingUseCase();
+  final UpdateChargingStationsOnMapUseCase updateChargingStationsOnMapUseCase =
+      UpdateChargingStationsOnMapUseCase();
   final FetchFaqUseCase fetchFaqUseCase = FetchFaqUseCase();
 
   HomeCubit({required this.authBloc, required this.profileCubit})
@@ -502,6 +503,30 @@ class HomeCubit extends Cubit<HomeState> {
           chargingStationsOnMap: allStations,
           userStationIds: result['user'],
           globalStationIds: result['global'],
+          isLoading: false,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          errorMessage: () => e.toString(),
+          isLoading: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> updateChargingStationsOnMap(
+    List<ChargingStationModel> stations,
+  ) async {
+    try {
+      final updatedStations = await updateChargingStationsOnMapUseCase.execute(
+        stations,
+      );
+
+      emit(
+        state.copyWith(
+          chargingStationsOnMap: updatedStations,
           isLoading: false,
         ),
       );

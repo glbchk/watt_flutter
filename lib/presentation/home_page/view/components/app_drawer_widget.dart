@@ -124,7 +124,7 @@ class AppDrawer extends StatelessWidget {
                         ),
                         _buildMenuItem(
                           Icons.calendar_today_outlined,
-                          'Bookings - (Unfinished)',
+                          'Bookings',
                           () {
                             onPressedBookings?.call();
                           },

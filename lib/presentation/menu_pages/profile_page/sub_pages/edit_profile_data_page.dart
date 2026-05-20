@@ -5,6 +5,7 @@ import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dar
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/components/edit_data_widget.dart';
 import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type_enum.dart';
+import 'package:watt/presentation/menu_pages/profile_page/sub_pages/email_verification_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/login_alert.dart';
@@ -38,7 +39,12 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
   void initState() {
     super.initState();
     controller.text = widget.value;
-    context.read<ProfileCubit>().fetchUserData();
+
+    if (widget.type == ProfileDataType.editEmail) {
+      context.read<ProfileCubit>().checkVerificationEmailAndUpdate(
+        controller.text,
+      );
+    }
   }
 
   @override
@@ -72,10 +78,10 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
     }
 
     return BlocConsumer<ProfileCubit, ProfileState>(
+      listenWhen: (previous, current) =>
+          previous.errorMessage != current.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage?.contains('reauth-required') ?? false) {
-          context.read<ProfileCubit>().clearError();
-
+        if (state.errorMessage == 'reauth-required') {
           final cubit = context.read<ProfileCubit>();
           final emailToUpdate = controller.text;
 
@@ -85,26 +91,34 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
             message: "Please enter your password to change your email.",
             buttonLabel: 'Confirm',
             onConfirm: (String password) async {
-              await cubit.reauthenticateUser(
-                password,
-                ProfileDataType.editEmail,
-                emailToUpdate,
-              );
+              try {
+                await cubit.reauthenticateUser(
+                  password,
+                  ProfileDataType.editEmail,
+                  emailToUpdate,
+                );
+
+                if (!context.mounted) return;
+
+                Navigator.of(context).pop();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmailVerificationPage(
+                      pendingEmail: emailToUpdate,
+                    ),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              }
             },
           );
-
-          if (state.email != null &&
-              state.passwordError == null &&
-              !state.isLoading) {
-            Navigator.of(context).pop();
-          }
         }
       },
-      buildWhen: (previous, current) =>
-          previous.nameError != current.nameError ||
-          previous.emailError != current.emailError ||
-          previous.phoneNumberError != current.phoneNumberError ||
-          previous.isEmailVerified != current.isEmailVerified,
       builder: (context, state) {
         String? error;
         switch (widget.type) {

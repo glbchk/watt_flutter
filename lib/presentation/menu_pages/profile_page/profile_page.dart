@@ -4,6 +4,7 @@ import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dar
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type_enum.dart';
 import 'package:watt/presentation/menu_pages/profile_page/sub_pages/edit_profile_data_page.dart';
+import 'package:watt/presentation/menu_pages/profile_page/sub_pages/email_verification_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';
@@ -180,29 +181,72 @@ class _ProfilePageState extends State<ProfilePage> {
                                               onLinkTap: () {
                                                 context
                                                     .read<ProfileCubit>()
-                                                    .verifyEmail();
-                                              },
-                                              onPressed: (String email) async {
-                                                await context
-                                                    .read<ProfileCubit>()
-                                                    .editEmailUserData(email);
+                                                    .sendVerificationEmail();
 
-                                                final latestState = context
-                                                    .read<ProfileCubit>()
-                                                    .state;
-
-                                                if (latestState.errorMessage ==
-                                                    null) {
-                                                  if (context.mounted) {
-                                                    FocusScope.of(
-                                                      context,
-                                                    ).unfocus();
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                  }
+                                                if (state.isEmailVerified ==
+                                                    true) {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                } else {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          EmailVerificationPage(
+                                                            pendingEmail:
+                                                                state.email ??
+                                                                '',
+                                                          ),
+                                                    ),
+                                                  );
                                                 }
+
+                                                // context
+                                                //     .read<ProfileCubit>()
+                                                //     .sendVerificationEmail();
+                                                //
+                                                // WattAlertWidget.show(
+                                                //   context: context,
+                                                //   title: 'Check your email',
+                                                //   message:
+                                                //       'A verification link was sent to ${state.email}. Click it to confirm your new email.',
+                                                //   buttonTextColor: context
+                                                //       .theme
+                                                //       .appColors
+                                                //       .onSecondary,
+                                                //   buttonLabel: 'OK',
+                                                //   onConfirm: () => Navigator.of(
+                                                //     context,
+                                                //   ).pop(),
+                                                // );
                                               },
+                                              onPressed:
+                                                  (String newEmail) async {
+                                                    final cubit = context
+                                                        .read<ProfileCubit>();
+
+                                                    await cubit.updateEmail(
+                                                      newEmail,
+                                                    );
+                                                    final latestState =
+                                                        cubit.state;
+
+                                                    if (latestState
+                                                            .errorMessage ==
+                                                        'reauth-required') {
+                                                      return;
+                                                    }
+
+                                                    if (context.mounted) {
+                                                      FocusScope.of(
+                                                        context,
+                                                      ).unfocus();
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    }
+                                                  },
                                             ),
                                           ),
                                         );

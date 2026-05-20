@@ -312,14 +312,17 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             },
-            onPressedYourCharger: () {
+            onPressedYourCharger: () async {
               Navigator.of(context).pop();
-              Navigator.push(
+
+              final cubit = context.read<HomeCubit>();
+
+              final stations = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => MyChargingStationsPage()),
-              ).then((_) async {
-                await context.read<HomeCubit>().fetchChargingStationsForMap();
-              });
+              );
+
+              cubit.updateChargingStationsOnMap(stations);
             },
             onPressedPaymentMethod: () {
               Navigator.push(

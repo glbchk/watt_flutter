@@ -17,21 +17,33 @@ class CreateUserUseCase extends UserUseCase {
   }
 }
 
+class UpdateUserEmailUseCase extends UserUseCase {
+  Future<void> execute(String newEmail) {
+    return userRepository.updateEmail(newEmail);
+  }
+}
+
+// class ListenForEmailVerificationUseCase extends UserUseCase {
+//   Stream<bool> execute(String pendingEmail) {
+//     return userRepository.listenForEmailVerification(pendingEmail);
+//   }
+// }
+
 class ReauthenticateUserUseCase extends UserUseCase {
   Future execute(String currentPassword, String newEmail) {
     return userRepository.reauthenticateUser(currentPassword, newEmail);
   }
 }
 
-class VerifyEmailUserUseCase extends UserUseCase {
+class SendVerificationEmailUserUseCase extends UserUseCase {
   Future execute() {
-    return userRepository.verifyEmail();
+    return userRepository.sendVerificationEmail();
   }
 }
 
-class UpdateUserEmailUseCase extends UserUseCase {
-  Future execute(String email) {
-    return userRepository.updateUserEmail(email);
+class CheckVerificationEmailAndUpdateUseCase extends UserUseCase {
+  Future execute(String pendingEmail) {
+    return userRepository.checkVerificationAndUpdate(pendingEmail);
   }
 }
 
@@ -205,11 +217,11 @@ class FetchPastBookingsUseCase extends UserUseCase {
   }
 }
 
-// class CloseBookingUseCase extends UserUseCase {
-//   Future execute(BookingModel booking) {
-//     return userRepository.closeBooking(booking);
-//   }
-// }
+class UpdateChargingStationsOnMapUseCase extends UserUseCase {
+  Future execute(List<ChargingStationModel> stations) {
+    return userRepository.updateChargingStationsOnMap(stations);
+  }
+}
 
 class DeleteUserUseCase extends UserUseCase {
   Future execute() {

@@ -32,11 +32,11 @@ class LoginAlertWidget extends StatelessWidget {
     String? buttonLabel,
     Future<void> Function(String password)? onConfirm,
   }) {
+    final passwordController = TextEditingController();
+
     return showDialog(
       context: context,
       builder: (dialogContext) {
-        final passwordController = TextEditingController();
-
         return BlocBuilder<ProfileCubit, ProfileState>(
           builder: (context, state) {
             return LoginAlertWidget(

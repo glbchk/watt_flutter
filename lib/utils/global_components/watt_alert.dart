@@ -19,6 +19,7 @@ class WattAlertWidget extends StatelessWidget {
   final String? buttonLabel;
   final VoidCallback? onConfirm;
   final Color? buttonColor;
+  final Color? buttonTextColor;
   final String? cancelLabel;
   final VoidCallback? onCancelConfirm;
 
@@ -34,6 +35,7 @@ class WattAlertWidget extends StatelessWidget {
     this.buttonLabel,
     this.onConfirm,
     this.buttonColor,
+    this.buttonTextColor,
     this.cancelLabel,
     this.onCancelConfirm,
   });
@@ -50,6 +52,7 @@ class WattAlertWidget extends StatelessWidget {
     String? buttonLabel,
     VoidCallback? onConfirm,
     Color? buttonColor,
+    Color? buttonTextColor,
     String? cancelLabel,
     VoidCallback? onCancelConfirm,
   }) {
@@ -79,6 +82,8 @@ class WattAlertWidget extends StatelessWidget {
                 onChanged: onChanged,
                 errorMessage: currentError,
                 buttonLabel: buttonLabel,
+                buttonColor: buttonColor,
+                buttonTextColor: buttonTextColor,
                 onConfirm: onConfirm,
                 cancelLabel: cancelLabel,
                 onCancelConfirm: onCancelConfirm,
@@ -150,7 +155,7 @@ class WattAlertWidget extends StatelessWidget {
             Expanded(
               child: WattMainButton(
                 label: buttonLabel ?? '',
-                textColor: context.theme.appColors.error,
+                textColor: buttonTextColor ?? context.theme.appColors.error,
                 backgroundColor:
                     buttonColor ?? context.theme.appColors.background,
                 buttonShadow: cancelLabel != null

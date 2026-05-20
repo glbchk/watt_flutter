@@ -15,6 +15,7 @@ class ProfileState {
   final String? phoneNumberError;
   final String? newEmailValue;
   final String? passwordError;
+  final String? pendingEmail;
 
   ProfileState({
     required this.isUserAuthenticated,
@@ -31,6 +32,7 @@ class ProfileState {
     this.phoneNumberError,
     this.newEmailValue,
     this.passwordError,
+    this.pendingEmail,
   });
 
   ProfileState copyWith({
@@ -49,6 +51,7 @@ class ProfileState {
     String? Function()? phoneNumberError,
     String? Function()? newEmailValue,
     String? Function()? passwordError,
+    String? pendingEmail,
   }) {
     return ProfileState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
@@ -71,6 +74,7 @@ class ProfileState {
       passwordError: passwordError != null
           ? passwordError()
           : this.passwordError,
+      pendingEmail: pendingEmail ?? this.pendingEmail,
     );
   }
 }

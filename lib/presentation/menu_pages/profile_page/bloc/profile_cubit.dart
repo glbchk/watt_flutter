@@ -11,15 +11,21 @@ import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type
 class ProfileCubit extends Cubit<ProfileState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
+  // StreamSubscription? _emailVerificationSubscription;
 
   final GetUserDataUseCase getUserDataUseCase = GetUserDataUseCase();
-  final ReauthenticateUserUseCase reauthenticateUserUseCase =
-      ReauthenticateUserUseCase();
-  final VerifyEmailUserUseCase verifyEmailUserUseCase =
-      VerifyEmailUserUseCase();
-  final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
+  // final ListenForEmailVerificationUseCase listenForEmailVerificationUseCase =
+  //     ListenForEmailVerificationUseCase();
   final UpdateUserEmailUseCase updateUserEmailUseCase =
       UpdateUserEmailUseCase();
+  final ReauthenticateUserUseCase reauthenticateUserUseCase =
+      ReauthenticateUserUseCase();
+  final SendVerificationEmailUserUseCase sendVerificationEmailUserUseCase =
+      SendVerificationEmailUserUseCase();
+  final UpdateUserNameUseCase updateUserNameUseCase = UpdateUserNameUseCase();
+  final CheckVerificationEmailAndUpdateUseCase
+  checkVerificationEmailAndUpdateUseCase =
+      CheckVerificationEmailAndUpdateUseCase();
   final UpdatePhoneNumberUseCase updateUserPhoneNumberUseCase =
       UpdatePhoneNumberUseCase();
   final LogoutUserUseCase logoutUserUseCase = LogoutUserUseCase();
@@ -35,6 +41,47 @@ class ProfileCubit extends Cubit<ProfileState> {
     });
   }
 
+  // void startListeningForEmailVerification(String pendingEmail) {
+  //   print(
+  //     'DEBUG: startListeningForEmailVerification called with $pendingEmail',
+  //   );
+  //   _emailVerificationSubscription?.cancel();
+  //
+  //   _emailVerificationSubscription = listenForEmailVerificationUseCase
+  //       .execute(pendingEmail)
+  //       .listen(
+  //         (isVerified) async {
+  //           print('DEBUG: stream emitted isVerified=$isVerified');
+  //           if (isVerified) {
+  //             await fetchUserData();
+  //
+  //             emit(
+  //               state.copyWith(
+  //                 isEmailVerified: true,
+  //               ),
+  //             );
+  //
+  //             stopListeningForEmailVerification();
+  //           }
+  //         },
+  //         onError: (e) => print('DEBUG: stream error: $e'),
+  //         onDone: () => print('DEBUG: stream done'),
+  //       );
+  //   print('DEBUG: subscription created: $_emailVerificationSubscription');
+  // }
+
+  // void stopListeningForEmailVerification() {
+  //   _emailVerificationSubscription?.cancel();
+  //   _emailVerificationSubscription = null;
+  // }
+
+  @override
+  Future<void> close() {
+    authSubscription.cancel();
+    // _emailVerificationSubscription?.cancel();
+    return super.close();
+  }
+
   Future<void> fetchUserData() async {
     emit(state.copyWith(isLoading: true));
     try {
@@ -44,6 +91,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(
           state.copyWith(
             userData: user,
+            email: user.email,
             isEmailVerified: user.isEmailVerified,
             isLoading: false,
             isUserAuthenticated: true,
@@ -94,39 +142,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> editEmailUserData(String email) async {
-    // emit(state.copyWith(isLoading: true));
-    try {
-      print('User email updated!');
-      await updateUserEmailUseCase.execute(email);
-
-      emit(
-        state.copyWith(
-          email: email,
-          // isLoading: false,
-        ),
-      );
-    } catch (e) {
-      if (e.toString().contains('requires-recent-login')) {
-        emit(
-          state.copyWith(
-            errorMessage: () => 'reauth-required',
-            // isLoading: false,
-          ),
-        );
-        return;
-      }
-
-      print('Error changing user email: $e');
-      emit(
-        state.copyWith(
-          errorMessage: () => e.toString(),
-          // isLoading: false,
-        ),
-      );
-    }
-  }
-
   void clearError() {
     emit(
       state.copyWith(
@@ -162,6 +177,35 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  Future<void> updateEmail(String newEmail) async {
+    try {
+      await updateUserEmailUseCase.execute(newEmail);
+
+      if (newEmail != '') {
+        emit(
+          state.copyWith(
+            email: newEmail,
+            isEmailVerified: false,
+          ),
+        );
+      }
+    } catch (e) {
+      if (e.toString().contains('requires-recent-login')) {
+        emit(
+          state.copyWith(
+            errorMessage: () => 'reauth-required',
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            errorMessage: () => e.toString(),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> reauthenticateUser(
     String currentPassword,
     ProfileDataType type,
@@ -173,38 +217,53 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           isLoading: false,
-          email: newEmail,
           isEmailVerified: false,
           passwordError: () => null,
           errorMessage: () => null,
         ),
       );
+      // startListeningForEmailVerification(newEmail);
     } catch (e) {
       emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: () => "Wrong password. Please try again.",
+          errorMessage: () => '$e',
         ),
       );
     }
   }
 
-  Future<void> verifyEmail() async {
+  Future<void> sendVerificationEmail() async {
     try {
-      await verifyEmailUserUseCase.execute();
-
-      final updatedUser = await getUserDataUseCase.execute();
-
-      emit(
-        state.copyWith(
-          isEmailVerified: updatedUser?.isEmailVerified ?? false,
-          userData: updatedUser,
-        ),
-      );
+      await sendVerificationEmailUserUseCase.execute();
     } catch (e) {
       emit(
         state.copyWith(
           errorMessage: () => "Failed to verify email",
+        ),
+      );
+    }
+  }
+
+  Future<void> checkVerificationEmailAndUpdate(String pendingEmail) async {
+    try {
+      final isVerified = await checkVerificationEmailAndUpdateUseCase.execute(
+        pendingEmail,
+      );
+
+      if (isVerified) {
+        await fetchUserData();
+        emit(
+          state.copyWith(
+            isEmailVerified: true,
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error checking verification: $e");
+      emit(
+        state.copyWith(
+          errorMessage: () => 'Not possible to update if the email verified.',
         ),
       );
     }
