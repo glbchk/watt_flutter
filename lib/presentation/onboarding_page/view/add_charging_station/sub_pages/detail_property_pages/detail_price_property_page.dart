@@ -8,13 +8,11 @@ import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 
 class DetailPricePropertyPage extends StatefulWidget {
-  // final TextEditingController controllerPrice;
   final String savedPrice;
   final String currency;
 
   const DetailPricePropertyPage({
     super.key,
-    // required this.controllerPrice,
     required this.savedPrice,
     this.currency = 'SEK',
   });

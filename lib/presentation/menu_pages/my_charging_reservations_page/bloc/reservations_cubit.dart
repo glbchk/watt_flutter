@@ -174,7 +174,6 @@ class ReservationsCubit extends Cubit<ReservationsState>
       );
 
       await stopChargingUseCase.execute(reservation, booking);
-      // await closeBookingUseCase.execute(booking);
     } catch (e) {
       print('Error deleting upcoming reservation $e');
     }

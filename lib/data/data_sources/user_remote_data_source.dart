@@ -12,9 +12,6 @@ class UserRemoteDataSource {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  // Stream<User?> get authStateChanges => auth.authStateChanges();
-  // Stream<User?> get idTokenChanges => auth.idTokenChanges();
-
   Stream<bool> listenForEmailVerification(String pendingEmail) async* {
     while (true) {
       await Future.delayed(const Duration(seconds: 3));
@@ -98,7 +95,7 @@ class UserRemoteDataSource {
   Future<void> sendVerificationEmail() async {
     final user = auth.currentUser;
     if (user == null) return;
-    // await user.verifyBeforeUpdateEmail(user.email ?? '');
+
     await user.sendEmailVerification();
   }
 

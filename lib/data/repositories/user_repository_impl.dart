@@ -22,7 +22,6 @@ class UserRepositoryImpl implements UserRepository {
       email: user.email,
       phoneNumber: user.phoneNumber,
       isOnboardingCompleted: user.isOnboardingCompleted,
-      // language: user.language,
       paymentMethods: user.paymentMethods,
       cars: user.cars,
       chargingStations: user.chargingStations,

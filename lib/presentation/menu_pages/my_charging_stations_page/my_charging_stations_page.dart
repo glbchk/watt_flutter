@@ -23,7 +23,6 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
   void initState() {
     super.initState();
     context.read<MyChargingStationsCubit>().fetchChargingStations();
-    // context.read<MyChargingStationsCubit>().fetchUserData();
   }
 
   @override
@@ -124,6 +123,7 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
                                           pngImage: chargingStation.brandLogo,
                                           marginDistance: marginSize,
                                           onPressed: () {
+                                            ///TODO: NEED TO FIX
                                             // Navigator.push(
                                             //   context,
                                             //   MaterialPageRoute(

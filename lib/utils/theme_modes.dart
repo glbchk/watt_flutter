@@ -9,6 +9,4 @@ class AppTheme with ChangeNotifier {
     _themeMode = themeMode;
     notifyListeners();
   }
-
-  // ...
 }

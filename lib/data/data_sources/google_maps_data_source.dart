@@ -138,7 +138,6 @@ class GoogleMapsRemoteDataSource {
       }
     } catch (e) {
       print("Error finding location: $e");
-      // You could trigger a SnackBar here if the address is invalid
     }
     return null;
   }

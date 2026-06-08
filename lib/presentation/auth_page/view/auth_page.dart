@@ -5,12 +5,12 @@ import 'package:watt/presentation/auth_page/bloc/auth_event.dart';
 import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/auth_page/view/components/buttons_section_widget.dart';
 import 'package:watt/presentation/auth_page/view/components/header_auth_widget.dart';
+import 'package:watt/presentation/home_page/view/home_page.dart';
 import 'package:watt/presentation/onboarding_page/view/onboarding_page.dart';
 import 'package:watt/utils/colors.dart';
+import 'package:watt/utils/global_components/bottom_floating_button.dart';
 import 'package:watt/utils/global_components/watt_alert.dart';
 
-import '../../../utils/global_components/bottom_floating_button.dart';
-import '../../home_page/view/home_page.dart';
 import 'components/auth_form_widget.dart';
 
 class AuthPage extends StatefulWidget {

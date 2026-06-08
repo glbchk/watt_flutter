@@ -24,7 +24,6 @@ class TextIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // width: width ?? double.infinity,
       height: 50,
       child: TextButton.icon(
         icon: Padding(

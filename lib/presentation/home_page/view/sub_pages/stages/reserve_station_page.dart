@@ -491,11 +491,6 @@ class _ReserveStationPageState extends State<ReserveStationPage> {
                             child: WattMainButton(
                               label: 'Book',
                               onPressed: () async {
-                                // final convertedTimeSlots =
-                                //     StringHelperMethods.convertSelectedSlotsToTimeSlots(
-                                //       state.selectedSlots ?? [],
-                                //       slots,
-                                //     );
                                 double powerKw =
                                     double.tryParse(
                                       state.chargingStation?.chargingEffect

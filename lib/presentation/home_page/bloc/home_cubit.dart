@@ -426,7 +426,6 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         state.copyWith(
           errorTimeIsNotChosen: null,
-          // isBooked: false,
         ),
       );
     }

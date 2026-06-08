@@ -58,7 +58,6 @@ class AuthRemoteDataSource {
     await FirebaseAuth.instance.sendPasswordResetEmail(
       email: email,
     );
-    print(email);
   }
 
   Future<void> logout() async {

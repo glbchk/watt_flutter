@@ -33,15 +33,6 @@ class _BackgroundGradientState extends State<BackgroundGradient> {
       decoration: BoxDecoration(
         gradient: widget.backgroundColor ?? wattGradient,
       ),
-      // child: Column(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   children: [
-      //     SizedBox(
-      //       height: 50.0,
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

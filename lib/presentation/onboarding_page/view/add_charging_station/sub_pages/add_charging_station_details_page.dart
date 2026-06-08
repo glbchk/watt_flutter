@@ -53,10 +53,6 @@ class _AddChargingStationDetailsPageState
     isOnlineChargerOn = state.onlineCharger ?? false;
     isEveryoneCanAccess = state.everyoneCanAccess ?? false;
 
-    // context.read<ChargingStationBloc>().add(
-    //   ResetChargingStationFormEvent(),
-    // );
-
     super.initState();
   }
 
@@ -304,9 +300,6 @@ class _AddChargingStationDetailsPageState
                   context.read<ChargingStationBloc>().add(
                     AddOneChargingStationEvent(chargingStation),
                   );
-                  // context.read<ChargingStationBloc>().add(
-                  //   ResetChargingStationFormEvent(),
-                  // );
                   Navigator.pop(context);
                 }
                 ;

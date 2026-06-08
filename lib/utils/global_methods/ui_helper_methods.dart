@@ -158,7 +158,6 @@ class UiHelperMethods {
       initialDate: initialDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
-      // Apply your Watt theme colors to the picker
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -174,7 +173,6 @@ class UiHelperMethods {
     );
 
     if (picked != null) {
-      // Format the date for the text field
       controller.text = DateFormat('dd/MM/yyyy').format(picked);
       onDateSelected(picked);
     }
@@ -256,7 +254,6 @@ class UiHelperMethods {
             padding: const EdgeInsets.only(
               left: 8,
               right: 8,
-              // bottom: 34,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

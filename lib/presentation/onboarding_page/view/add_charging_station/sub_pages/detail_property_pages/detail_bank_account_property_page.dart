@@ -11,12 +11,7 @@ import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
 class DetailBankAccountPropertyPage extends StatefulWidget {
-  // final VoidCallback onPress;
-
-  const DetailBankAccountPropertyPage({
-    super.key,
-    // required this.onPress,
-  });
+  const DetailBankAccountPropertyPage({super.key});
 
   @override
   State<DetailBankAccountPropertyPage> createState() =>

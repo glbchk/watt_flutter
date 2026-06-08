@@ -42,19 +42,6 @@ class _HomePageState extends State<HomePage> {
 
   GoogleMapController? _mapController;
 
-  // Set<Marker> _markers = {};
-  //
-  // Future<void> generateMarkers(
-  //   List<ChargingStationModel> stations,
-  //   HomeState state,
-  // ) async {
-  //   final markers = buildMarkers(stations, state);
-  //
-  //   setState(() {
-  //     _markers = markers;
-  //   });
-  // }
-
   Set<Marker> buildMarkers(
     List<ChargingStationModel> locations,
     HomeState state,
@@ -129,7 +116,6 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 station: location,
                 onPressedMoreDetails: () {
-                  // context.read<HomeCubit>().bookingStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -140,7 +126,6 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 onPressedToBook: () {
-                  // context.read<HomeCubit>().bookingStage();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -221,10 +206,6 @@ class _HomePageState extends State<HomePage> {
             (route) => false,
           );
         }
-
-        // if (state.chargingStationsOnMap != null) {
-        //   buildMarkers(state.chargingStationsOnMap ?? [], state);
-        // }
 
         if (state.address != null) {
           final latLng = LatLng(
@@ -368,6 +349,7 @@ class _HomePageState extends State<HomePage> {
                 myLocationButtonEnabled: false,
                 zoomControlsEnabled: false,
                 onTap: (LatLng tappedPoint) async {
+                  ///TODO: FIX THIS
                   // context.read<HomeCubit>().add(
                   //   HandleMapTapEvent(tappedPoint),
                   // );
@@ -485,6 +467,7 @@ class _HomePageState extends State<HomePage> {
                           controller: searchController,
                           mapController: _mapController,
                           onChanged: (value) {
+                            ///TODO: FIX THIS
                             // context.read<ChargingStationBloc>().add(
                             //   FetchLocationSuggestionsEvent(value),
                             // );
@@ -538,6 +521,7 @@ class _HomePageState extends State<HomePage> {
                               });
                               _focusNode.unfocus();
 
+                              ///TODO: FIX THIS
                               // context.read<ChargingStationBloc>().add(
                               //   SearchLocationEvent(
                               //     suggestion,

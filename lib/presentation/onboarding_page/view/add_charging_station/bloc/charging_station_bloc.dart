@@ -57,7 +57,6 @@ class ChargingStationBloc
           address: () => null,
           addressLatitude: () => null,
           addressLongitude: () => null,
-          // addressPosition: () => null,
           locationSuggestions: [],
           brandName: event.brandName,
           brandLogo: event.brandLogo,
@@ -94,7 +93,6 @@ class ChargingStationBloc
               address: () => address,
               addressLatitude: () => position.latitude,
               addressLongitude: () => position.longitude,
-              // addressPosition: () => position,
             ),
           );
         }
@@ -119,7 +117,6 @@ class ChargingStationBloc
               address: () => null,
               addressLatitude: () => null,
               addressLongitude: () => null,
-              // addressPosition: () => null,
             ),
           );
           return;
@@ -130,7 +127,6 @@ class ChargingStationBloc
               address: () => locationResult.address,
               addressLatitude: () => locationResult.position.latitude,
               addressLongitude: () => locationResult.position.longitude,
-              // addressPosition: () => locationResult.position,
             ),
           );
         }
@@ -153,7 +149,6 @@ class ChargingStationBloc
               address: () => null,
               addressLatitude: () => null,
               addressLongitude: () => null,
-              // addressPosition: () => null,
             ),
           );
           return;
@@ -165,7 +160,6 @@ class ChargingStationBloc
               address: () => tapResult,
               addressLatitude: () => addressPosition?.latitude,
               addressLongitude: () => addressPosition?.longitude,
-              // addressPosition: () => addressPosition,
             ),
           );
         }
@@ -185,7 +179,6 @@ class ChargingStationBloc
               address: () => null,
               addressLatitude: () => null,
               addressLongitude: () => null,
-              // addressPosition: () => null,
             ),
           );
           return;
@@ -195,7 +188,6 @@ class ChargingStationBloc
               address: () => locationResult.address,
               addressLatitude: () => locationResult.position.latitude,
               addressLongitude: () => locationResult.position.longitude,
-              // addressPosition: () => locationResult.position,
             ),
           );
         }
@@ -225,7 +217,6 @@ class ChargingStationBloc
           address: () => event.value,
           addressLatitude: () => event.addressLatitude,
           addressLongitude: () => event.addressLongitude,
-          // addressPosition: () => event.addressPosition,
         ),
       );
     });
@@ -236,7 +227,6 @@ class ChargingStationBloc
           address: () => null,
           addressLatitude: () => null,
           addressLongitude: () => null,
-          // addressPosition: () => null,
           locationSuggestions: [],
         ),
       );

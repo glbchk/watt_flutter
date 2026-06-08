@@ -57,23 +57,19 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
   Widget build(BuildContext context) {
     String? title;
     String? label;
-    // String? value;
 
     switch (widget.type) {
       case ProfileDataType.editName:
         title = 'What is your name?';
         label = 'Name';
-        // value = 'Some name';
         break;
       case ProfileDataType.editEmail:
         title = 'What is your email?';
         label = 'Email';
-        // value = 'Some email';
         break;
       case ProfileDataType.editPhoneNumber:
         title = 'What is your phone number?';
         label = 'Phone Number';
-        // value = 'Some phone number';
         break;
     }
 

@@ -8,6 +8,7 @@ import 'package:watt/presentation/auth_page/bloc/auth_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type_enum.dart';
 
+///TODO: NEED TO FIX
 class ProfileCubit extends Cubit<ProfileState> {
   final AuthBloc authBloc;
   late StreamSubscription authSubscription;
@@ -120,7 +121,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<void> editNameUserData(String name) async {
-    // emit(state.copyWith(isLoading: true));
     try {
       print('User name updated!');
       await updateUserNameUseCase.execute(name);
@@ -128,7 +128,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           name: name,
-          // isLoading: false,
         ),
       );
     } catch (e) {
@@ -136,7 +135,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          // isLoading: false,
         ),
       );
     }
@@ -155,7 +153,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<void> editPhoneNumberUserData(String phoneNumber) async {
-    // emit(state.copyWith(isLoading: true));
     try {
       print('User phone number updated!');
       await updateUserPhoneNumberUseCase.execute(phoneNumber);
@@ -163,7 +160,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           phoneNumber: phoneNumber,
-          // isLoading: false,
         ),
       );
     } catch (e) {
@@ -171,7 +167,6 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(
         state.copyWith(
           errorMessage: () => e.toString(),
-          // isLoading: false,
         ),
       );
     }

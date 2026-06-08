@@ -36,11 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
         print(state.userData?.name);
         print(state.userData?.email);
         print(state.userData);
-        // if (state.isLoading) {
-        //   return const Scaffold(
-        //     body: Center(child: CircularProgressIndicator()),
-        //   );
-        // }
 
         if (state.userData == null) {
           return const Scaffold(
@@ -201,25 +196,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     ),
                                                   );
                                                 }
-
-                                                // context
-                                                //     .read<ProfileCubit>()
-                                                //     .sendVerificationEmail();
-                                                //
-                                                // WattAlertWidget.show(
-                                                //   context: context,
-                                                //   title: 'Check your email',
-                                                //   message:
-                                                //       'A verification link was sent to ${state.email}. Click it to confirm your new email.',
-                                                //   buttonTextColor: context
-                                                //       .theme
-                                                //       .appColors
-                                                //       .onSecondary,
-                                                //   buttonLabel: 'OK',
-                                                //   onConfirm: () => Navigator.of(
-                                                //     context,
-                                                //   ).pop(),
-                                                // );
                                               },
                                               onPressed:
                                                   (String newEmail) async {
@@ -257,7 +233,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                       secondLabel:
                                           state.phoneNumber ??
                                           user?.phoneNumber,
-                                      // hideChevron: false,
                                       onPressed: () {
                                         Navigator.push(
                                           context,

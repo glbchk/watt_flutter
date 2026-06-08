@@ -60,7 +60,6 @@ class MapPopupWidget extends StatelessWidget {
     VoidCallback? onPressedMyStation,
     String? singleButtonLabel,
   }) {
-    // Navigator.pop(dialogContext);
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -69,11 +68,6 @@ class MapPopupWidget extends StatelessWidget {
       builder: (popupContext) {
         return BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
-            // String? currentError;
-            // if (state is AuthUnauthenticatedState) {
-            //   currentError = state.forgotPasswordError;
-            // }
-
             return MapPopupWidget(
               chargingStationType: station.type ?? ChargingStationType.private,
               chargingStationName: station.chargingStationName,
@@ -103,7 +97,6 @@ class MapPopupWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
-        // width: double.infinity,
         height: 320,
         decoration: BoxDecoration(
           color: context.theme.appColors.background,
@@ -154,7 +147,6 @@ class MapPopupWidget extends StatelessWidget {
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
-                          // textAlign: TextAlign.left,
                         ),
                         Row(
                           children: [
