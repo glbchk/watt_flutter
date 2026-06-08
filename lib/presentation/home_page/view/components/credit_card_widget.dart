@@ -102,7 +102,6 @@ class CreditCardWidget extends StatelessWidget {
                     ),
                     Text(
                       cardHolder ?? 'Joe Smith',
-                      //currentCard.cardName ?? '',
                       style: TextStyle(
                         color: context.theme.appColors.onPrimary,
                         fontSize: 15,

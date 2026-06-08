@@ -126,29 +126,6 @@ class _AddPaymentMethodPageState extends State<AddPaymentMethodPage> {
                                         // );
                                       },
                                     );
-                                    // } else if (paymentMethod is IbanModel) {
-                                    // return TallCardButton(
-                                    //   isDismissible: true,
-                                    //   label: 'IBAN Method',
-                                    //   subLabel:
-                                    //       '${paymentMethod.ibanNumber?.substring(0, 16)}${paymentMethod.isUsedForReceivingEarnings == true ? ' * Receiver' : ''}',
-                                    //   svgImage: KCardIcons.paymentMethod,
-                                    //   marginDistance: marginSize,
-                                    //   onPressed: () {
-                                    //     // Navigator.push(
-                                    //     //   context,
-                                    //     //   MaterialPageRoute(
-                                    //     //     builder: (_) =>
-                                    //     //         AddIbanDetailsPage(),
-                                    //     //   ),
-                                    //     // );
-                                    //   },
-                                    // );
-                                    // } else {
-                                    //   return SizedBox(
-                                    //     height: 1,
-                                    //   );
-                                    // }
                                   }),
                                   const SizedBox(height: 30.0),
                                   Padding(

@@ -12,7 +12,6 @@ class ChargingStationState {
   final String? address;
   final double? addressLatitude;
   final double? addressLongitude;
-  // final Position? addressPosition;
   final List<String>? locationSuggestions;
   final String? brandName;
   final String? brandLogo;
@@ -43,7 +42,6 @@ class ChargingStationState {
     this.address,
     this.addressLatitude,
     this.addressLongitude,
-    // this.addressPosition,
     this.locationSuggestions,
     this.brandName,
     this.brandLogo,
@@ -105,9 +103,6 @@ class ChargingStationState {
       addressLongitude: addressLongitude != null
           ? addressLongitude()
           : this.addressLongitude,
-      // addressPosition: addressPosition != null
-      //     ? addressPosition()
-      //     : this.addressPosition,
       locationSuggestions: locationSuggestions ?? this.locationSuggestions,
       brandName: brandName ?? this.brandName,
       brandLogo: brandLogo ?? this.brandLogo,

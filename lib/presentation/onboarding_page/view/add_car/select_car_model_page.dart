@@ -28,7 +28,6 @@ class SelectCarModelPage extends StatefulWidget {
 
 class _SelectCarModelPageState extends State<SelectCarModelPage> {
   TextEditingController plateController = TextEditingController();
-  // var items = ['One', 'Two', 'Three', 'Four'];
   String? _dropdownValue;
 
   @override

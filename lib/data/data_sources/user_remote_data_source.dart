@@ -12,6 +12,41 @@ class UserRemoteDataSource {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+  Stream<bool> listenForEmailVerification(String pendingEmail) async* {
+    while (true) {
+      await Future.delayed(const Duration(seconds: 3));
+
+      final user = auth.currentUser;
+
+      if (user == null) {
+        yield false;
+        break;
+      }
+
+      await user.reload();
+
+      final refreshedUser = auth.currentUser;
+
+      print('=== EMAIL VERIFICATION CHECK ===');
+      print('Current user email: ${refreshedUser?.email}');
+      print('Pending email: $pendingEmail');
+      print('emailVerified: ${refreshedUser?.emailVerified}');
+      print('================================');
+
+      if (refreshedUser?.emailVerified == true) {
+        await firestore.collection('users').doc(user.uid).update({
+          'email': refreshedUser?.email,
+          'is_email_verified': true,
+        });
+
+        yield true;
+        break;
+      }
+
+      yield false;
+    }
+  }
+
   Future<void> createUser(UserModel user) async {
     await firestore.collection('users').doc(user.id).set(user.toJson());
   }
@@ -21,26 +56,68 @@ class UserRemoteDataSource {
     await firestore.collection("users").doc(user?.uid).get();
   }
 
-  Future<void> reauthenticateUser(String password) async {
-    User? user = auth.currentUser;
-    final email = user?.email;
+  Future<void> updateEmail(String newEmail) async {
+    final user = auth.currentUser;
 
-    if (user == null || email == null) {
-      print('No user found to reauthenticate');
-    }
+    if (user == null) return;
 
-    AuthCredential credential = EmailAuthProvider.credential(
-      email: email ?? '',
-      password: password,
-    );
-
-    await user?.reauthenticateWithCredential(credential);
+    await user.verifyBeforeUpdateEmail(newEmail);
   }
 
-  Future<void> updateUserEmail(String email) async {
+  Future<void> reauthenticateUser(
+    String currentPassword,
+    String newEmail,
+  ) async {
     User? user = auth.currentUser;
-    await user?.verifyBeforeUpdateEmail(email);
-    await firestore.collection("users").doc(user?.uid).update({'email': email});
+
+    if (user == null || user.email == null) {
+      print('No user found to reauthenticate');
+      return;
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: user.email ?? '',
+      password: currentPassword,
+    );
+
+    await user.reauthenticateWithCredential(credential);
+    await user.verifyBeforeUpdateEmail(newEmail);
+
+    await user.reload();
+    user = auth.currentUser;
+
+    await firestore.collection('users').doc(user?.uid).update({
+      'email': newEmail,
+      'is_email_verified': false,
+    });
+  }
+
+  Future<void> sendVerificationEmail() async {
+    final user = auth.currentUser;
+    if (user == null) return;
+
+    await user.sendEmailVerification();
+  }
+
+  Future<bool> checkVerificationAndUpdate(String pendingEmail) async {
+    User? user = auth.currentUser;
+    if (user == null) return false;
+
+    await user.reload();
+    user = auth.currentUser;
+
+    final isUpdated =
+        user != null &&
+        user.email == pendingEmail &&
+        user.emailVerified == true;
+
+    if (isUpdated) {
+      await firestore.collection('users').doc(user.uid).update({
+        'is_email_verified': true,
+      });
+      return true;
+    }
+    return false;
   }
 
   Future<void> updateUserName(String name) async {
@@ -51,7 +128,6 @@ class UserRemoteDataSource {
 
   Future<void> updatePhoneNumber(String phoneNumber) async {
     User? user = auth.currentUser;
-    //await user?.updatePhoneNumber(phoneNumber); //Need PhoneAuthCredential
     await firestore.collection("users").doc(user?.uid).update({
       'phone_number': phoneNumber,
     });
@@ -574,46 +650,42 @@ class UserRemoteDataSource {
         .toList();
   }
 
-  // Future<void> closeBooking(BookingModel booking) async {
-  //   final user = auth.currentUser;
-  //   if (user == null) return;
-  //
-  //   final docRef = firestore.collection("users").doc(user.uid);
-  //
-  //   await docRef.update({
-  //     'upcoming_bookings': FieldValue.arrayRemove([booking.toJson()]),
-  //   });
-  //
-  //   await firestore.collection("users").doc(user.uid).update({
-  //     'past_bookings': FieldValue.arrayUnion([booking.toJson()]),
-  //   });
-  // }
+  Future<List<ChargingStationModel>> updateChargingStationsOnMap(
+    List<ChargingStationModel> stations,
+  ) async {
+    if (stations.isEmpty) return [];
 
-  // Future<void> placeUpcomingBooking(
-  //   BookingModel booking,
-  //   String stationId,
-  // ) async {
-  //   final docSnapshot = await firestore
-  //       .collection("app_charging_stations")
-  //       .doc(stationId)
-  //       .get();
-  //
-  //   final user = auth.currentUser;
-  //   if (user == null) return;
-  //
-  //   if (docSnapshot.exists && docSnapshot.data() != null) {
-  //     final station = ChargingStationModel.fromJson(docSnapshot.data()!);
-  //
-  //     print("Found station: ${station.chargingStationName}");
-  //     if (station.id == user.uid) {
-  //       await firestore.collection("users").doc(user.uid).update({
-  //         'bookings': FieldValue.arrayUnion([booking.toJson()]),
-  //       });
-  //     }
-  //   } else {
-  //     print("Station not found!");
-  //   }
-  // }
+    final globalSnap = await firestore
+        .collection("app_charging_stations")
+        .get();
+
+    final existingGlobalIds = globalSnap.docs.map((d) => d.id).toSet();
+
+    final batch = firestore.batch();
+    int addedCount = 0;
+
+    for (final station in stations) {
+      final stationId = station.id;
+
+      if (!existingGlobalIds.contains(stationId)) {
+        batch.set(
+          firestore.collection("app_charging_stations").doc(stationId),
+          station.toJson(),
+          SetOptions(merge: true),
+        );
+        addedCount++;
+      }
+    }
+
+    if (addedCount > 0) {
+      await batch.commit();
+      print('$addedCount user stations synced to global collection.');
+    } else {
+      print('All state stations are already in the global collection.');
+    }
+
+    return stations;
+  }
 
   Future<void> deleteUser() async {
     User? user = auth.currentUser;

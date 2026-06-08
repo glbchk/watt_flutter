@@ -35,7 +35,6 @@ class ReservationCardWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
-        // width: double.infinity,
         height: 360,
         decoration: BoxDecoration(
           color: context.theme.appColors.background,

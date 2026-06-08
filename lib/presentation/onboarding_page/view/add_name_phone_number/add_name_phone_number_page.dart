@@ -191,16 +191,6 @@ class _AddNameAndPhoneNumberPageState extends State<AddNameAndPhoneNumberPage> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: context.theme.appColors.transparent,
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //     color: context.theme.appColors.onSecondary.withAlpha(
-                      //       26,
-                      //     ),
-                      //     spreadRadius: 0,
-                      //     blurRadius: 30,
-                      //     offset: Offset(0, 0),
-                      //   ),
-                      // ],
                     ),
                     padding: const EdgeInsets.only(
                       left: 20.0,

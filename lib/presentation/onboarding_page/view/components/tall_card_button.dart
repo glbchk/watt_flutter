@@ -74,7 +74,6 @@ class TallCardButton extends StatelessWidget {
                   height: 100.0,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
                         color: context.theme.appColors.onSecondary.withAlpha(

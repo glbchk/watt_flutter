@@ -22,7 +22,6 @@ class UserRepositoryImpl implements UserRepository {
       email: user.email,
       phoneNumber: user.phoneNumber,
       isOnboardingCompleted: user.isOnboardingCompleted,
-      // language: user.language,
       paymentMethods: user.paymentMethods,
       cars: user.cars,
       chargingStations: user.chargingStations,
@@ -36,9 +35,30 @@ class UserRepositoryImpl implements UserRepository {
     await userRemoteDataSource.getCurrentUser();
   }
 
+  // @override
+  // Stream<bool> listenForEmailVerification(String pendingEmail) {
+  //   return userRemoteDataSource.listenForEmailVerification(pendingEmail);
+  // }
+
   @override
-  Future<void> reauthenticateUser(String password) async {
-    await userRemoteDataSource.reauthenticateUser(password);
+  Future<void> updateEmail(String newEmail) async {
+    await userRemoteDataSource.updateEmail(newEmail);
+  }
+
+  @override
+  Future<void> reauthenticateUser(
+    String currentPassword,
+    String newEmail,
+  ) async {
+    await userRemoteDataSource.reauthenticateUser(
+      currentPassword,
+      newEmail,
+    );
+  }
+
+  @override
+  Future<void> sendVerificationEmail() async {
+    await userRemoteDataSource.sendVerificationEmail();
   }
 
   @override
@@ -47,8 +67,8 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> updateUserEmail(String email) async {
-    await userRemoteDataSource.updateUserEmail(email);
+  Future<bool> checkVerificationAndUpdate(String pendingEmail) async {
+    return await userRemoteDataSource.checkVerificationAndUpdate(pendingEmail);
   }
 
   @override
@@ -210,10 +230,12 @@ class UserRepositoryImpl implements UserRepository {
     return await userRemoteDataSource.fetchPastBookings();
   }
 
-  // @override
-  // Future<void> closeBooking(BookingModel booking) async {
-  //   await userRemoteDataSource.closeBooking(booking);
-  // }
+  @override
+  Future<List<ChargingStationModel>> updateChargingStationsOnMap(
+    List<ChargingStationModel> stations,
+  ) async {
+    return await userRemoteDataSource.updateChargingStationsOnMap(stations);
+  }
 
   @override
   Future<void> deleteUser() async {

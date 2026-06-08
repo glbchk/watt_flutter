@@ -9,8 +9,11 @@ import 'package:watt/domain/entities/user_entity.dart';
 abstract class UserRepository {
   Future<void> createUser(UserEntity user);
   Future<void> getCurrentUser();
-  Future<void> reauthenticateUser(String password);
-  Future<void> updateUserEmail(String email);
+  // Stream<bool> listenForEmailVerification(String pendingEmail);
+  Future<void> updateEmail(String newEmail);
+  Future<void> reauthenticateUser(String currentPassword, String newEmail);
+  Future<void> sendVerificationEmail();
+  Future<bool> checkVerificationAndUpdate(String pendingEmail);
   Future<void> updateUserName(String name);
   Future<void> updatePhoneNumber(String phoneNumber);
   Future<void> addCar(CarModel car);
@@ -46,6 +49,8 @@ abstract class UserRepository {
   );
   Future<List<BookingModel>> fetchUpcomingBookings();
   Future<List<BookingModel>> fetchPastBookings();
-  // Future<void> closeBooking(BookingModel booking);
+  Future<List<ChargingStationModel>> updateChargingStationsOnMap(
+    List<ChargingStationModel> stations,
+  );
   Future<void> deleteUser();
 }

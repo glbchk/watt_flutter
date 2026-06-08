@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:watt/data/models/charging_station_model.dart';
 import 'package:watt/presentation/home_page/bloc/home_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_stations_page/bloc/my_charging_stations_cubit.dart';
 import 'package:watt/presentation/menu_pages/my_charging_stations_page/bloc/my_charging_stations_state.dart';
@@ -22,7 +23,6 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
   void initState() {
     super.initState();
     context.read<MyChargingStationsCubit>().fetchChargingStations();
-    // context.read<MyChargingStationsCubit>().fetchUserData();
   }
 
   @override
@@ -38,7 +38,11 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
           scaffoldBackgroundColor: context.theme.appColors.primary,
           leading: BackButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pop<List<ChargingStationModel>>(
+                context,
+                state.userChargingStations ?? [],
+              );
+              context.read<HomeCubit>().fetchChargingStationsForMap();
             },
           ),
           body: Stack(
@@ -119,6 +123,7 @@ class _MyChargingStationsPageState extends State<MyChargingStationsPage> {
                                           pngImage: chargingStation.brandLogo,
                                           marginDistance: marginSize,
                                           onPressed: () {
+                                            ///TODO: NEED TO FIX
                                             // Navigator.push(
                                             //   context,
                                             //   MaterialPageRoute(

@@ -1,9 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/components/edit_data_widget.dart';
 import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type_enum.dart';
+import 'package:watt/presentation/menu_pages/profile_page/sub_pages/email_verification_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/custom_textfield.dart';
 import 'package:watt/utils/global_components/login_alert.dart';
@@ -14,6 +16,7 @@ class EditProfileDataPage extends StatefulWidget {
   final Function(String) onPressed;
   final String? error;
   final Function(String?)? onChanged;
+  final VoidCallback? onLinkTap;
 
   const EditProfileDataPage({
     super.key,
@@ -22,6 +25,7 @@ class EditProfileDataPage extends StatefulWidget {
     required this.onPressed,
     this.error,
     this.onChanged,
+    this.onLinkTap,
   });
 
   @override
@@ -30,19 +34,22 @@ class EditProfileDataPage extends StatefulWidget {
 
 class _EditProfileDataPageState extends State<EditProfileDataPage> {
   TextEditingController controller = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     controller.text = widget.value;
-    context.read<ProfileCubit>().fetchUserData();
+
+    if (widget.type == ProfileDataType.editEmail) {
+      context.read<ProfileCubit>().checkVerificationEmailAndUpdate(
+        controller.text,
+      );
+    }
   }
 
   @override
   void dispose() {
     controller.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -50,48 +57,59 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
   Widget build(BuildContext context) {
     String? title;
     String? label;
-    // String? value;
 
     switch (widget.type) {
       case ProfileDataType.editName:
         title = 'What is your name?';
         label = 'Name';
-        // value = 'Some name';
         break;
       case ProfileDataType.editEmail:
         title = 'What is your email?';
         label = 'Email';
-        // value = 'Some email';
         break;
       case ProfileDataType.editPhoneNumber:
         title = 'What is your phone number?';
         label = 'Phone Number';
-        // value = 'Some phone number';
         break;
     }
 
     return BlocConsumer<ProfileCubit, ProfileState>(
+      listenWhen: (previous, current) =>
+          previous.errorMessage != current.errorMessage,
       listener: (context, state) {
-        if (state.errorMessage?.contains('reauth-required') ?? false) {
+        if (state.errorMessage == 'reauth-required') {
+          final cubit = context.read<ProfileCubit>();
+          final emailToUpdate = controller.text;
+
           LoginAlertWidget.show(
             context: context,
             title: "Confirm Identity",
             message: "Please enter your password to change your email.",
-            passwordController: passwordController,
-            passwordError: state.passwordError,
             buttonLabel: 'Confirm',
-            onConfirm: () {
-              if (state.passwordError != null) {
-                context.read<ProfileCubit>().verifyPasswordUserData(
-                  passwordController.text,
-                );
-              } else {
-                context.read<ProfileCubit>().reauthenticateUser(
-                  passwordController.text,
+            onConfirm: (String password) async {
+              try {
+                await cubit.reauthenticateUser(
+                  password,
                   ProfileDataType.editEmail,
-                  controller.text,
+                  emailToUpdate,
                 );
-                Navigator.pop(context);
+
+                if (!context.mounted) return;
+
+                Navigator.of(context).pop();
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EmailVerificationPage(
+                      pendingEmail: emailToUpdate,
+                    ),
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
               }
             },
           );
@@ -124,6 +142,46 @@ class _EditProfileDataPageState extends State<EditProfileDataPage> {
                   error: error,
                   onChanged: (String? value) => widget.onChanged?.call(value),
                 ),
+                if (widget.type == ProfileDataType.editEmail &&
+                    (state.isEmailVerified == null ||
+                        state.isEmailVerified == false))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: context.theme.appColors.grey4,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Email is not verified, ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.theme.appColors.primary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'CLICK TO SEND VERIFICATION EMAIL',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context.theme.appColors.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = widget.onLinkTap,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

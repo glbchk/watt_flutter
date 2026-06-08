@@ -47,14 +47,12 @@ class BookingsCubit extends Cubit<BookingsState> {
     try {
       final results = await Future.wait([
         fetchUpcomingBookingsUseCase.execute(),
-        // fetchPastReservationsUseCase.execute(),
         fetchAllChargingStationsUseCase.execute(),
       ]);
 
       emit(
         state.copyWith(
           upcomingBookings: results[0] as List<BookingModel>,
-          // pastBookings: results[1] as List<BookingsModel>,
           bookedChargingStations: results[1] as List<ChargingStationModel>,
           isLoading: false,
         ),
@@ -107,8 +105,6 @@ class BookingsCubit extends Cubit<BookingsState> {
         (b) => b.id == booking.id,
       );
       if (bookingToDelete == null) return;
-
-      // await deleteUpcomingReservationUseCase.execute(BookingModel(id: ''));
 
       final updatedBookings = (state.upcomingBookings ?? [])
           .where((b) => b.id != booking.id)

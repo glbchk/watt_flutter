@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dart';
@@ -12,7 +13,7 @@ class LoginAlertWidget extends StatelessWidget {
   final TextEditingController? passwordController;
   final String? passwordError;
   final String? buttonLabel;
-  final VoidCallback? onConfirm;
+  final AsyncCallback? onConfirm;
 
   const LoginAlertWidget({
     super.key,
@@ -28,11 +29,11 @@ class LoginAlertWidget extends StatelessWidget {
     required BuildContext context,
     required String title,
     String? message,
-    TextEditingController? passwordController,
-    String? passwordError,
     String? buttonLabel,
-    VoidCallback? onConfirm,
+    Future<void> Function(String password)? onConfirm,
   }) {
+    final passwordController = TextEditingController();
+
     return showDialog(
       context: context,
       builder: (dialogContext) {
@@ -44,7 +45,9 @@ class LoginAlertWidget extends StatelessWidget {
               passwordController: passwordController,
               passwordError: state.passwordError,
               buttonLabel: buttonLabel,
-              onConfirm: onConfirm,
+              onConfirm: () async {
+                await onConfirm?.call(passwordController.text);
+              },
             );
           },
         );
@@ -94,8 +97,8 @@ class LoginAlertWidget extends StatelessWidget {
       actions: [
         WattMainButton(
           label: buttonLabel ?? '',
-          onPressed: () {
-            onConfirm?.call();
+          onPressed: () async {
+            await onConfirm?.call();
           },
         ),
       ],

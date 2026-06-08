@@ -8,14 +8,13 @@ import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/bloc/charging_station_state.dart';
 import 'package:watt/presentation/onboarding_page/view/add_charging_station/components/details_widget.dart';
 import 'package:watt/presentation/onboarding_page/view/components/tall_card_button.dart';
+import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/constants.dart';
 import 'package:watt/utils/global_components/small_textfield.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 import 'package:watt/utils/global_methods/custom_input_formatters.dart';
 import 'package:watt/utils/global_methods/string_helper_methods.dart';
 import 'package:watt/utils/global_methods/textfield_helper_methods.dart';
-
-import '../../../../../../utils/colors.dart';
 
 class DetailAvailableHoursPropertyPage extends StatefulWidget {
   const DetailAvailableHoursPropertyPage({
@@ -44,13 +43,15 @@ class _DetailAvailableHoursPropertyPageState
     super.initState();
 
     startFocus.addListener(() {
-      if (!startFocus.hasFocus)
+      if (!startFocus.hasFocus) {
         TextfieldHelperMethods.completeTimeFormatting(controllerStartTime);
+      }
     });
 
     endFocus.addListener(() {
-      if (!endFocus.hasFocus)
+      if (!endFocus.hasFocus) {
         TextfieldHelperMethods.completeTimeFormatting(controllerEndTime);
+      }
     });
   }
 

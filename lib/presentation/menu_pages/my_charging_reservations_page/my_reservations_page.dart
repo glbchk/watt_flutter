@@ -54,13 +54,6 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
             resizeToAvoidBottomInset: true,
             extendBodyBehindAppBar: false,
             showAppBar: false,
-            // appBarBackgroundColor: context.theme.appColors.transparent,
-            // scaffoldBackgroundColor: context.theme.appColors.primary,
-            // leading: BackButton(
-            //   onPressed: () {
-            //     Navigator.of(context).pop();
-            //   },
-            // ),
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
@@ -98,7 +91,6 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(64),
                     child: Container(
-                      // color: context.theme.appColors.background,
                       decoration: BoxDecoration(
                         color: context.theme.appColors.background,
                         borderRadius: const BorderRadius.only(
@@ -235,15 +227,6 @@ class _MyReservationsPageState extends State<MyReservationsPage> {
                                 ),
                               ),
                             );
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (_) => ChargingPage(
-                            //       reservation: upcomingReservation,
-                            //       duration: Duration(minutes: time),
-                            //     ),
-                            //   ),
-                            // );
                           },
                           onPressedContactUser: () {
                             UiHelperMethods.showContactOptions(context);

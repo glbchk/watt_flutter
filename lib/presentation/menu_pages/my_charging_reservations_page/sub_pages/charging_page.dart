@@ -12,6 +12,7 @@ import 'package:watt/utils/global_components/dynamic_timer_widget.dart';
 import 'package:watt/utils/global_components/status_widget.dart';
 import 'package:watt/utils/global_components/watt_white_button.dart';
 
+///TODO: NEED TO BE MERGED WITH charging_generic_test_page.dart AND FIXED
 class ChargingPage extends StatefulWidget {
   final ReservationModel reservation;
   final BookingModel booking;

@@ -54,12 +54,6 @@ class _ReservedStationPageState extends State<ReservedStationPage> {
           leading: BackButton(
             color: context.theme.appColors.onSecondary,
             onPressed: () {
-              // context.read<OnboardingBloc>().add(
-              //   NameVerificationEvent(value: ''),
-              // );
-              // context.read<OnboardingBloc>().add(
-              //   PhoneNumberVerificationEvent(value: ''),
-              // );
               Navigator.of(context).pop();
             },
           ),
@@ -444,6 +438,7 @@ class _ReservedStationPageState extends State<ReservedStationPage> {
                                 //       state.selectedSlots,
                                 //     );
 
+                                ///TODO: NEED TO BE FINISHED
                                 final ReservationModel
                                 bookingToSave = ReservationModel(
                                   id: Uuid().v4(),

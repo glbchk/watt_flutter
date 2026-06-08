@@ -4,6 +4,7 @@ import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_cubit.dar
 import 'package:watt/presentation/menu_pages/profile_page/bloc/profile_state.dart';
 import 'package:watt/presentation/menu_pages/profile_page/enum/profile_data_type_enum.dart';
 import 'package:watt/presentation/menu_pages/profile_page/sub_pages/edit_profile_data_page.dart';
+import 'package:watt/presentation/menu_pages/profile_page/sub_pages/email_verification_page.dart';
 import 'package:watt/utils/colors.dart';
 import 'package:watt/utils/global_components/default_app_bar.dart';
 import 'package:watt/utils/global_components/row_button.dart';
@@ -35,11 +36,6 @@ class _ProfilePageState extends State<ProfilePage> {
         print(state.userData?.name);
         print(state.userData?.email);
         print(state.userData);
-        // if (state.isLoading) {
-        //   return const Scaffold(
-        //     body: Center(child: CircularProgressIndicator()),
-        //   );
-        // }
 
         if (state.userData == null) {
           return const Scaffold(
@@ -56,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
           scaffoldBackgroundColor: context.theme.appColors.primary,
           leading: BackButton(
             onPressed: () {
+              context.read<ProfileCubit>().clearError();
               Navigator.of(context).pop();
             },
           ),
@@ -121,8 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   children: [
                                     RowButton(
                                       label: 'Name',
-                                      secondLabel:
-                                          user?.name ?? 'No name found',
+                                      secondLabel: state.name ?? user?.name,
                                       // hideChevron: false,
                                       onPressed: () {
                                         Navigator.push(
@@ -130,12 +126,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                           MaterialPageRoute(
                                             builder: (_) => EditProfileDataPage(
                                               type: ProfileDataType.editName,
-                                              value: user?.name ?? '',
+                                              value:
+                                                  state.name ??
+                                                  user?.name ??
+                                                  '',
                                               onPressed: (String name) {
                                                 context
                                                     .read<ProfileCubit>()
                                                     .editNameUserData(name);
-                                                Navigator.of(context).pop();
+                                                if (context.mounted) {
+                                                  Navigator.of(context).pop();
+                                                }
                                               },
                                               error: state.nameError,
                                               onChanged: (String? value) {
@@ -152,8 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                     RowButton(
                                       label: 'Email',
-                                      secondLabel:
-                                          user?.email ?? 'No email found',
+                                      secondLabel: state.email ?? user?.email,
                                       // hideChevron: false,
                                       onPressed: () {
                                         Navigator.push(
@@ -161,26 +161,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                           MaterialPageRoute(
                                             builder: (_) => EditProfileDataPage(
                                               type: ProfileDataType.editEmail,
-                                              value: user?.email ?? '',
-                                              onPressed: (String email) async {
-                                                await context
-                                                    .read<ProfileCubit>()
-                                                    .editEmailUserData(email);
-
-                                                final latestState = context
-                                                    .read<ProfileCubit>()
-                                                    .state;
-
-                                                if (latestState.errorMessage ==
-                                                    null) {
-                                                  FocusScope.of(
-                                                    context,
-                                                  ).unfocus();
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
-                                                }
-                                              },
+                                              value:
+                                                  state.email ??
+                                                  user?.email ??
+                                                  '',
                                               error: state.emailError,
                                               onChanged: (String? value) {
                                                 context
@@ -189,6 +173,56 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       value ?? '',
                                                     );
                                               },
+                                              onLinkTap: () {
+                                                context
+                                                    .read<ProfileCubit>()
+                                                    .sendVerificationEmail();
+
+                                                if (state.isEmailVerified ==
+                                                    true) {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                } else {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          EmailVerificationPage(
+                                                            pendingEmail:
+                                                                state.email ??
+                                                                '',
+                                                          ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              onPressed:
+                                                  (String newEmail) async {
+                                                    final cubit = context
+                                                        .read<ProfileCubit>();
+
+                                                    await cubit.updateEmail(
+                                                      newEmail,
+                                                    );
+                                                    final latestState =
+                                                        cubit.state;
+
+                                                    if (latestState
+                                                            .errorMessage ==
+                                                        'reauth-required') {
+                                                      return;
+                                                    }
+
+                                                    if (context.mounted) {
+                                                      FocusScope.of(
+                                                        context,
+                                                      ).unfocus();
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    }
+                                                  },
                                             ),
                                           ),
                                         );
@@ -197,9 +231,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     RowButton(
                                       label: 'Mobile',
                                       secondLabel:
-                                          user?.phoneNumber ??
-                                          'No phone number found',
-                                      // hideChevron: false,
+                                          state.phoneNumber ??
+                                          user?.phoneNumber,
                                       onPressed: () {
                                         Navigator.push(
                                           context,
@@ -207,7 +240,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                             builder: (_) => EditProfileDataPage(
                                               type: ProfileDataType
                                                   .editPhoneNumber,
-                                              value: user?.phoneNumber ?? '',
+                                              value:
+                                                  state.phoneNumber ??
+                                                  user?.phoneNumber ??
+                                                  '',
                                               onPressed: (String phoneNumber) {
                                                 context
                                                     .read<ProfileCubit>()
@@ -251,59 +287,4 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
-  // void _showReauthDialog(BuildContext context, password) {
-  //   final passwordController = TextEditingController();
-  //   final state = context.read<ProfileCubit>().state;
-  //
-  //   showDialog(
-  //     context: context,
-  //     builder: (diagContext) => LoginAlertWidget(
-  //       title: "Confirm Identity",
-  //       emailController: ,
-  //       emailError: ,
-  //       onEmailChanged: ,
-  //       passwordController: ,
-  //       passwordError: ,
-  //       onPasswordChanged: ,
-  //       onConfirm: () {
-  //         Navigator.pop(diagContext);
-  //       },
-  //       // onCancel: () {
-  //       //   Navigator.pop(diagContext);
-  //       // },
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           const Text("Please enter your password to change your email."),
-  //           TextField(
-  //             controller: passwordController,
-  //             obscureText: true,
-  //             decoration: const InputDecoration(labelText: 'Password'),
-  //           ),
-  //         ],
-  //       ),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(diagContext),
-  //           child: const Text("Cancel"),
-  //         ),
-  //         ElevatedButton(
-  //           onPressed: () {
-  //             // Call the reauthenticate method you created in the Cubit
-  //             context.read<ProfileCubit>().reauthenticateUser(
-  //               passwordController.text,
-  //               ProfileDataType.editEmail,
-  //               // You'll need to pass the temporary email here
-  //               // or store it in your state
-  //               state.newEmailValue ?? '',
-  //             );
-  //             Navigator.pop(diagContext);
-  //           },
-  //           child: const Text("Confirm"),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

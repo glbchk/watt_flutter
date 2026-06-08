@@ -50,13 +50,6 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
             resizeToAvoidBottomInset: true,
             extendBodyBehindAppBar: false,
             showAppBar: false,
-            // appBarBackgroundColor: context.theme.appColors.transparent,
-            // scaffoldBackgroundColor: context.theme.appColors.primary,
-            // leading: BackButton(
-            //   onPressed: () {
-            //     Navigator.of(context).pop();
-            //   },
-            // ),
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
@@ -94,7 +87,6 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(64),
                     child: Container(
-                      // color: context.theme.appColors.background,
                       decoration: BoxDecoration(
                         color: context.theme.appColors.background,
                         borderRadius: const BorderRadius.only(
@@ -174,6 +166,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                           'yyyy-MM-dd',
                         ).format(parsedDate);
 
+                        ///TODO: FIX THIS
                         final time =
                             StringHelperMethods.calculateTotalBookingMinutes(
                               upcomingBooking.selectedTimes,
@@ -186,6 +179,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                           chargingStationAddress: stationAddress,
                           negativeLabel: 'Cancel reservation',
                           onPressedReject: () {
+                            ///TODO: FIX THIS
                             print(upcomingBooking.id);
                             // context
                             //     .read<BookingsCubit>()
@@ -196,6 +190,7 @@ class _MyBookingsPageState extends State<MyBookingsPage> {
                           positiveLabel: 'Start charging',
                           positiveButtonColor: context.theme.appColors.primary,
                           onPressedAccept: () {
+                            ///TODO: FIX THIS
                             // Navigator.push(
                             //   context,
                             //   MaterialPageRoute(

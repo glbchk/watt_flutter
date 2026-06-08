@@ -41,10 +41,6 @@ class _ChargingStationDetailsPageState
     isOnlineChargerOn = state.chargingStation?.onlineCharger ?? false;
     isEveryoneCanAccess = state.chargingStation?.everyoneCanAccess ?? false;
 
-    // context.read<ChargingStationBloc>().add(
-    //   ResetChargingStationFormEvent(),
-    // );
-
     super.initState();
   }
 

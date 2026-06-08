@@ -5,24 +5,34 @@ class ProfileState {
   final bool isLoading;
   final bool? isLocationEnabled;
   final UserModel? userData;
+  final String? name;
+  final String? email;
+  final bool? isEmailVerified;
+  final String? phoneNumber;
   final String? errorMessage;
   final String? nameError;
   final String? emailError;
   final String? phoneNumberError;
   final String? newEmailValue;
   final String? passwordError;
+  final String? pendingEmail;
 
   ProfileState({
     required this.isUserAuthenticated,
     this.isLoading = false,
     this.isLocationEnabled,
     this.userData,
+    this.name,
+    this.email,
+    this.isEmailVerified,
+    this.phoneNumber,
     this.errorMessage,
     this.nameError,
     this.emailError,
     this.phoneNumberError,
     this.newEmailValue,
     this.passwordError,
+    this.pendingEmail,
   });
 
   ProfileState copyWith({
@@ -30,6 +40,10 @@ class ProfileState {
     bool? isLoading,
     bool? isLocationEnabled,
     UserModel? userData,
+    String? name,
+    String? email,
+    bool? isEmailVerified,
+    String? phoneNumber,
     String? Function()? errorMessage,
     bool clearUserData = false,
     String? Function()? nameError,
@@ -37,12 +51,17 @@ class ProfileState {
     String? Function()? phoneNumberError,
     String? Function()? newEmailValue,
     String? Function()? passwordError,
+    String? pendingEmail,
   }) {
     return ProfileState(
       isUserAuthenticated: isUserAuthenticated ?? this.isUserAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,
       userData: clearUserData ? null : (userData ?? this.userData),
+      name: name ?? this.name,
+      email: email ?? this.email,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       errorMessage: errorMessage != null ? errorMessage() : this.errorMessage,
       nameError: nameError != null ? nameError() : this.nameError,
       emailError: emailError != null ? emailError() : this.emailError,
@@ -55,6 +74,7 @@ class ProfileState {
       passwordError: passwordError != null
           ? passwordError()
           : this.passwordError,
+      pendingEmail: pendingEmail ?? this.pendingEmail,
     );
   }
 }
