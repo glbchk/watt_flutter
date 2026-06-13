@@ -51,3 +51,5 @@ This project represents my first attempt at building a production-style Flutter 
 
 # Purpose
 This project was created to explore and implement a complete EV-focused user journey, including authentication, onboarding, vehicle integration, and map-based services while following modern Flutter development best practices.
+
+"Copyright (c) 2026 glbchk. All rights reserved. No commercial or non-commercial use, reproduction, or distribution of this code is permitted without explicit written consent."
